@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dr. Minsu Kim</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+    }
+    nav {
+      width: 180px;
+      background-color: #f0f0f0;
+      padding-top: 40px;
+      height: 100vh;
+      position: fixed;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+    nav a {
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+    .container {
+      margin-right: 180px;
+      padding: 40px;
+      display: flex;
+      align-items: center;
+      height: 100vh;
+    }
+    .photo {
+      flex: 0 0 180px;
+      height: 180px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 40px;
+    }
+    .photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .intro {
+      max-width: 600px;
+    }
+    section {
+      padding: 60px;
+    }
+    h2 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="photo">
+      <img src="your_photo.jpg" alt="Dr. Minsu Kim">
+    </div>
+    <div class="intro">
+      <h1>Dr. Minsu Kim</h1>
+      <p>Postdoctoral researcher in neurobiology and space bioscience. Interested in brain vulnerability under spaceflight environments such as radiation and microgravity.</p>
+    </div>
+  </div>
+
+  <nav>
+    <a href="#about">About Me</a>
+    <a href="#skills">Skills</a>
+    <a href="#publications">Publications</a>
+    <a href="#research">Research</a>
+    <a href="#idea">Idea</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <section id="about">
+    <h2>About Me</h2>
+    <p>Introduce your academic journey and goals.</p>
+  </section>
+  <section id="skills">
+    <h2>Skills</h2>
+    <p>Western blot, IHC, Python, RNA-seq analysis, etc.</p>
+  </section>
+  <section id="publications">
+    <h2>Publications</h2>
+    <p>Include links to your published papers.</p>
+  </section>
+  <section id="research">
+    <h2>Research</h2>
+    <p>Summarize your Ph.D. research and space bioscience goals.</p>
+  </section>
+  <section id="idea">
+    <h2>Idea</h2>
+    <p>Introduce your future research directions, especially in spaceflight and brain health.</p>
+  </section>
+  <section id="contact">
+    <h2>Contact</h2>
+    <p>Email: your.email@example.com</p>
+  </section>
+</body>
+</html>
