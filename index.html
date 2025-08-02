@@ -7,114 +7,100 @@
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #ffffff;
+      color: #222;
+    }
+    header {
+      width: 100%;
+      height: 300px;
+      background: url('space_banner.jpg') center/cover no-repeat;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+    }
+    header h1 {
+      font-size: 3em;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      border-radius: 10px;
     }
     nav {
-      width: 180px;
-      background-color: #f5f5f5;
-      padding-top: 40px;
       position: fixed;
+      top: 50%;
       right: 0;
-      top: 0;
-      height: 100vh;
+      transform: translateY(-50%);
       display: flex;
       flex-direction: column;
-      gap: 20px;
-      align-items: center;
+      align-items: flex-end;
+      padding-right: 10px;
+      gap: 15px;
+      z-index: 100;
     }
     nav a {
-      text-decoration: none;
+      background-color: #f0f0f0;
       color: #333;
-      font-weight: bold;
+      text-decoration: none;
+      padding: 10px 16px;
+      border-radius: 6px 0 0 6px;
+      font-weight: 500;
+      transition: background-color 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    nav a:hover {
+      background-color: #dcdcdc;
     }
     .container {
-      margin-right: 180px;
-      padding: 40px;
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .intro {
       display: flex;
       align-items: center;
-      height: 100vh;
+      gap: 40px;
+      margin-top: 40px;
     }
     .photo {
-      flex: 0 0 180px;
+      width: 180px;
       height: 180px;
       border-radius: 50%;
       overflow: hidden;
-      margin-right: 40px;
     }
     .photo img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-    .intro {
-      max-width: 600px;
-    }
-    section {
-      padding: 60px;
-      max-width: 800px;
-    }
-    h2 {
-      margin-top: 0;
-    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="photo">
-      <img src="minsu.jpg" alt="Dr. Minsu Kim">
-    </div>
-    <div class="intro">
-      <h1>Dr. Minsu Kim</h1>
-      <p>Postdoctoral researcher with a Ph.D. in Bioengineering. Passionate about understanding how spaceflight environments such as microgravity and cosmic radiation impact the central nervous system. Experienced in molecular neuroscience, inflammation, and blood-brain barrier research, with recent focus on transcriptomic analysis of space-exposed mouse brain.</p>
-    </div>
-  </div>
+  <header>
+    <h1>Dr. Minsu Kim</h1>
+  </header>
 
   <nav>
-    <a href="#about">About Me</a>
-    <a href="#skills">Skills</a>
-    <a href="#publications">Publications</a>
-    <a href="#research">Research</a>
-    <a href="#idea">Ideas</a>
-    <a href="#contact">Contact</a>
+    <a href="index.html">Home</a>
+    <a href="about.html">About Me</a>
+    <a href="skills.html">Skills</a>
+    <a href="research.html">Research</a>
+    <a href="publications.html">Publications</a>
+    <a href="idea.html">Ideas</a>
+    <a href="contact.html">Contact</a>
   </nav>
 
-  <section id="about">
-    <h2>About Me</h2>
-    <p>I earned my Ph.D. in Bioengineering in South Korea and am currently seeking postdoctoral opportunities in space neuroscience. My doctoral work focused on blood-brain barrier dysfunction and macrophage-driven inflammation following traumatic brain injury (TBI). I'm transitioning into space bioscience, particularly exploring how the brain responds to long-term exposure to microgravity and space radiation.</p>
-  </section>
-
-  <section id="skills">
-    <h2>Skills</h2>
-    <ul>
-      <li>Experimental: Western blotting, Immunohistochemistry, animal brain surgery (TBI model)</li>
-      <li>Computational: Python (statistical analysis, graphing), R (DESeq2, GSEA), Git</li>
-      <li>Bioinformatics: RNA-seq (NASA GeneLab-based), STAR, RSEM, ERCC normalization, GSEA</li>
-      <li>Languages: Korean (native), English (academic/interview level)</li>
-    </ul>
-  </section>
-
-  <section id="publications">
-    <h2>Publications</h2>
-    <p>Available upon request. Includes peer-reviewed papers on TBI, blood-brain barrier pathology, and recent poster submissions related to ferroptosis in spaceflight brain.</p>
-  </section>
-
-  <section id="research">
-    <h2>Research</h2>
-    <p>I established a TBI mouse model in a newly built lab, managed animal experiments across two campuses, and discovered the anti-inflammatory effect of intravenous recombinant protein X. Recent research includes RNA-seq analysis of NASA GeneLab datasets to study ferroptosis-related gene changes in space-exposed mouse brains, supporting the hypothesis that long-term spaceflight may induce astrocyte vulnerability.</p>
-  </section>
-
-  <section id="idea">
-    <h2>Ideas</h2>
-    <p>I aim to investigate the intersection of spaceflight stressors and neurovascular regulation. Specific interests include astrocyte ferroptosis under cosmic radiation, transcriptomic shifts in brain immune cells during prolonged microgravity, and adaptation failure in hippocampal regions post-flight.</p>
-  </section>
-
-  <section id="contact">
-    <h2>Contact</h2>
-    <p>Email: your.email@example.com<br>
-    GitHub: <a href="https://github.com/kmnns0613" target="_blank">@kmnns0613</a><br>
-    CV available upon request</p>
-  </section>
+  <div class="container">
+    <div class="intro">
+      <div class="photo">
+        <img src="minsu.jpg" alt="Dr. Minsu Kim">
+      </div>
+      <div>
+        <h2>Welcome</h2>
+        <p>I’m a postdoctoral researcher exploring how long-term spaceflight affects the central nervous system. My research bridges neuroinflammation, space bioscience, and transcriptomic adaptation of the brain to extraterrestrial stressors.</p>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
