@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dr. Minsu Kim | Skills</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y5KHEV62JH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-Y5KHEV62JH');
+  </script>
+  <style>
+    :root {
+      --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-serif: Georgia, serif;
+      --font-size-h1: clamp(28px, 4vw, 40px);
+      --font-size-h2: clamp(22px, 3vw, 30px);
+      --font-size-body: clamp(15px, 1.5vw, 17px);
+      --banner-height: 30vh;
+      --banner-font-size: clamp(18px, 2vw, 28px);
+      --menu-width: clamp(60px, 8vw, 130px);
+      --menu-font: clamp(11px, 1.5vw, 16px);
+      --container-padding: clamp(10px, 5vw, 30px);
+      --container-max-width: 1100px;
+      --color-bg: #ffffff;
+      --color-text: #222;
+      --color-muted: #666;
+      --color-accent: #ffbb00;
+      --color-surface: #f8f8f8;
+      --color-menu-bg: #fafafa;
+      --radius: 16px;
+      --shadow-light: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    [data-theme="dark"] {
+      --color-bg: #1e1e1e;
+      --color-text: #f0f0f0;
+      --color-muted: #aaa;
+      --color-accent: #ffd94f;
+      --color-surface: #2a2a2a;
+      --color-menu-bg: #1a1a1a;
+      --shadow-light: 0 2px 6px rgba(255,255,255,0.08);
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-system);
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
+    }
+
+    header {
+      width: 100%;
+      height: var(--banner-height);
+      background: url('space_banner.jpg') center/cover no-repeat;
+      position: relative;
+      color: white;
+      transition: height 0.4s ease, padding 0.4s ease;
+    }
+
+    .quote-banner {
+      position: absolute;
+      top: 70%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: var(--banner-font-size);
+      font-style: italic;
+      text-align: center;
+      max-width: 90%;
+    }
+
+    .quote-author {
+      font-size: clamp(12px, 1vw, 14px);
+      color: var(--color-muted);
+      margin-top: 4px;
+    }
+
+    nav {
+      display: none;
+    }
+
+    @media (min-width: 769px) {
+      nav {
+        display: flex;
+        position: fixed;
+        top: 55%;
+        right: 0;
+        transform: translateY(-50%);
+        flex-direction: column;
+        align-items: flex-end;
+        padding-right: clamp(5px, 2vw, 15px);
+        gap: clamp(8px, 2vw, 15px);
+        z-index: 100;
+      }
+    }
+
+    nav a {
+      background-color: var(--color-surface);
+      color: var(--color-text);
+      text-decoration: none;
+      padding: clamp(6px, 1.5vw, 10px) clamp(12px, 3vw, 20px);
+      border-radius: 6px 0 0 6px;
+      font-size: var(--menu-font);
+      font-family: var(--font-system);
+      width: var(--menu-width);
+      text-align: center;
+      font-weight: 500;
+      box-shadow: var(--shadow-light);
+      transition: background-color 0.2s ease;
+    }
+
+    nav a:hover,
+    nav a.active {
+      background-color: var(--color-accent);
+      color: white;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: var(--container-max-width);
+      padding: var(--container-padding);
+      padding-right: clamp(100px, 20vw, 160px);
+      margin: 20px auto;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: var(--font-size-h1);
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-family: var(--font-serif);
+      font-size: var(--font-size-h2);
+      margin-bottom: 8px;
+      border-bottom: 2px solid var(--color-accent);
+      display: inline-block;
+    }
+
+    .card {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      background-color: var(--color-surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-light);
+      padding: 20px;
+      margin-bottom: 30px;
+      gap: 20px;
+    }
+
+    .slide-container {
+      flex: 1 1 320px;
+      max-width: 400px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .slide-container img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      display: none;
+    }
+
+    .slide-container img.active {
+      display: block;
+    }
+
+    .slide-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(0,0,0,0.4);
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 4px;
+    }
+
+    .slide-btn.prev { left: 8px; }
+    .slide-btn.next { right: 8px; }
+
+    .skills-list {
+      flex: 1 1 350px;
+    }
+
+    .sub-section {
+      margin-bottom: 18px;
+    }
+
+    .sub-section h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--color-accent);
+    }
+
+    .skill-btn {
+      background-color: var(--color-accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      margin: 3px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    .skill-btn:hover {
+      background-color: #e0a700;
+    }
+
+    /* Popup Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      position: relative; /* ⭐️ 닫기 버튼 위치 기준 */
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      padding: 20px 30px;
+      border-radius: 10px;
+      max-width: 600px;
+      box-shadow: var(--shadow-light);
+    }
+
+    #modalText {
+      max-height: 60vh;       /* 화면 높이의 60%까지만 표시 */
+      overflow-y: auto;       /* 내용 넘치면 스크롤 표시 */
+      padding-right: 10px;    /* 스크롤바와 텍스트 간 여백 */
+      margin-top: 15px;       /* 제목과 간격 */
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      color: var(--color-accent);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: var(--color-muted);
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .close-btn:hover {
+      color: var(--color-text);
+    }
+
+    .collapsed header {
+      height: 120px;
+    }
+
+    .collapsed .quote-banner {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .collapsed .container {
+      margin-top: 20px;
+    }
+
+    .hamburger {
+      display: none;
+      position: fixed;
+      top: 55%;
+      right: 0;
+      transform: translateY(-50%);
+      font-size: 28px;
+      background-color: var(--color-surface);
+      border-radius: 6px 0 0 6px;
+      padding: 6px 12px;
+      z-index: 101;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
+
+      nav {
+        display: none;
+        position: fixed;
+        top: 55%;
+        right: 0;
+        transform: translateY(-50%);
+        flex-direction: column;
+        align-items: flex-end;
+        background-color: var(--color-menu-bg);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        border-radius: 10px 0 0 10px;
+        padding: 10px;
+        z-index: 1000;
+        gap: clamp(8px, 2vw, 15px);
+      }
+      nav.show { display: flex; }
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <header>
+    <div class="quote-banner">
+      <em>“Somewhere, something incredible is waiting to be known.”</em>
+      <div class="quote-author">– Carl Sagan</div>
+    </div>
+  </header>
+
+  <div class="hamburger" onclick="toggleMenu()">☰</div>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">Biography</a>
+    <a href="skills.html" class="active">Skills</a>
+    <a href="research.html">Research</a>
+    <a href="publications.html">Publications</a>
+    <a href="idea.html">Ideas</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+  <div class="container">
+    <h1>Skills</h1>
+
+    <!-- 1️⃣ Wet Lab Techniques -->
+    <div class="card">
+      <div class="slide-container" id="slide1">
+        <img src="wetlab1.jpeg" class="active">
+        <img src="wetlab2.jpeg">
+        <img src="wetlab3.jpeg">
+        <img src="wetlab4.jpeg">
+        <img src="wetlab5.jpg">
+        <img src="wetlab6.jpg">
+        <button class="slide-btn prev" onclick="prevSlide('slide1')">❮</button>
+        <button class="slide-btn next" onclick="nextSlide('slide1')">❯</button>
+      </div>
+
+      <div class="skills-list">
+        <h2>1. Wet Lab Techniques</h2>
+        <div class="sub-section">
+          <h3>in vivo</h3>
+          <button class="skill-btn" onclick="openModal('brain_surgery')">Brain surgery</button>
+          <button class="skill-btn" onclick="openModal('brain_section')">Brain section</button>
+        </div>
+        <div class="sub-section">
+          <h3>in vitro</h3>
+          <button class="skill-btn" onclick="openModal('cell_culture')">Cell culture</button>
+        </div>
+        <div class="sub-section">
+          <h3>protein level experiments</h3>
+          <button class="skill-btn" onclick="openModal('Mito_Fraction')">Mitochondria Fraction</button>
+          <button class="skill-btn" onclick="openModal('western_blot')">Western blot</button>
+          <button class="skill-btn" onclick="openModal('ihc')">Immunohistochemistry</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2️⃣ Imaging & Quantification -->
+    <div class="card">
+      <div class="slide-container" id="slide2">
+        <img src="imaging1.jpg" class="active">
+        <img src="imaging2.jpg">
+        <img src="imaging3.jpg">
+        <button class="slide-btn prev" onclick="prevSlide('slide2')">❮</button>
+        <button class="slide-btn next" onclick="nextSlide('slide2')">❯</button>
+      </div>
+
+      <div class="skills-list">
+        <h2>2. Imaging & Quantification</h2>
+        <div class="sub-section">
+          <h3>ImageJ</h3>
+          <button class="skill-btn" onclick="openModal('Intensity_measure')">Protein Intensity measurement</button>
+          <button class="skill-btn" onclick="openModal('morph_analysis')">Cell morphology analysis</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3️⃣ Statistical Analysis -->
+    <div class="card">
+      <div class="slide-container" id="slide3">
+        <img src="analysis1.png" class="active">
+        <img src="analysis2.png">
+        <img src="analysis3.png">
+        <button class="slide-btn prev" onclick="prevSlide('slide3')">❮</button>
+        <button class="slide-btn next" onclick="nextSlide('slide3')">❯</button>
+      </div>
+
+      <div class="skills-list">
+        <h2>3. Statistical Analysis</h2>
+        <div class="sub-section">
+          <h3>Python with AI</h3>
+          <button class="skill-btn" onclick="openModal('statistical')">Statistical Analysis & Visualization</button>
+          <button class="skill-btn" onclick="openModal('volcano')">Volcano plot</button>
+        </div>
+        <div class="sub-section">
+          <h3>R with AI</h3>
+          <button class="skill-btn" onclick="openModal('fgsea')">fGSEA</button>
+          <button class="skill-btn" onclick="openModal('ssgsea')">ssGSEA</button>
+          <button class="skill-btn" onclick="openModal('ora')">ORA</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 모달 팝업 -->
+    <div class="modal" id="modal">
+      <div class="modal-content">
+        <button class="close-btn" onclick="closeModal()">×</button>
+        <h3 id="modalTitle"></h3>
+        <p id="modalText"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleMenu(event) {
+      event.stopPropagation();
+      document.querySelector("nav").classList.toggle("show");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const hamburger = document.querySelector(".hamburger");
+      const nav = document.querySelector("nav");
+
+      hamburger.addEventListener("click", toggleMenu);
+
+      document.querySelectorAll("nav a").forEach(link => {
+        link.addEventListener("click", () => {
+          nav.classList.remove("show");
+        });
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!nav.contains(event.target) && !hamburger.contains(event.target)) {
+          nav.classList.remove("show");
+        }
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      });
+
+      if (window.scrollY > 50) {
+        document.body.classList.add("collapsed");
+      }
+    });
+
+    let isCollapsed = false;
+
+    window.addEventListener("scroll", () => {
+      const scrollY = window.scrollY;
+      const thresholdDown = window.innerHeight * 0.1;
+      const thresholdUp = window.innerHeight * 0.02;
+
+      if (!isCollapsed && scrollY > thresholdDown) {
+        document.body.classList.add("collapsed");
+        isCollapsed = true;
+      } else if (isCollapsed && scrollY < thresholdUp) {
+        document.body.classList.remove("collapsed");
+        isCollapsed = false;
+      }
+    });
+
+    function nextSlide(id) {
+      const slides = document.querySelectorAll(`#${id} img`);
+      let activeIndex = [...slides].findIndex(img => img.classList.contains("active"));
+      slides[activeIndex].classList.remove("active");
+      slides[(activeIndex + 1) % slides.length].classList.add("active");
+    }
+
+    function prevSlide(id) {
+      const slides = document.querySelectorAll(`#${id} img`);
+      let activeIndex = [...slides].findIndex(img => img.classList.contains("active"));
+      slides[activeIndex].classList.remove("active");
+      slides[(activeIndex - 1 + slides.length) % slides.length].classList.add("active");
+    }
+
+    const modalData = {
+      brain_surgery: {
+        title: "Controlled Cortical Impact (CCI) for Traumatic Brain Injury Modeling",
+        text: "<strong>1. Anesthesia & Positioning</strong><br>Male C57BL/6 mice (8–10 weeks old) are anesthetized with 2% inhaled isoflurane in a 7:3 mixture of N₂O and O₂ using an isoflurane vaporizer. The head is secured in a stereotaxic frame to ensure stability during surgery.<br><br>" +
+              "<strong>2. Cranial Exposure</strong><br>While maintaining anesthesia, the scalp is incised to expose the skull.<br><br>" +
+              "<strong>3. Craniotomy</strong><br>To target the somatosensory cortex, a 3 mm circular area is marked on the skull at +1.2 mm lateral and −1.2 mm posterior to bregma. A craniotomy is carefully performed using a microdrill.<br><br>" +
+              "<strong>4. Cortical Impact</strong><br>After adjusting the impactor tip height to zero based on the brain surface, a controlled cortical impact is delivered at a depth of 2 mm with a velocity of 5 m/s.<br><br>" +
+              "<strong>5. Post-Injury Care</strong><br>Hemorrhage is gently cleared, and the scalp is rapidly sutured. Mice are allowed to recover for a defined period based on experimental design.<br><br>" + 
+              "<strong>6. Tissue Collection</strong><br>At the experimental endpoint, mice are anesthetized with 1.5% isoflurane in N₂O gas and transcardially perfused with saline. Brains are then extracted, rapidly frozen, and stored at −80 °C for subsequent analysis."},
+      brain_section: { 
+        title: "Brain Tissue Preparation for Immunohistochemistry", 
+        text: "<strong>1. Mounting the Brain</strong><br>The frozen brain (−80 °C) is mounted in Optimal cutting temperature (OCT) compound on the cryostat chuck with careful orientation along the coronal plane. The blade direction and target region must be considered to preserve structural fidelity. The cryostat chamber is pre-cooled to −30 °C.<br><br>" +
+              "<strong>2. Frozen Sectioning</strong><br>The brain is sectioned slowly and evenly. Slices are transferred directly onto pre-chilled (−30 °C) glass slides, ensuring immediate adhesion using gentle heat. Care must be taken to avoid tissue curling or OCT contamination of the region of interest.<br><br>" +
+              "<strong>3. Post-section Handling</strong><br>Slides are stored at −30 °C for gradual cooling and then transferred to −80 °C for long-term storage. Sudden freezing should be avoided to prevent detachment during later immunostaining."},
+      cell_culture: { 
+        title: "Raw 264.7 Cell Culture", 
+        text: "<strong>1. Thawing</strong><br>" +
+              "Thaw frozen Raw 264.7 cells rapidly in a 37 °C water bath after wiping with 70% ethanol. While thawing, pre-warm a T75 flask containing 10 mL of complete medium (DMEM high glucose + 10% FBS + 1% penicillin-streptomycin) in a CO₂ incubator for at least 15 minutes.<br><br>" +
+              "Once thawed, transfer 1–2 mL of pre-warmed medium into the cryovial, gently resuspend the cells, and transfer the suspension into the T75 flask. Incubate for ~8 hours, confirm cell attachment, then replace with fresh complete medium to remove DMSO.<br><br>" +
+
+              "<strong>2. Subculture</strong><br>" +
+              "When cells reach 90–95% confluency, aspirate the old medium and replace with fresh complete medium. Gently detach cells using a cell scraper, then resuspend by pipetting.<br><br>" +
+              "Transfer the cell suspension to new culture vessels at appropriate ratios (e.g., T75: 1 → 4–5 flasks). Incubate in a humidified CO₂ incubator. Cells are typically ready for experimentation after 2–3 days of growth.<br><br>" +
+
+              "<strong>3. Freezing</strong><br>" +
+              "For cryopreservation, prepare freezing medium (90% FBS + 10% DMSO). After reaching ~90–95% confluency, gently scrape and collect cells as described above.<br><br>" +
+              "Aliquot 1–1.5 mL of cell suspension into each cryovial. Wrap in tissue and place immediately into a −80 °C freezer for initial freezing. After ~3 days, transfer to liquid nitrogen for long-term storage."},
+      Mito_Fraction: { 
+        title: "Mitochondrial Fractionation Using Mannitol–Sucrose Buffer", 
+        text: "<strong>Mannitol–Sucrose Buffer (pH 7.4)</strong><br>" +
+              "210 mM mannitol + 70 mM sucrose + 5 mM MOPS + 1 mM EDTA + protease inhibitor cocktail.<br><br>" +
+              "<strong>1. PBS Wash</strong><br>" +
+              "Wash cells once with cold PBS (pH 7.4) to remove residual medium.<br><br>" +
+              "<strong>2. Cell Collection</strong><br>" +
+              "Scrape cells gently in ice-cold Mannitol–Sucrose buffer to preserve mitochondrial integrity.<br><br>" +
+              "<strong>3. Homogenization</strong><br>" +
+              "Pass the cell suspension through a 27‑gauge ½‑inch needle several times until ~80% of the cells are disrupted. Keep on ice.<br><br>" +
+              "<strong>4. Nuclei Removal</strong><br>" +
+              "Centrifuge the homogenate at 800 × g for 10 minutes at 4 °C. The pellet contains nuclei and unbroken cells.<br><br>" +
+              "<strong>5. Mitochondrial Separation</strong><br>" +
+              "Collect the supernatant (post‑nuclear fraction) and centrifuge at 10,000 × g for 20 minutes. The pellet is the crude mitochondrial fraction, and the supernatant represents the cytosolic fraction.<br><br>" +
+              "<strong>6. Washing</strong><br>" +
+              "Resuspend the mitochondrial pellet in Mannitol–Sucrose buffer, then centrifuge again at 10,000 × g for 20 minutes to remove contaminants.<br><br>" +
+              "<strong>7. Mitochondrial Lysis</strong><br>" +
+              "Resuspend the washed mitochondrial pellet in lysis buffer (e.g., 1% Triton X‑100). Incubate on ice for 15 minutes, then centrifuge at 15,000 rpm for 15 minutes. The supernatant contains mitochondrial proteins ready for downstream analysis."},
+      western_blot: { 
+        title: "Western Blot", 
+        text: "<strong>1. Protein Extraction</strong><br>" +
+              "Cells or tissue samples are homogenized in lysis buffer and incubated at 4 °C for at least 20 minutes. After centrifugation at 15,000 rpm for 20 minutes, the supernatant is collected for analysis.<br><br>" +
+
+              "<strong>2. Quantification Using BCA Assay</strong><br>" +
+              "In a 96-well plate, mix 9 μL distilled water, 1 μL of sample, and 90 μL of BCA solution. Incubate at 37 °C for 5 minutes and measure absorbance at 562 nm. Use BSA standard dilutions to create a standard curve and determine protein concentrations.<br><br>" +
+
+              "<strong>3. Sample Buffer Mixing and Denaturation</strong><br>" +
+              "Mix each sample with an equal volume of 2× SDS sample buffer. Heat at 100 °C for 5 minutes to denature proteins.<br><br>" +
+
+              "<strong>4. SDS-PAGE</strong><br>" +
+              "Load denatured samples onto a polyacrylamide gel and run SDS–PAGE, ensuring the running buffer does not overheat.<br><br>" +
+
+              "<strong>5. Transfer</strong><br>" +
+              "Transfer separated proteins onto a PVDF membrane. Monitor buffer temperature during transfer to avoid overheating.<br><br>" +
+
+              "<strong>6. Blocking</strong><br>" +
+              "Block membranes with 5% skim milk in TBS-T (0.1% Tween 20) at room temperature for 1 hour.<br><br>" +
+
+              "<strong>7. Primary Antibody Incubation</strong><br>" +
+              "Dilute primary antibodies (1:1000) in TBS-T and incubate membranes overnight at 4 °C.<br><br>" +
+
+              "<strong>8. Washing</strong><br>" +
+              "Wash membranes 3 times with TBS-T (0.1%) for 10 minutes each at room temperature.<br><br>" +
+
+              "<strong>9. Secondary Antibody Incubation</strong><br>" +
+              "Apply HRP-conjugated secondary antibodies (1:5000 dilution) and incubate for 1 hour at room temperature.<br><br>" +
+
+              "<strong>10. Final Wash</strong><br>" +
+              "Repeat the washing step as above to remove unbound antibodies.<br><br>" +
+
+              "<strong>11. Signal Detection</strong><br>" +
+              "Treat membranes with ECL substrate evenly, incubate for 1 minute, and detect chemiluminescent signal using appropriate imaging equipment." },
+      ihc: { 
+        title: "Immunohistochemistry with PFA Fixation", 
+        text: "<strong>1. Fixation</strong><br>Frozen brain slides are air-dried and compartmentalized with a PAP pen. 4% paraformaldehyde (PFA) is applied (100 μL per section, 15 min, RT), then rinsed in 1× PBS.<br><br>" +
+              "<strong>2. Washing</strong><br>Slides are sequentially washed in PBS-T (Tween 20; 0.1%, 0.2%, then 0.1%) with shaking (10 min per wash, RT).<br><br>" +
+              "<strong>3. Blocking</strong><br>Blocking solution (3% BSA in PBS-Triton X-100 0.1%) is applied (100 μL per section, 1 h, RT).<br><br>" +
+              "<strong>4. Primary Antibody</strong><br>After blocking, primary antibody solution (1:300 in BSA buffer) is added (100 μL per section) and incubated overnight at 4 °C.<br><br>" +
+              "<strong>5. Washing</strong><br>Repeat the same washing steps as before (Step 2).<br><br>" +
+              "<strong>6. Secondary Antibody</strong><br>Apply secondary antibody (1:300) for 1 h at RT in the dark.<br><br>" +
+              "<strong>7. Final Wash</strong><br>Repeat washing steps again under light-protected conditions.<br><br>" +
+              "<strong>8. Mounting</strong><br>Mount with DAPI-containing solution, avoid bubbles, cover with cover glass, and incubate >2 h at 4 °C.<br><br>" +
+              "<strong>9. Imaging</strong><br>Detect under a fluorescence microscope. Protect from light throughout the staining and mounting process." },
+      Intensity_measure: { 
+        title: "Protein Intensity Measurement Using ImageJ", 
+        text: "<strong>1. Open Image and Select Channel</strong><br>" +
+              "Load the fluorescence or DAB-stained image into ImageJ. If the image is multi-channel (e.g., RGB), split channels and select the appropriate one for quantification.<br><br>" +
+              "<strong>2. ROI Definition</strong><br>" +
+              "Define the region of interest (ROI) corresponding to specific cells or tissue regions to be analyzed. Register this information in the ROI Manager.<br><br>" +
+              "<strong>3. Remove Unwanted Areas and Define Metric</strong><br>" +
+              "Delete irrelevant background regions outside the target area and specify the measurement parameter to be used for quantification.<br><br>" +
+              "<strong>4. Measure Intensity</strong><br>" +
+              "Use <em>Analyze → Measure</em> or press <kbd>M</kbd> to calculate intensity metrics. 'Integrated Density' is typically used as a representative value for protein expression.<br><br>" +
+              "<strong>This process can be automated using ImageJ Macros.</strong>" },
+      morph_analysis: { 
+        title: "Cell Morphology and Protein Intensity Analysis", 
+        text: "<strong>1. ROI Extraction</strong><br>" +
+              "From microscopy images, regions of interest (ROIs) were extracted corresponding to all cells double-positive for a specific cell marker and DAPI. Each ROI was assigned a unique identifier.<br><br>" +
+              "<strong>2. Morphological Quantification</strong><br>" +
+              "For each ROI, morphological parameters such as roundness and aspect ratio were measured using built-in analysis tools.<br><br>" +
+              "<strong>3. Protein Intensity Measurement</strong><br>" +
+              "The same ROIs were used to quantify signal intensities of co-stained proteins. This allowed direct pairing of morphological features with expression levels on a per-cell basis.<br><br>" +
+              "<strong>4. Normalization and Comparative Analysis</strong><br>" +
+              "Protein intensity values were converted into z-scores using the mean and sample standard deviation of all ROIs within the same experimental group to enable standardized comparisons between groups." },
+      statistical: { 
+        title: "Statistical Analysis & Visualization", 
+        text: "<strong>1. Data Input and Preprocessing</strong><br>" +
+              "The tool loads a wide-format Excel file and automatically transforms it into long-format for analysis. Non-numeric and missing values are excluded, and group labels are standardized as ordered categorical variables.<br><br>" +
+              "<strong>2. Statistical Analysis Logic</strong><br>" +
+              "Depending on the number of groups and sample consistency:<br>" +
+              "– If two groups with equal sample sizes: a paired t-test is performed.<br>" +
+              "– If more than two groups with equal sizes: one-way ANOVA followed by Tukey’s HSD test.<br>" +
+              "– If sample sizes are inconsistent or too small: statistical testing is skipped to avoid invalid inferences.<br><br>" +
+              "<strong>3. Significance Annotation</strong><br>" +
+              "Users can manually select pairs to annotate statistical significance (e.g., * or ***) based on p-values. These annotations are linked to lines and can be repositioned by dragging on the plot.<br><br>" +
+              "<strong>4. Interactive Visualization</strong><br>" +
+              "Plots support bar, dot, and errorbar overlays. Colors for bars and dots can be changed interactively by clicking, and axis labels and layout settings are adjustable through a settings menu.<br><br>" +
+              "<strong>5. Export and Reporting</strong><br>" +
+              "Plots are saved in TIFF and SVG formats. If statistical analysis is valid, an HTML report is auto-generated, including raw data, analysis summaries, plots, and annotations.<br><br>" +
+              "<strong>* Script is available upon request.</strong>" },
+      volcano: { 
+        title: "Volcano Plot GUI – Interactive DEG Visualization by Role", 
+        text: "<strong>1. Input and Preprocessing</strong><br>" +
+              "Loads an Excel file containing differential expression results. It automatically detects paired log₂ fold change (Log2fc_) and adjusted p-value (Adj.p.value_) columns, then extracts gene annotations and role assignments. Duplicate genes are merged by combining role labels.<br><br>" +
+              "<strong>2. Role-based Classification</strong><br>" +
+              "Each gene is categorized based on a refined 'Role' column. Genes with multiple role labels (e.g., 'Driver,Marker') are treated as distinct role combinations. Additional categories like Up-Unassigned and Down-Unassigned are generated for significant DEGs without known roles.<br><br>" +
+              "<strong>3. Volcano Plot Logic</strong><br>" +
+              "The scatter plot displays Log2FC (x-axis) vs. –log₁₀(p-value) (y-axis), dynamically scaling for p-values equal to zero. Genes are colored by role group, with adjustable dot size, symbol labels, and cutoff thresholds. If 'Use Role Colors' is off, a simpler up/down/other scheme is used.<br><br>" +
+              "<strong>4. Role-specific Gene Display</strong><br>" +
+              "For each role combination, users can choose to annotate top N genes with SYMBOL labels. Role-specific dot size, label visibility, and colors are editable in real time via the 'Settings' window.<br><br>" +
+              "<strong>5. Interactive Customization</strong><br>" +
+              "Users can adjust axis labels, font sizes, cutoff lines, legend position, and color schemes interactively. All updates are instantly reflected on the plot.<br><br>" +
+              "<strong>6. Export Functions</strong><br>" +
+              "Plots can be exported as PNG and SVG. The gene list passing current cutoff criteria (by role and regulation direction) can also be saved.<br><br>" +
+              "<strong>* Script is available upon request.</strong>" },
+      fgsea: { 
+        title: "fGSEA Multi-Database Analysis Pipeline", 
+        text: "This script automates <strong>fast gene set enrichment analysis (fGSEA)</strong> across multiple biological databases, integrating pathway-level results into a unified output.<br><br>" +
+              "<strong>1. Input Processing</strong><br>" +
+              "Loads a differential gene expression table, detects relevant columns (gene symbol, log₂ fold change, p-value), and constructs a ranked gene list for enrichment analysis.<br><br>" +
+              "<strong>2. Enrichment Across Multiple Databases</strong><br>" +
+              "Performs fGSEA or GSEA using multiple pathway collections, including Hallmark, Gene Ontology (BP/CC/MF), KEGG, Reactome, and user-defined gene sets.<br><br>" +
+              "<strong>3. Pathway Filtering and Highlighting</strong><br>" +
+              "Identifies and highlights enrichment results relevant to a specific biological theme or keyword set (e.g., oxidative stress, mitochondrial function), exporting filtered tables and plots for those terms.<br><br>" +
+              "<strong>4. Automated Visualization and Output</strong><br>" +
+              "Generates publication-ready enrichment plots and exports all full and filtered results as CSV files. Outputs are organized by database and pathway category.<br><br>" +
+              "<strong>5. Extensible and Reproducible</strong><br>" +
+              "Designed to be adaptable for a wide range of transcriptomic analyses, the script allows rapid, consistent enrichment profiling across diverse datasets and pathway themes.<br><br>" +
+              "<em>The R script can be provided upon request.</em>" },
+      ssgsea: { 
+        title: "ssGSEA Multi-Database Analysis Pipeline", 
+        text: "This script automates <strong>single-sample gene set enrichment analysis (ssGSEA)</strong> across multiple pathway databases using normalized expression data.<br><br>" +
+              "<strong>1. Expression Matrix Loading</strong><br>" +
+              "Reads and processes expression matrices from spreadsheet files. Automatically detects gene symbol columns, aggregates replicates, and structures the matrix for ssGSEA input.<br><br>" +
+              "<strong>2. Gene Set Preparation</strong><br>" +
+              "Loads pathway collections from standard databases including Gene Ontology (BP/CC/MF), KEGG, Reactome, and custom gene sets (e.g., from GMT files or curated CSVs). Symbol normalization and minimum gene count filtering are applied.<br><br>" +
+              "<strong>3. ssGSEA Execution</strong><br>" +
+              "Performs single-sample GSEA using version-compatible parameters. Expression values are transformed into enrichment scores per gene set per sample.<br><br>" +
+              "<strong>4. Output and Filtering</strong><br>" +
+              "For each database and input file, results are saved as CSV files. Additionally, keyword-based filtering (e.g., targeting oxidative stress or other pathways of interest) generates focused result subsets.<br><br>" +
+              "<strong>5. Scalable and Modular</strong><br>" +
+              "The script is designed to handle multiple input matrices in batch mode, supporting consistent enrichment profiling across diverse conditions, regions, or datasets.<br><br>" +
+              "<em>The R script can be provided upon request.</em>"},
+      ora: { 
+        title: "ORA Multi-Database Analysis Pipeline", 
+        text: "This script automates <strong>over-representation analysis (ORA)</strong> of gene sets across multiple pathway databases, enabling high-throughput, reproducible functional profiling of differentially expressed genes.<br><br>" +
+              "<strong>1. Input File Detection</strong><br>" +
+              "Automatically scans a specified directory for DEG tables in spreadsheet format and parses gene symbols, log₂ fold change values, and adjusted p-values.<br><br>" +
+              "<strong>2. DEG Filtering</strong><br>" +
+              "Up- and down-regulated gene sets are defined using user-specified thresholds for log₂ fold change and FDR. Each direction is analyzed separately.<br><br>" +
+              "<strong>3. Enrichment Analysis</strong><br>" +
+              "For each gene set, ORA is performed against multiple pathway collections, including Gene Ontology (BP, CC, MF), KEGG, Reactome, Hallmark gene sets, and user-defined thematic pathways.<br><br>" +
+              "<strong>4. Output and Organization</strong><br>" +
+              "Results are saved to structured output folders, with CSV files for each pathway and regulation direction. Keyword-based filtering (e.g., oxidative stress, iron metabolism) is applied to extract focused subsets.<br><br>" +
+              "<strong>5. Fully Automated Workflow</strong><br>" +
+              "The pipeline iterates through all detected input files and produces annotated enrichment results for both up- and down-regulated genes, ensuring scalability across experimental conditions.<br><br>" +
+              "<em>The R script can be provided upon request.</em>"}
+    };
+
+    function openModal(key) {
+      const data = modalData[key];
+      document.getElementById("modalTitle").innerText = data.title;
+      const modalTextEl = document.getElementById("modalText");
+      modalTextEl.innerHTML = data.text; // 여기서 HTML을 해석해서 렌더링
+      document.getElementById("modal").style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+
+    window.addEventListener("click", function(event) {
+      const modal = document.getElementById("modal");
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    const toggleDarkMode = () => {
+      const currentTheme = document.documentElement.getAttribute("data-theme");
+
+      if (currentTheme === "dark") {
+        document.documentElement.removeAttribute("data-theme");
+        localStorage.setItem("theme", "light");  // 저장
+      } else {
+        document.documentElement.setAttribute("data-theme", "dark");
+        localStorage.setItem("theme", "dark");  // 저장
+      }
+    };
+
+    function nextSlide(id) {
+      const container = document.getElementById(id);
+      const images = container.querySelectorAll('img');
+      let current = Array.from(images).findIndex(img => img.classList.contains('active'));
+      images[current].classList.remove('active');
+      let next = (current + 1) % images.length;
+      images[next].classList.add('active');
+    }
+
+    function prevSlide(id) {
+      const container = document.getElementById(id);
+      const images = container.querySelectorAll('img');
+      let current = Array.from(images).findIndex(img => img.classList.contains('active'));
+      images[current].classList.remove('active');
+      let prev = (current - 1 + images.length) % images.length;
+      images[prev].classList.add('active');
+    }
+  </script>
+
+  <button onclick="toggleDarkMode()" style="position:fixed; bottom:20px; right:20px; z-index:999; padding:8px 12px; background:var(--color-accent); color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">🌓 Toggle Theme</button>
+</body>
+</html>

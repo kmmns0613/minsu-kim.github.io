@@ -15,18 +15,15 @@
   </script>
   <style>
     :root {
-      /* Font Family */
       --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       --font-serif: Georgia, serif;
 
-      /* Font Sizes */
       --font-size-h1: clamp(28px, 4vw, 40px);
       --font-size-h2: clamp(22px, 3vw, 30px);
       --font-size-body-lg: clamp(17px, 2vw, 20px);
       --font-size-body: clamp(15px, 1.5vw, 17px);
       --font-size-small: clamp(13px, 1.2vw, 14px);
 
-      /* Layout */
       --banner-height: 30vh;
       --banner-font-size: clamp(18px, 2vw, 28px);
       --menu-width: clamp(60px, 8vw, 130px);
@@ -34,7 +31,6 @@
       --container-padding: clamp(10px, 5vw, 30px);
       --container-max-width: 1000px;
 
-      /* Colors (Light Theme) */
       --color-bg: #ffffff;
       --color-text: #222;
       --color-muted: #666;
@@ -43,7 +39,6 @@
       --color-highlight: #ffe0a3;
       --color-menu-bg: #fafafa;
 
-      /* Others */
       --radius: 8px;
       --shadow-light: 0 1px 3px rgba(0,0,0,0.06);
     }
@@ -84,20 +79,13 @@
       font-weight: normal;
     }
 
-    .state-paragraph {
-      font-family: var(--font-serif);
-      font-size: var(--font-size-body-lg);
-      line-height: 1.6;
-      margin-bottom: 5px;
-      white-space: normal;
-    }
-
     .intro-paragraph {
       font-family: var(--font-system);
       font-size: var(--font-size-body);
       line-height: 1.6;
       text-align: justify;
       margin-bottom: 10px;
+      text-indent: 1em;
     }
 
     header {
@@ -174,62 +162,6 @@
       margin: 10px auto;
     }
 
-    .photo-text-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: clamp(20px, 5vw, 40px);
-      align-items: center;
-      margin-top: 20px;
-    }
-
-    .photo {
-      width: clamp(120px, 20vw, 180px);
-      height: clamp(120px, 20vw, 180px);
-      border-radius: 50%;
-      overflow: hidden;
-      flex: 0 0 auto;
-    }
-
-    .photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .text-right {
-      flex: 1 1 300px;
-      min-width: 250px;
-    }
-
-    .cv-button,
-    .mail-button {
-      display: inline-block;
-      margin-top: 15px;
-      padding: clamp(8px, 1.2vw, 12px) clamp(14px, 2vw, 24px);
-      font-size: var(--font-size-body);
-      font-family: var(--font-system);
-      font-weight: bold;
-      color: white;
-      text-decoration: none;
-      border-radius: var(--radius);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      transition: background-color 0.3s ease;
-    }
-
-    .cv-button {
-      background-color: #2d6cdf;
-    }
-    .cv-button:hover {
-      background-color: #1f4fb3;
-    }
-
-    .mail-button {
-      background-color: #ff8800;
-    }
-    .mail-button:hover {
-      background-color: #e76e00;
-    }
-
     .collapsed header {
       height: 120px;
     }
@@ -293,6 +225,7 @@
     });
   </script>
 </head>
+
 <body>
   <header>
     <div class="quote-banner">
@@ -304,46 +237,105 @@
   <div class="hamburger" onclick="toggleMenu()">☰</div>
 
   <nav>
-    <a href="index.html" class="active">Home</a>
+    <a href="index.html">Home</a>
     <a href="about.html">Biography</a>
     <a href="skills.html">Skills</a>
     <a href="research.html">Research</a>
-    <a href="publications.html">Publications</a>
+    <a href="publications.html" class="active">Publications</a>
     <a href="idea.html">Ideas</a>
     <a href="contact.html">Contact</a>
   </nav>
 
   <div class="container">
-    <div class="intro">
-      <h1>Welcome!</h1>
-      <p class="state-paragraph">
-        <strong>I’m seeking opportunities to join a team exploring the effects of spaceflight on the brain.</strong>
-      </p>
-    </div>
+    <h1>Publications</h1>
+    <p class="intro-paragraph">
+      Below is a selection of peer-reviewed publications highlighting work on astrocyte metabolism, mitochondrial dynamics, and neurovascular regulation under pathological and physiological stress conditions.
+    </p>
 
-    <div class="photo-text-row">
-      <div class="photo">
-        <img src="minsu.jpeg" alt="Dr. Minsu Kim">
-      </div>
+    <style>
+      .highlight-name {
+        background-color: var(--color-highlight);
+        padding: 0 4px;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+      }
+      [data-theme="dark"] .highlight-name {
+        background-color: #ffda77; /* 밝은 황토빛, 다크모드 대비용 */
+        color: black; /* 어두운 배경에 대비되는 텍스트 색상 */
+      }
 
-      <div class="text-right">
-        <div class="name-button-group" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-          <h2 style="margin: 0;">Dr. Minsu Kim</h2>
-          <a href="Minsu_Kim_CV_Postdoc.pdf" target="_blank" class="cv-button" style="margin-left:auto; font-size: 14px; padding: 6px 12px;margin-top: -3px;">📄 View CV</a>
-        </div>
+      .publication-list {
+        list-style: decimal;
+        padding-left: 20px;
+        margin-top: 20px;
+      }
 
-        <p class="intro-paragraph">
-          I’m a postdoctoral researcher exploring how long-term spaceflight affects the central nervous system.<br>
-          My previous research focused on the inflammatory response following traumatic brain injury and the improvement of mitochondrial function in astrocytes.
-          Currently, I am deeply interested in how spaceflight-related stressors such as microgravity and cosmic radiation induce molecular changes in the brain.
-        </p>
+      .publication-list li {
+        margin-bottom: 16px;
+        line-height: 1.6;
+        text-align: justify;
+      }
 
-        <div class="contact-cta" style="margin-top: 18px;">
-          <p style="margin-bottom: 8px;"><strong>Interested in collaboration?</strong></p>
-          <a href="mailto:minsu.kim940613@gmail.com" class="mail-button" style="font-size: 14px;">✉️ Mail Now!</a>
-        </div>
-      </div>
-    </div>
+      .publication-list em {
+        font-style: italic;
+      }
+    </style>
+
+    <ol class="publication-list">
+      <li>
+        Hyungsu Kim, Sunhong Moon, <span class="highlight-name">Minsu Kim</span>, Hyungkeun Oh, Jinhong Park, Suji Kim, Taehyung Yoo, Ji-Yoon Kim, Yonghee Kim, Young-Myeong Kim, Yoon Kyung Choi. 
+        <em>Upregulation of astrocytic mitochondrial functions via Korean red ginseng-induced CREB-BKα-HIF-1α axis through L-type Ca²⁺ channel subunits α1C and β4.</em> 
+        <strong>J Cereb Blood Flow Metab.</strong> 2025 May 2:271678X251332760.
+      </li>
+
+      <li>
+        Sunhong Moon, Jinseo Park, Sueun Kim, <span class="highlight-name">Minsu Kim</span>, Hui Su Jeon, Hyungsu Kim, Young-Myeong Kim, Ji-Yoon Kim, Yoon Kyung Choi. 
+        <em>Korean Red Ginseng-induced astrocytic HIF-1α: A key regulator of neuroglobin derived from neural stem cell differentiation in physiologic retina and brain.</em> 
+        <strong>J Ginseng Res.</strong> 2025 Mar;49(2):189-196.
+      </li>
+
+      <li>
+        Eunyoung Jung, Ye Eun Kim, Hui Su Jeon, Myeongjong Yoo, <span class="highlight-name">Minsu Kim</span>, Young-Myeong Kim, Seong-Ho Koh, Yoon Kyung Choi. 
+        <em>Chronic hypoxia of endothelial cells boosts HIF-1α-NLRP1 circuit in Alzheimer's disease.</em> 
+        <strong>Free Radic Biol Med.</strong> 2023 Aug 1;204:385-393.
+      </li>
+
+      <li>
+        Hui Su Jeon†, Chang-Hee Kim†, <span class="highlight-name">Minsu Kim</span>, Sunhong Moon, Yoon Kyung Choi. 
+        <em>Korean red ginseng mediates mitochondrial membrane potential repair via the Tom22-Tom20-SIRT2 pathway in astrocytes.</em> 
+        <strong>Conditioning Medicine.</strong> 2022 Oct;5(3):105-111.
+      </li>
+
+      <li>
+        Sunhong Moon, Chang-Hee Kim, Jinhong Park, <span class="highlight-name">Minsu Kim</span>, Hui Su Jeon, Young-Myeong Kim, Yoon Kyung Choi. 
+        <em>Induction of BVR-A Expression by Korean Red Ginseng in Murine Hippocampal Astrocytes: Role of Bilirubin in Mitochondrial Function via the LKB1-SIRT1-ERRα Axis.</em> 
+        <strong>Antioxidants (Basel).</strong> 2022 Sep 1;11(9):1742.
+      </li>
+
+      <li>
+        Jinhong Park, Minjae Lee, <span class="highlight-name">Minsu Kim</span>, Sunhong Moon, Seunghee Kim, Sueun Kim, Seong-Ho Koh, Young-Myeong Kim, Yoon Kyung Choi. 
+        <em>Prophylactic role of Korean Red Ginseng in astrocytic mitochondrial biogenesis through HIF-1α.</em> 
+        <strong>J Ginseng Res.</strong> 2022 May;46(3):408-417.
+      </li>
+
+      <li>
+        <span class="highlight-name">Minsu Kim</span>, Sunhong Moon, Hui Su Jeon, Sueun Kim, Seong-Ho Koh, Mi-Sook Chang, Young-Myeong Kim, Yoon Kyung Choi. 
+        <em>Dual Effects of Korean Red Ginseng on Astrocytes and Neural Stem Cells in Traumatic Brain Injury: The HO-1-Tom20 Axis as a Putative Target for Mitochondrial Function.</em> 
+        <strong>Cells.</strong> 2022 Mar 4;11(5):892.
+      </li>
+
+      <li>
+        <span class="highlight-name">Minsu Kim</span>, Joohwan Kim, Sunhong Moon, Bo Young Choi, Sueun Kim, Hui Su Jeon, Sang Won Suh, Young-Myeong Kim, Yoon Kyung Choi. 
+        <em>Korean Red Ginseng Improves Astrocytic Mitochondrial Function by Upregulating HO-1-Mediated AMPKα-PGC-1α-ERRα Circuit after Traumatic Brain Injury.</em> 
+        <strong>Int J Mol Sci.</strong> 2021 Dec 3;22(23):13081.
+      </li>
+
+      <li>
+        <span class="highlight-name">Minsu Kim</span>, Hyejung Mok, Woon-Seok Yeo, Joong-Hoon Ahn, Yoon Kyung Choi. 
+        <em>Role of ginseng in the neurovascular unit of neuroinflammatory diseases focused on the blood-brain barrier.</em> 
+        <strong>J Ginseng Res.</strong> 2021 Sep;45(5):599-609.
+      </li>
+    </ol>
   </div>
 
   <script>
@@ -393,7 +385,7 @@
         isCollapsed = false;
       }
     });
-  
+
     const toggleDarkMode = () => {
       const currentTheme = document.documentElement.getAttribute("data-theme");
 

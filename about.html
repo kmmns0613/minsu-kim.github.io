@@ -15,18 +15,15 @@
   </script>
   <style>
     :root {
-      /* Font Family */
       --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       --font-serif: Georgia, serif;
 
-      /* Font Sizes */
       --font-size-h1: clamp(28px, 4vw, 40px);
       --font-size-h2: clamp(22px, 3vw, 30px);
       --font-size-body-lg: clamp(17px, 2vw, 20px);
       --font-size-body: clamp(15px, 1.5vw, 17px);
       --font-size-small: clamp(13px, 1.2vw, 14px);
 
-      /* Layout */
       --banner-height: 30vh;
       --banner-font-size: clamp(18px, 2vw, 28px);
       --menu-width: clamp(60px, 8vw, 130px);
@@ -34,7 +31,6 @@
       --container-padding: clamp(10px, 5vw, 30px);
       --container-max-width: 1000px;
 
-      /* Colors (Light Theme) */
       --color-bg: #ffffff;
       --color-text: #222;
       --color-muted: #666;
@@ -43,7 +39,6 @@
       --color-highlight: #ffe0a3;
       --color-menu-bg: #fafafa;
 
-      /* Others */
       --radius: 8px;
       --shadow-light: 0 1px 3px rgba(0,0,0,0.06);
     }
@@ -84,20 +79,13 @@
       font-weight: normal;
     }
 
-    .state-paragraph {
-      font-family: var(--font-serif);
-      font-size: var(--font-size-body-lg);
-      line-height: 1.6;
-      margin-bottom: 5px;
-      white-space: normal;
-    }
-
     .intro-paragraph {
       font-family: var(--font-system);
       font-size: var(--font-size-body);
       line-height: 1.6;
       text-align: justify;
       margin-bottom: 10px;
+      text-indent: 1em;
     }
 
     header {
@@ -174,62 +162,6 @@
       margin: 10px auto;
     }
 
-    .photo-text-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: clamp(20px, 5vw, 40px);
-      align-items: center;
-      margin-top: 20px;
-    }
-
-    .photo {
-      width: clamp(120px, 20vw, 180px);
-      height: clamp(120px, 20vw, 180px);
-      border-radius: 50%;
-      overflow: hidden;
-      flex: 0 0 auto;
-    }
-
-    .photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .text-right {
-      flex: 1 1 300px;
-      min-width: 250px;
-    }
-
-    .cv-button,
-    .mail-button {
-      display: inline-block;
-      margin-top: 15px;
-      padding: clamp(8px, 1.2vw, 12px) clamp(14px, 2vw, 24px);
-      font-size: var(--font-size-body);
-      font-family: var(--font-system);
-      font-weight: bold;
-      color: white;
-      text-decoration: none;
-      border-radius: var(--radius);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      transition: background-color 0.3s ease;
-    }
-
-    .cv-button {
-      background-color: #2d6cdf;
-    }
-    .cv-button:hover {
-      background-color: #1f4fb3;
-    }
-
-    .mail-button {
-      background-color: #ff8800;
-    }
-    .mail-button:hover {
-      background-color: #e76e00;
-    }
-
     .collapsed header {
       height: 120px;
     }
@@ -293,6 +225,7 @@
     });
   </script>
 </head>
+
 <body>
   <header>
     <div class="quote-banner">
@@ -304,8 +237,8 @@
   <div class="hamburger" onclick="toggleMenu()">☰</div>
 
   <nav>
-    <a href="index.html" class="active">Home</a>
-    <a href="about.html">Biography</a>
+    <a href="index.html">Home</a>
+    <a href="about.html" class="active">Biography</a>
     <a href="skills.html">Skills</a>
     <a href="research.html">Research</a>
     <a href="publications.html">Publications</a>
@@ -314,36 +247,16 @@
   </nav>
 
   <div class="container">
-    <div class="intro">
-      <h1>Welcome!</h1>
-      <p class="state-paragraph">
-        <strong>I’m seeking opportunities to join a team exploring the effects of spaceflight on the brain.</strong>
-      </p>
-    </div>
+    <!-- 여기에 페이지별 내용 삽입 -->
+    <h1>Biography</h1>
+    <!-- 또는 Publications -->
+    <p class="intro-paragraph">
+      Hello, I’m <mark class="highlight">Dr. Minsu Kim</mark>, a neuroscientist exploring how the brain adapts under extreme conditions—from traumatic brain injury to spaceflight. I earned my Ph.D. in Biomedical Science from Konkuk University (Seoul, South Korea) in February 2025, where my research centered on astrocytic protein alterations and immune regulation following traumatic brain injury. During this time, I gained extensive experience in rodent handling, molecular assays, and mechanistic investigations of neuroinflammation and mitochondrial function. 
+    </p>
 
-    <div class="photo-text-row">
-      <div class="photo">
-        <img src="minsu.jpeg" alt="Dr. Minsu Kim">
-      </div>
-
-      <div class="text-right">
-        <div class="name-button-group" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-          <h2 style="margin: 0;">Dr. Minsu Kim</h2>
-          <a href="Minsu_Kim_CV_Postdoc.pdf" target="_blank" class="cv-button" style="margin-left:auto; font-size: 14px; padding: 6px 12px;margin-top: -3px;">📄 View CV</a>
-        </div>
-
-        <p class="intro-paragraph">
-          I’m a postdoctoral researcher exploring how long-term spaceflight affects the central nervous system.<br>
-          My previous research focused on the inflammatory response following traumatic brain injury and the improvement of mitochondrial function in astrocytes.
-          Currently, I am deeply interested in how spaceflight-related stressors such as microgravity and cosmic radiation induce molecular changes in the brain.
-        </p>
-
-        <div class="contact-cta" style="margin-top: 18px;">
-          <p style="margin-bottom: 8px;"><strong>Interested in collaboration?</strong></p>
-          <a href="mailto:minsu.kim940613@gmail.com" class="mail-button" style="font-size: 14px;">✉️ Mail Now!</a>
-        </div>
-      </div>
-    </div>
+    <p class="intro-paragraph">
+      I am currently seeking a postdoctoral position in the field of <strong>space bioscience</strong>, with a strong interest in how long-term spaceflight influences molecular and cellular pathways in the brain. My future work aims to investigate astrocyte ferroptosis, blood-brain barrier dynamics, and glial responses to cosmic radiation and microgravity. By bridging neurotrauma and space biology, I hope to uncover conserved stress responses of the brain across radically different environments.
+    </p>
   </div>
 
   <script>
@@ -393,7 +306,7 @@
         isCollapsed = false;
       }
     });
-  
+
     const toggleDarkMode = () => {
       const currentTheme = document.documentElement.getAttribute("data-theme");
 
