@@ -15,25 +15,37 @@
   </script>
   <style>
     :root {
+      /* Font Family */
       --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       --font-serif: Georgia, serif;
+
+      /* Font Sizes (Home 기준) */
       --font-size-h1: clamp(28px, 4vw, 40px);
       --font-size-h2: clamp(22px, 3vw, 30px);
+      --font-size-body-lg: clamp(17px, 2vw, 22px);
       --font-size-body: clamp(15px, 1.5vw, 17px);
+      --font-size-small: clamp(13px, 1.2vw, 14px);
+
+      /* Layout */
       --banner-height: 30vh;
       --banner-font-size: clamp(18px, 2vw, 28px);
       --menu-width: clamp(60px, 8vw, 130px);
       --menu-font: clamp(11px, 1.5vw, 16px);
       --container-padding: clamp(10px, 5vw, 30px);
       --container-max-width: 1100px;
+
+      /* Colors (Light) */
       --color-bg: #ffffff;
       --color-text: #222;
       --color-muted: #666;
       --color-accent: #ffbb00;
-      --color-surface: #f8f8f8;
+      --color-surface: #f8f8f8;        /* Skills 기존값 유지 */
       --color-menu-bg: #fafafa;
-      --radius: 16px;
-      --shadow-light: 0 2px 6px rgba(0,0,0,0.08);
+      --skill-btn-fg: #ffffff;
+
+      /* Others */
+      --radius: 16px;                  /* Skills 기존값 유지 */
+      --shadow-light: 0 2px 6px rgba(0,0,0,0.08); /* Skills 기존값 유지 */
     }
 
     [data-theme="dark"] {
@@ -43,17 +55,45 @@
       --color-accent: #ffd94f;
       --color-surface: #2a2a2a;
       --color-menu-bg: #1a1a1a;
+      --skill-btn-fg: #000000;
       --shadow-light: 0 2px 6px rgba(255,255,255,0.08);
     }
 
+    /* Document base */
     body {
       margin: 0;
       font-family: var(--font-system);
+      font-size: var(--font-size-body);   /* Home 기준 추가 */
       background-color: var(--color-bg);
       color: var(--color-text);
       line-height: 1.6;
     }
 
+    /* Typography (Home 구조 맞춤) */
+    h1, h2 {
+      font-family: var(--font-serif);
+      font-weight: bold;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-size: var(--font-size-h1);
+    }
+    h2 {
+      font-size: var(--font-size-h2);
+      font-weight: bold;
+    }
+
+    .intro-paragraph {
+      font-family: var(--font-system);
+      font-size: var(--font-size-body);
+      line-height: 1.6;
+      text-align: justify;
+      margin-bottom: 10px;
+      text-indent: 1em; /* Skills 고유 설정 유지 */
+    }
+
+    /* Header / Banner */
     header {
       width: 100%;
       height: var(--banner-height);
@@ -80,9 +120,8 @@
       margin-top: 4px;
     }
 
-    nav {
-      display: none;
-    }
+    /* Navigation */
+    nav { display: none; }
 
     @media (min-width: 769px) {
       nav {
@@ -121,34 +160,14 @@
       font-weight: bold;
     }
 
+    /* Container */
     .container {
       max-width: var(--container-max-width);
       padding: var(--container-padding);
-      margin: 20px auto;
+      margin: 20px auto; /* Skills 기존값 유지 */
     }
 
-    h1 {
-      font-family: var(--font-serif);
-      font-size: var(--font-size-h1);
-      margin-bottom: 10px;
-    }
-
-    h2 {
-      font-family: var(--font-serif);
-      font-size: var(--font-size-h2);
-      margin-bottom: 8px;
-      border-bottom: 2px solid var(--color-accent);
-      display: inline-block;
-    }
-
-        .intro-paragraph {
-      font-family: var(--font-system);
-      font-size: var(--font-size-body);
-      line-height: 1.6;
-      text-align: justify;
-      margin-bottom: 10px;
-      text-indent: 1em;
-    }
+    /* ===== Skills 전용 컴포넌트 ===== */
 
     .card {
       display: flex;
@@ -166,9 +185,9 @@
       position: relative;
       width: 100%;
       aspect-ratio: 4 / 3;
-      max-width: 600px;         /* ✅ 최대 너비 제한 */
-      max-height: 450px;        /* ✅ 최대 높이 제한 */
-      margin: 0 auto;           /* 가운데 정렬 */
+      max-width: 600px;
+      max-height: 450px;
+      margin: 0 auto;
       background-color: #eee;
       overflow: hidden;
     }
@@ -178,13 +197,10 @@
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      object-fit: contain;  /* 긴 쪽 기준으로 안 잘리게 */
+      object-fit: contain; /* 슬라이드 이미지 잘림 방지 */
       display: none;
     }
-
-    .slide-container img.active {
-      display: block;
-    }
+    .slide-container img.active { display: block; }
 
     .slide-btn {
       position: absolute;
@@ -198,18 +214,12 @@
       font-size: 16px;
       border-radius: 4px;
     }
-
     .slide-btn.prev { left: 8px; }
     .slide-btn.next { right: 8px; }
 
-    .skills-list {
-      flex: 1 1 350px;
-    }
+    .skills-list { flex: 1 1 350px; }
 
-    .sub-section {
-      margin-bottom: 18px;
-    }
-
+    .sub-section { margin-bottom: 18px; }
     .sub-section h3 {
       margin: 0 0 8px;
       font-size: 18px;
@@ -219,7 +229,7 @@
 
     .skill-btn {
       background-color: var(--color-accent);
-      color: white;
+      color: var(--skill-btn-fg);
       border: none;
       border-radius: 6px;
       padding: 6px 12px;
@@ -228,27 +238,22 @@
       font-size: 14px;
       transition: background-color 0.3s ease;
     }
-
-    .skill-btn:hover {
-      background-color: #e0a700;
-    }
+    .skill-btn:hover { background-color: #e0a700; }
 
     /* Popup Modal */
     .modal {
       display: none;
       position: fixed;
       z-index: 10000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
       background-color: rgba(0,0,0,0.6);
       justify-content: center;
       align-items: center;
     }
 
     .modal-content {
-      position: relative; /* ⭐️ 닫기 버튼 위치 기준 */
+      position: relative; /* 닫기 버튼 기준 */
       background-color: var(--color-bg);
       color: var(--color-text);
       padding: 20px 30px;
@@ -258,10 +263,10 @@
     }
 
     #modalText {
-      max-height: 60vh;       /* 화면 높이의 60%까지만 표시 */
-      overflow-y: auto;       /* 내용 넘치면 스크롤 표시 */
-      padding-right: 10px;    /* 스크롤바와 텍스트 간 여백 */
-      margin-top: 15px;       /* 제목과 간격 */
+      max-height: 60vh;
+      overflow-y: auto;
+      padding-right: 10px;
+      margin-top: 15px;
     }
 
     .modal-content h3 {
@@ -280,24 +285,17 @@
       cursor: pointer;
       transition: color 0.3s ease;
     }
+    .close-btn:hover { color: var(--color-text); }
 
-    .close-btn:hover {
-      color: var(--color-text);
-    }
-
-    .collapsed header {
-      height: 120px;
-    }
-
+    /* Collapsed 상태 */
+    .collapsed header { height: 120px; }
     .collapsed .quote-banner {
       opacity: 0;
       pointer-events: none;
     }
+    .collapsed .container { margin-top: 20px; }
 
-    .collapsed .container {
-      margin-top: 20px;
-    }
-
+    /* Hamburger */
     .hamburger {
       display: none;
       position: fixed;
@@ -313,10 +311,9 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     }
 
+    /* Mobile */
     @media (max-width: 768px) {
-      .hamburger {
-        display: block;
-      }
+      .hamburger { display: block; }
 
       nav {
         display: none;
