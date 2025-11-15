@@ -29,7 +29,7 @@
       --menu-width: clamp(60px, 8vw, 130px);
       --menu-font: clamp(11px, 1.5vw, 16px);
       --container-padding: clamp(10px, 5vw, 30px);
-      --container-max-width: 1000px;
+      --container-max-width: 1100px;
 
       --color-bg: #ffffff;
       --color-text: #222;
@@ -40,7 +40,7 @@
       --color-menu-bg: #fafafa;
 
       --radius: 8px;
-      --shadow-light: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-light: 0 2px 6px rgba(0,0,0,0.08);
     }
 
     [data-theme="dark"] {
@@ -51,7 +51,7 @@
       --color-surface: #2a2a2a;
       --color-highlight: #3a3a3a;
       --color-menu-bg: #1a1a1a;
-      --shadow-light: 0 1px 3px rgba(255,255,255,0.06);
+      --shadow-light: 0 2px 6px rgba(255,255,255,0.08);
     }
 
     body {
@@ -238,19 +238,58 @@
 
   <nav>
     <a href="index.html">Home</a>
-    <a href="about.html">Biography</a>
+    <a href="updates.html">Updates</a>
+    <a href="biography.html">Biography</a>
     <a href="skills.html">Skills</a>
-    <a href="research.html">Research</a>
     <a href="publications.html">Publications</a>
-    <a href="idea.html">Ideas</a>
     <a href="contact.html" class="active">Contact</a>
   </nav>
 
   <div class="container">
-    <!-- 여기에 페이지별 내용 삽입 -->
     <h1>Contact</h1>
-    <!-- 또는 Publications -->
-    <p class="intro-paragraph">Feel free to reach out via email: <a href="mailto:kmmns0613@gmail.com">kmmns0613@gmail.com</a></p>
+
+    <div class="card" style="padding: 32px;">
+
+      <div class="photo-text-row">
+
+        <!-- Profile Photo -->
+        <div class="photo" 
+            style="
+                width: min(320px, 40vw);
+                height: min(320px, 40vw);
+                border-radius: 12px;
+                overflow: hidden;
+            ">
+          <img src="contact_photo.jpeg"
+              alt="Profile Photo"
+              style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+
+        <!-- Contact Text + Icons -->
+        <div class="text-right">
+          <p class="large-body" style="margin-bottom:16px;">
+            Thank you for your interest in my work.  
+            Feel free to reach out anytime.
+          </p>
+
+          <p style="margin:8px 0;">
+            📧  
+            <a class="link" href="mailto:kmmns0613@gmail.com">kmmns0613@gmail.com</a>
+          </p>
+
+          <p style="margin:8px 0;">
+            🔗  
+            <a class="link" href="https://www.linkedin.com/in/minsukim0613" target="_blank">LinkedIn</a>
+          </p>
+
+          <p style="margin:8px 0;">
+            📱 +82-10-3209-1961
+          </p>
+
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <script>

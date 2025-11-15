@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dr. Minsu Kim | Spaceflight Neuroscience</title>
-  <!-- Google tag (gtag.js) -->
+  <title>ASGSR 2025 | Special Page</title>
+  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y5KHEV62JH"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -38,8 +38,9 @@
       --color-surface: #f0f0f0;
       --color-highlight: #ffe0a3;
       --color-menu-bg: #fafafa;
+      --code-btn-fg: #ffffff;
 
-      --radius: 8px;
+      --radius: 16px;
       --shadow-light: 0 2px 6px rgba(0,0,0,0.08);
     }
 
@@ -51,6 +52,7 @@
       --color-surface: #2a2a2a;
       --color-highlight: #3a3a3a;
       --color-menu-bg: #1a1a1a;
+      --code-btn-fg: #000000;
       --shadow-light: 0 2px 6px rgba(255,255,255,0.08);
     }
 
@@ -86,7 +88,6 @@
       text-align: justify;
       margin-bottom: 10px;
       text-indent: 1em;
-      font-style: oblique 10deg; 
     }
 
     header {
@@ -151,7 +152,7 @@
 
     nav a:hover,
     nav a.active {
-      background-color: var(--color-accent);
+      background: var(--color-accent);
       color: white;
       font-weight: bold;
     }
@@ -216,8 +217,99 @@
         display: flex;
       }
     }
+
+    .section-box {
+      background: var(--color-surface);
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      margin-bottom: 25px;
+    }
+
+    .small-note {
+      font-size: var(--font-size-small);
+      color: var(--color-muted);
+      margin-top: -5px;
+    }
+
+    /* ===== Skills-style Modal (unified) ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      position: relative;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      padding: 20px 30px;
+      border-radius: 10px;
+      max-width: 700px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-light);
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      color: var(--color-accent);
+    }
+
+    #modalText {
+      max-height: 65vh;
+      overflow-y: auto;
+      padding-right: 10px;
+      margin-top: 10px;
+    }
+
+    .modal-content pre {
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 14px;
+      user-select: none;
+      pointer-events: none;
+      margin: 0;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: var(--color-muted);
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .close-btn:hover {
+      color: var(--color-text);
+    }
+
+    .code-btn {
+      background: var(--color-accent);
+      color: var(--code-btn-fg);
+      border: none;
+      border-radius: 6px;
+      padding: 8px 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+    .code-btn:hover { background-color: #e0a700; }
   </style>
+
   <script>
+    // 다크 모드 초기 설정 (공통)
     document.addEventListener("DOMContentLoaded", () => {
       const savedTheme = localStorage.getItem("theme");
       if (savedTheme === "dark") {
@@ -237,118 +329,85 @@
 
   <div class="hamburger" onclick="toggleMenu()">☰</div>
 
+  <!-- Menu -->
   <nav>
     <a href="index.html">Home</a>
     <a href="updates.html">Updates</a>
     <a href="biography.html">Biography</a>
     <a href="skills.html">Skills</a>
-    <a href="publications.html" class="active">Publications</a>
+    <a href="publications.html">Publications</a>
     <a href="contact.html">Contact</a>
   </nav>
 
   <div class="container">
-    <h1>Publications</h1>
-    <p class="intro-paragraph">
-      Click any publication to open a page where you can view the full text.
+    <h1>ASGSR 2025 Special Page</h1>
+    <p class="small-note">This page is exclusively available during ASGSR 2025.</p>
+    
+    <h2 style="margin-top: 30px;">Thank you so much for taking an interest in my presentation.</h2>
+
+    <p>
+    Space has always meant more to me than a scientific topic—it is a source of inspiration, curiosity,
+    and a reminder of how much there is left to discover. When I first encountered the field of space biology last year,
+    something clicked deeply. I knew immediately that I wanted to dedicate myself to understanding how life adapts
+    when it leaves Earth.
+    <br><br>
+    Being here at ASGSR, sharing my work with you in less than a year since that realization,
+    feels nothing short of extraordinary.
     </p>
 
+    <p>
+    I also want to be transparent. I have no formal training in omics analysis.
+    Everything I built for this project—from data processing to enrichment analysis—came from months of studying, failing,
+    trying again, and pushing forward because I truly wanted to be part of this field.
+    <br><br>
+    <span class="highlight">So if you notice something that can be improved or re-thought,
+    I genuinely welcome your critique and guidance.</span><br>
+    I came here to learn. Any advice—technical, conceptual, or strategic—would mean a great deal to me.
+    To help you review my work, I’ve made my actual analysis scripts available with the buttons below.
+    </p>
+
+    <p>
+    My deepest scientific passion lies at the intersection of the brain and the space environment.
+    Spaceflight presents a unique biological challenge, and the brain—resilient yet vulnerable—holds so many unanswered questions.
+    <br><br>
+    <span class="highlight">If my research direction resonates with you,
+    I would be truly honored to discuss ideas and explore possibilities together.</span><br>
+    Whether in collaboration, mentorship, or even a brief conversation, I would be grateful for the chance to connect.
+    </p>
     <style>
-      .highlight-name {
+      .highlight {
         background-color: var(--color-highlight);
         padding: 0 4px;
         border-radius: 4px;
         transition: background-color 0.3s ease;
       }
-      [data-theme="dark"] .highlight-name {
+      [data-theme="dark"] .highlight {
         background-color: #ffda77;
         color: black;
       }
-
-      .publication-list {
-        list-style: decimal;
-        padding-left: 20px;
-        margin-top: 20px;
-        font-family: 'Times New Roman', Times, serif;
-        font-size: 15px;
-      }
-
-      .publication-list li {
-        margin-bottom: 16px;
-        line-height: 1.6;
-        text-align: justify;
-        transition: background-color 0.2s ease;
-        padding: 10px 12px;
-        border-radius: 6px;
-        cursor: pointer;
-      }
-
-      .publication-list li:hover {
-        background-color: var(--color-surface);
-      }
-
-      .publication-list em {
-        font-style: italic;
-      }
     </style>
 
-    <ol class="publication-list">
-      <li onclick="window.open('https://doi.org/10.1177/0271678X251332760','_blank')">
-        Hyungsu Kim, Sunhong Moon, <span class="highlight-name">Minsu Kim</span>, Hyungkeun Oh, Jinhong Park, Suji Kim, Taehyung Yoo, Ji-Yoon Kim, Yonghee Kim, Young-Myeong Kim, Yoon Kyung Choi. 
-        <em>Upregulation of astrocytic mitochondrial functions via Korean red ginseng-induced CREB-BKα-HIF-1α axis through L-type Ca²⁺ channel subunits α1C and β4.</em> 
-        <strong>J Cereb Blood Flow Metab.</strong> 2025 May 2:271678X251332760.
-      </li>
+    <div class="section-box" style="margin-top: 40px;">
+        <h2>Code Snippets</h2>
+        <p>These are the detailed code components I used in my analysis.</p>
 
-      <li onclick="window.open('https://doi.org/10.1016/j.jgr.2024.12.008','_blank')">
-        Sunhong Moon, Jinseo Park, Sueun Kim, <span class="highlight-name">Minsu Kim</span>, Hui Su Jeon, Hyungsu Kim, Young-Myeong Kim, Ji-Yoon Kim, Yoon Kyung Choi. 
-        <em>Korean Red Ginseng-induced astrocytic HIF-1α: A key regulator of neuroglobin derived from neural stem cell differentiation in physiologic retina and brain.</em> 
-        <strong>J Ginseng Res.</strong> 2025 Mar;49(2):189-196.
-      </li>
+        <button class="code-btn" onclick="openModal('fgsea')">① fGSEA Code</button><br>
+        <button class="code-btn" onclick="openModal('ssgsea')">② ssGSEA / GSVA Code</button><br>
+        <button class="code-btn" onclick="openModal('ferrdb')">③ FerrDb Scoring Logic</button>
+    </div>
+    </div>
 
-      <li onclick="window.open('https://doi.org/10.1016/j.freeradbiomed.2023.05.011','_blank')">
-        Eunyoung Jung, Ye Eun Kim, Hui Su Jeon, Myeongjong Yoo, <span class="highlight-name">Minsu Kim</span>, Young-Myeong Kim, Seong-Ho Koh, Yoon Kyung Choi. 
-        <em>Chronic hypoxia of endothelial cells boosts HIF-1α-NLRP1 circuit in Alzheimer's disease.</em> 
-        <strong>Free Radic Biol Med.</strong> 2023 Aug 1;204:385-393.
-      </li>
-
-      <li onclick="window.open('http://www.conditionmed.org/Data/View/13721?type=200','_blank')">
-        Hui Su Jeon†, Chang-Hee Kim†, <span class="highlight-name">Minsu Kim</span>, Sunhong Moon, Yoon Kyung Choi. 
-        <em>Korean red ginseng mediates mitochondrial membrane potential repair via the Tom22-Tom20-SIRT2 pathway in astrocytes.</em> 
-        <strong>Conditioning Medicine.</strong> 2022 Oct;5(3):105-111.
-      </li>
-
-      <li onclick="window.open('https://doi.org/10.3390/antiox11091742','_blank')">
-        Sunhong Moon, Chang-Hee Kim, Jinhong Park, <span class="highlight-name">Minsu Kim</span>, Hui Su Jeon, Young-Myeong Kim, Yoon Kyung Choi. 
-        <em>Induction of BVR-A Expression by Korean Red Ginseng in Murine Hippocampal Astrocytes: Role of Bilirubin in Mitochondrial Function via the LKB1-SIRT1-ERRα Axis.</em> 
-        <strong>Antioxidants (Basel).</strong> 2022 Sep 1;11(9):1742.
-      </li>
-
-      <li onclick="window.open('https://doi.org/10.1016/j.jgr.2021.07.003','_blank')">
-        Jinhong Park, Minjae Lee, <span class="highlight-name">Minsu Kim</span>, Sunhong Moon, Seunghee Kim, Sueun Kim, Seong-Ho Koh, Young-Myeong Kim, Yoon Kyung Choi. 
-        <em>Prophylactic role of Korean Red Ginseng in astrocytic mitochondrial biogenesis through HIF-1α.</em> 
-        <strong>J Ginseng Res.</strong> 2022 May;46(3):408-417.
-      </li>
-
-      <li onclick="window.open('https://doi.org/10.3390/cells11050892','_blank')">
-        <span class="highlight-name">Minsu Kim</span>, Sunhong Moon, Hui Su Jeon, Sueun Kim, Seong-Ho Koh, Mi-Sook Chang, Young-Myeong Kim, Yoon Kyung Choi. 
-        <em>Dual Effects of Korean Red Ginseng on Astrocytes and Neural Stem Cells in Traumatic Brain Injury: The HO-1-Tom20 Axis as a Putative Target for Mitochondrial Function.</em> 
-        <strong>Cells.</strong> 2022 Mar 4;11(5):892.
-      </li>
-
-      <li onclick="window.open('https://doi.org/10.3390/ijms222313081','_blank')">
-        <span class="highlight-name">Minsu Kim</span>, Joohwan Kim, Sunhong Moon, Bo Young Choi, Sueun Kim, Hui Su Jeon, Sang Won Suh, Young-Myeong Kim, Yoon Kyung Choi. 
-        <em>Korean Red Ginseng Improves Astrocytic Mitochondrial Function by Upregulating HO-1-Mediated AMPKα-PGC-1α-ERRα Circuit after Traumatic Brain Injury.</em> 
-        <strong>Int J Mol Sci.</strong> 2021 Dec 3;22(23):13081.
-      </li>
-
-      <li onclick="window.open('https://doi.org/10.1016/j.jgr.2021.02.003','_blank')">
-        <span class="highlight-name">Minsu Kim</span>, Hyejung Mok, Woon-Seok Yeo, Joong-Hoon Ahn, Yoon Kyung Choi. 
-        <em>Role of ginseng in the neurovascular unit of neuroinflammatory diseases focused on the blood-brain barrier.</em> 
-        <strong>J Ginseng Res.</strong> 2021 Sep;45(5):599-609.
-      </li>
-    </ol>
+  <!-- 공통 모달 (Skills 스타일) -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">×</button>
+      <h3 id="modalTitle"></h3>
+      <div id="modalText"></div>
+    </div>
   </div>
 
   <script>
+    // ===== Navigation / Header Collapse =====
     function toggleMenu(event) {
       event.stopPropagation();
       document.querySelector("nav").classList.toggle("show");
@@ -396,19 +455,93 @@
       }
     });
 
-    const toggleDarkMode = () => {
-      const currentTheme = document.documentElement.getAttribute("data-theme");
+    // ===== Modal Data (Skills 스타일) =====
+    const modalData = {
+      fgsea: {
+        title: "① fGSEA Code",
+        text: `
+<pre>
+# fGSEA
+# 여기에는 실제 fGSEA 분석에 사용한 R 코드를 붙여 넣으시면 됩니다.
 
-      if (currentTheme === "dark") {
+fGSEA
+</pre>
+        `
+      },
+      ssgsea: {
+        title: "② ssGSEA / GSVA Code",
+        text: `
+<pre>
+# ssGSEA / GSVA
+# 여기에는 실제 ssGSEA 또는 GSVA에 사용한 R 코드를 붙여 넣으시면 됩니다.
+
+ssGSEA
+</pre>
+        `
+      },
+      ferrdb: {
+        title: "③ FerrDb Scoring Logic",
+        text: `
+<pre>
+# FerrDb Composite Score (Example)
+library(dplyr)
+
+ferro_score &lt;- expr %&gt;%
+  mutate(
+    total =
+      rowMeans(select(., markers)) +
+      rowMeans(select(., drivers)) -
+      rowMeans(select(., suppressors))
+  )
+</pre>
+        `
+      }
+    };
+
+    function openModal(key) {
+      const data = modalData[key];
+      if (!data) return;
+
+      document.getElementById("modalTitle").innerText = data.title;
+      document.getElementById("modalText").innerHTML = data.text;
+      document.getElementById("modal").style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+
+    // 바깥 클릭 시 모달 닫기 (Skills와 동일)
+    window.addEventListener("click", function(event) {
+      const modal = document.getElementById("modal");
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    // ===== Copy / Selection Disable (기존 유지) =====
+    document.addEventListener("contextmenu", e => e.preventDefault());
+    document.addEventListener("copy", e => e.preventDefault());
+    document.addEventListener("selectstart", e => e.preventDefault());
+
+    // ===== Dark Mode Toggle =====
+    function toggleDarkMode() {
+      const theme = document.documentElement.getAttribute("data-theme");
+      if (theme === "dark") {
         document.documentElement.removeAttribute("data-theme");
         localStorage.setItem("theme", "light");
       } else {
         document.documentElement.setAttribute("data-theme", "dark");
         localStorage.setItem("theme", "dark");
       }
-    };
+    }
   </script>
 
-  <button onclick="toggleDarkMode()" style="position:fixed; bottom:20px; right:20px; z-index:999; padding:8px 12px; background:var(--color-accent); color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">🌓 Toggle Theme</button>
+  <button onclick="toggleDarkMode()"
+          style="position:fixed; bottom:20px; right:20px; z-index:999;
+                 padding:8px 12px; background:var(--color-accent); color:white;
+                 border:none; border-radius:6px; cursor:pointer; font-size:14px;">
+    🌓 Toggle Theme
+  </button>
 </body>
 </html>

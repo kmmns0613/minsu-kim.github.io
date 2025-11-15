@@ -15,22 +15,26 @@
   </script>
   <style>
     :root {
+      /* Font Family */
       --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       --font-serif: Georgia, serif;
 
+      /* Font Sizes */
       --font-size-h1: clamp(28px, 4vw, 40px);
       --font-size-h2: clamp(22px, 3vw, 30px);
-      --font-size-body-lg: clamp(17px, 2vw, 20px);
+      --font-size-body-lg: clamp(17px, 2vw, 22px);
       --font-size-body: clamp(15px, 1.5vw, 17px);
       --font-size-small: clamp(13px, 1.2vw, 14px);
 
+      /* Layout */
       --banner-height: 30vh;
       --banner-font-size: clamp(18px, 2vw, 28px);
       --menu-width: clamp(60px, 8vw, 130px);
       --menu-font: clamp(11px, 1.5vw, 16px);
       --container-padding: clamp(10px, 5vw, 30px);
-      --container-max-width: 1000px;
+      --container-max-width: 1100px;
 
+      /* Colors (Light Theme) */
       --color-bg: #ffffff;
       --color-text: #222;
       --color-muted: #666;
@@ -39,8 +43,9 @@
       --color-highlight: #ffe0a3;
       --color-menu-bg: #fafafa;
 
+      /* Others */
       --radius: 8px;
-      --shadow-light: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-light: 0 2px 6px rgba(0,0,0,0.08);
     }
 
     [data-theme="dark"] {
@@ -51,7 +56,7 @@
       --color-surface: #2a2a2a;
       --color-highlight: #3a3a3a;
       --color-menu-bg: #1a1a1a;
-      --shadow-light: 0 1px 3px rgba(255,255,255,0.06);
+      --shadow-light: 0 2px 6px rgba(255,255,255,0.08);
     }
 
     body {
@@ -238,20 +243,23 @@
 
   <nav>
     <a href="index.html">Home</a>
-    <a href="about.html">Biography</a>
+    <a href="updates.html">Updates</a>
+    <a href="biography.html" class="active">Biography</a>
     <a href="skills.html">Skills</a>
-    <a href="research.html">Research</a>
     <a href="publications.html">Publications</a>
-    <a href="idea.html" class="active">Ideas</a>
     <a href="contact.html">Contact</a>
   </nav>
 
   <div class="container">
     <!-- 여기에 페이지별 내용 삽입 -->
-    <h1>Ideas</h1>
+    <h1>Biography</h1>
     <!-- 또는 Publications -->
     <p class="intro-paragraph">
-      Coming soon. This section is currently under construction.
+      Hello, I’m <mark class="highlight">Dr. Minsu Kim</mark>, a neuroscientist exploring how the brain adapts under extreme conditions—from traumatic brain injury to spaceflight. I earned my Ph.D. in Biomedical Science from Konkuk University (Seoul, South Korea) in February 2025, where my research centered on astrocytic protein alterations and immune regulation following traumatic brain injury. During this time, I gained extensive experience in rodent handling, molecular assays, and mechanistic investigations of neuroinflammation and mitochondrial function. 
+    </p>
+
+    <p class="intro-paragraph">
+      I am currently seeking a <mark class="highlight"><strong>postdoctoral position</strong></mark> in the field of <mark class="highlight"><strong>space biology</strong></mark>, with a strong interest in how long-term spaceflight influences molecular and cellular pathways in the brain. My future work aims to investigate astrocyte ferroptosis, blood-brain barrier dynamics, and glial responses to cosmic radiation and microgravity. By bridging neurotrauma and space biology, I hope to uncover conserved stress responses of the brain across radically different environments.
     </p>
   </div>
 
