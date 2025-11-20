@@ -164,6 +164,39 @@
       margin: 10px auto;
     }
 
+    .container p {
+      text-align: justify;
+    }
+
+    /* ============================
+      ⭐ Generic Section Accordion
+      (History, Future sections)
+    ============================ */
+    .section-accordion {
+      margin-top: 0px;
+      padding: 15px 0;
+      border-top: 1px solid var(--color-muted);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .section-title:hover {
+      color: var(--color-accent);
+    }
+
+    .section-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .35s ease;
+      margin-top: 10px;
+      padding-left: 4px;
+    }
+
     .collapsed header {
       height: 120px;
     }
@@ -343,37 +376,106 @@
     <h1>ASGSR 2025 Special Page</h1>
     <p class="small-note">This page is exclusively available during ASGSR 2025.</p>
     
-    <h2 style="margin-top: 30px;">Thank you so much for taking an interest in my presentation.</h2>
+    <h2 style="margin-top: 30px;">Thank you for your interest in my research.</h2>
 
     <p>
-    Space has always meant more to me than a scientific topic—it is a source of inspiration, curiosity,
-    and a reminder of how much there is left to discover. When I first encountered the field of space biology last year,
-    something clicked deeply. I knew immediately that I wanted to dedicate myself to understanding how life adapts
-    when it leaves Earth.
-    <br><br>
-    Being here at ASGSR, sharing my work with you in less than a year since that realization,
-    feels nothing short of extraordinary.
+      It is a great honor to attend ASGSR 2025 and to have the opportunity to introduce myself and my research to you.
+      Being able to share my analysis results less than a year after first discovering the field of space biology feels truly special to me.
+      <br><br>
+      My previous work has focused on traumatic brain injury, <span class="highlight"><strong>but I am now seeking postdoctoral opportunities in Space Biology.</strong></span>
+      Ever since I first encountered this field, space has become more than an academic interest—it has become a scientific direction that continually pulls me forward.
+      It is strong enough to shift my research path entirely, and I believe I can contribute to understanding how the brain adapts and responds under spaceflight conditions.
+      <br><br>
+      While I have not received formal training in omics analysis, every step of my work—including enrichment analysis—has been driven by an eagerness to learn and by a growing passion for uncovering the biological impact of spaceflight.
+      Through countless rounds of trial, error, and refinement, this project became both a scientific challenge and a source of genuine excitement for me.
+      There may still be aspects that can be improved, and any feedback or critique you offer will be deeply appreciated.
+      <br><br>
+      I will be staying at the <span class="highlight"><strong>Hilton Phoenix Tapatio Cliffs Resort from December 2 to December 7, 2025,</strong></span> and I hope to have many opportunities for discussion and learning during this time.
+
+      Thank you.
     </p>
 
-    <p>
-    I also want to be transparent. I have no formal training in omics analysis.
-    Everything I built for this project—from data processing to enrichment analysis—came from months of studying, failing,
-    trying again, and pushing forward because I truly wanted to be part of this field.
-    <br><br>
-    <span class="highlight">So if you notice something that can be improved or re-thought,
-    I genuinely welcome your critique and guidance.</span><br>
-    I came here to learn. Any advice—technical, conceptual, or strategic—would mean a great deal to me.
-    To help you review my work, I’ve made my actual analysis scripts available with the buttons below.
-    </p>
+    <!-- ⭐ History Section -->
+    <div class="section-accordion">
+      <div class="section-title" onclick="toggleAccordion('history1')">
+        • History of This Project
+      </div>
 
-    <p>
-    My deepest scientific passion lies at the intersection of the brain and the space environment.
-    Spaceflight presents a unique biological challenge, and the brain—resilient yet vulnerable—holds so many unanswered questions.
-    <br><br>
-    <span class="highlight">If my research direction resonates with you,
-    I would be truly honored to discuss ideas and explore possibilities together.</span><br>
-    Whether in collaboration, mentorship, or even a brief conversation, I would be grateful for the chance to connect.
-    </p>
+      <div class="section-content" id="history1">
+        <p>
+          After completing my Ph.D. in February 2025, I worked as a Research Associate at Konkuk University in South Korea until April. 
+          During this time, I studied mitochondrial dysfunction and inflammation in a traumatic brain injury mouse model, gaining extensive experience in molecular biology techniques.
+          <br><br>
+          Toward the end of my doctoral program, I began deeply questioning the direction of my future research. 
+          Around that time, I happened to watch a presentation by Dr. JangKeun Kim, who discussed the biological effects of spaceflight based on the SpaceX Inspiration4 mission conducted by Christopher E. Mason’s lab at Weill Cornell Medicine. 
+          That talk became a turning point for me. It awakened a strong conviction that I wanted to pursue research in space biology.
+          <br><br>
+          However, space biology is still in its early stages in South Korea, and I had no clear pathway into the field. 
+          I found myself studying from the ground up—as if entering graduate school again—and soon realized that many spaceflight studies heavily rely on omics analyses such as transcriptomics and proteomics, 
+          likely due to the unique constraints of spaceflight experiments. 
+          Having no prior experience in these methods and no advisor to guide me, I struggled through the process of learning transcriptomic analysis entirely on my own.
+          <br><br>
+          During this period, Dr. Michael J. Pecaut from Loma Linda University encouraged me to attend the American Society for Gravitational and Space Research (ASGSR) conference, where he currently serves as President. 
+          As an independent researcher without institutional support, attending was financially challenging, but I did not want to miss this opportunity. 
+          After committing to participate, I was incredibly fortunate to be given a chance to present my work to all of you.
+          <br><br>
+          <span class="highlight"><strong>Only a few months ago, I could not have imagined attending my first international conference—let alone giving my first session presentation. 
+          I arrived here with both excitement and nervousness, and I sincerely hope that conversations during ASGSR will open doors that allow me to continue pursuing research in this field.</strong></span>
+        </p>
+      </div>
+    </div>
+    
+    <!-- ⭐ Logic Section -->
+    <div class="section-accordion">
+      <div class="section-title" onclick="toggleAccordion('Logic')">
+        • Analysis Framework
+      </div>
+
+      <div class="section-content" id="Logic">
+        <p>
+          <Strong>1. Dataset</Strong>
+          <br><br>
+          I analyzed long-duration spaceflight RNA-seq datasets from the <span class="highlight"><Strong>NASA GeneLab OSDR (GSE239336)</Strong></span>.
+          Normalized expression matrices and differential expression (DEG) results from each brain region were used to identify transcriptional changes induced by spaceflight.
+          <br><br>
+          <Strong>2. Gene Set Enrichment Score (GSEA / ssGSEA)</Strong>
+          <br><br>
+          To determine which biological pathways were altered by spaceflight, I performed both group-level fast GSEA and sample-level ssGSEA/GSVA using KEGG, Reactome, GO, Hallmark, and FerrDb V2 gene sets.
+          This dual-level approach allowed me to identify consistent pathway shifts and extract the leading-edge genes driving those changes.
+          <br><br>
+          <Strong>3. Hedge’s g (Effect Size Analysis)</Strong>
+          <br><br>
+          Ferroptosis involves multiple mechanistic axes, including iron homeostasis, ROS generation, lipid peroxidation, and mitochondrial function.
+          Using representative gene groups for each axis, I calculated Hedge’s g to quantify which mechanisms were most strongly affected by spaceflight.
+          This provided a measure of biological impact that goes beyond simple statistical significance.
+          <br><br>
+          <Strong>4. Pathway Correlation</Strong>
+          <br><br>
+          To determine whether pathways activated by spaceflight and suppressed by antioxidant pretreatment (BuOE) are truly linked to spaceflight-induced ferroptosis, I analyzed correlations among ssGSEA-derived pathway scores.
+          Spearman correlation was used to identify coordinated upward or downward shifts across pathways, and Hotelling’s test was applied to evaluate pathway-level separation between the GC-SAL and FLT-SAL groups.
+          <br><br>
+          <Strong>5. Scoring System</Strong>
+          <br><br>
+          Finally, I constructed a scoring framework integrating leading-edge gene frequency, pathway consistency, effect sizes (Hedge’s g), and FerrDb annotations to identify high-confidence molecular targets of spaceflight-induced ferroptosis.
+          The detailed scoring logic is provided in the Code Snippets section.
+        </p>
+      </div>
+    </div>
+
+    <!-- ⭐ Code Section -->
+    <div class="section-accordion">
+      <div class="section-title" onclick="toggleAccordion('codesnip')">
+        • Code Snippets
+      </div>
+
+      <div class="section-content" id="codesnip">
+        <p>These are the detailed code components I used in my analysis.</p>
+
+        <button class="code-btn" onclick="openModal('fgsea')">① fGSEA Code</button>
+        <button class="code-btn" onclick="openModal('ssgsea')">② ssGSEA / GSVA Code</button>
+        <button class="code-btn" onclick="openModal('ferrdb')">③ FerrDb Scoring Logic</button>
+    </div>
+
     <style>
       .highlight {
         background-color: var(--color-highlight);
@@ -387,15 +489,7 @@
       }
     </style>
 
-    <div class="section-box" style="margin-top: 40px;">
-        <h2>Code Snippets</h2>
-        <p>These are the detailed code components I used in my analysis.</p>
-
-        <button class="code-btn" onclick="openModal('fgsea')">① fGSEA Code</button><br>
-        <button class="code-btn" onclick="openModal('ssgsea')">② ssGSEA / GSVA Code</button><br>
-        <button class="code-btn" onclick="openModal('ferrdb')">③ FerrDb Scoring Logic</button>
-    </div>
-    </div>
+    
 
   <!-- 공통 모달 (Skills 스타일) -->
   <div class="modal" id="modal">
@@ -438,6 +532,19 @@
         document.body.classList.add("collapsed");
       }
     });
+
+    /* ⭐ Universal Accordion Toggle */
+    function toggleAccordion(id) {
+      const box = document.getElementById(id);
+
+      if (!box) return;
+
+      if (box.style.maxHeight) {
+        box.style.maxHeight = null;
+      } else {
+        box.style.maxHeight = box.scrollHeight + "px";
+      }
+    }
 
     let isCollapsed = false;
 
