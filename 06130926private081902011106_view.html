@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Guestbook Dashboard (Private)</title>
+
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    line-height: 1.6;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 18px;
+  }
+  th, td {
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+  }
+  tr:hover {
+    background: #fffbea;
+  }
+</style>
+
+</head>
+<body>
+
+<h1>Guestbook Messages (Private Only)</h1>
+<p>This page shows messages submitted during ASGSR 2025.</p>
+
+<table id="gbTable">
+  <thead>
+    <tr>
+      <th>Timestamp</th>
+      <th>Name</th>
+      <th>Affiliation</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+  const READ_URL =
+    "https://script.google.com/macros/s/AKfycbxj6VyUdkR6kM-WpCHkuC_H9igQu2g8xwuxsY5lLvYz313jKTnT7HsSFJC0CC3ApvdgqA/exec?read=true";
+
+  async function loadData() {
+    const res = await fetch(READ_URL);
+    const data = await res.json();   // Sheet 데이터 (2D array)
+
+    const tbody = document.querySelector("#gbTable tbody");
+    tbody.innerHTML = "";
+
+    data.forEach((row, i) => {
+      if (i === 0) return; // header row skip
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row[0]}</td>
+        <td>${row[1]}</td>
+        <td>${row[2]}</td>
+        <td>${row[3]}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  loadData();
+  // 30초마다 자동 갱신
+  setInterval(loadData, 30000);
+</script>
+
+</body>
+</html>
