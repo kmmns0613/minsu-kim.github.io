@@ -162,6 +162,50 @@
       margin: 10px auto;
     }
 
+    .contact-links a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--color-text);
+      padding: 6px 4px;
+      border-radius: 6px;
+      transition: background 0.2s ease, color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .contact-links a:hover {
+      background: var(--color-highlight); /* 스타일 가이드 highlight color */
+      color: var(--color-text);
+    }
+
+    .contact-links a:hover img {
+      filter: brightness(1.2); /* 아이콘 살짝 밝아짐 */
+      transform: translateX(2px); /* 시각적 반응감 */
+      transition: 0.2s ease;
+    }
+
+    .contact-links img {
+      transition: 0.2s ease;
+    }
+
+    .submit-button {
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:6px;
+      font-size:var(--font-size-body);
+      background:var(--color-surface);
+      color:var(--color-text);
+      cursor:pointer;
+      transition:0.2s ease;
+    }
+
+    .submit-button:hover {
+      background:var(--color-accent);
+      color:white;
+    }
+
     .collapsed header {
       height: 120px;
     }
@@ -215,6 +259,13 @@
         display: flex;
       }
     }
+
+    @media (max-width: 760px) {
+    .contact-links {
+      width: 100%;
+      margin-top: 12px;
+    }
+  }
   </style>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -248,43 +299,129 @@
   <div class="container">
     <h1>Contact</h1>
 
-    <div class="card" style="padding: 32px;">
+    <!-- Intro Message -->
+    <p style="
+      margin-bottom:18px;
+      font-size:clamp(18px, 3vw, 24px);
+      font-family: Georgia, serif;
+      line-height:1.5;
+    ">
+      Thank you for visiting this page.<br>
+      Meaningful conversations always move us forward.
+    </p>
 
-      <div class="photo-text-row">
+    <!-- Top Icon Bar -->
+    <div class="contact-icon-row"
+      style="
+        display:flex;
+        gap:20px;
+        margin:10px 0 26px 0;
+        align-items:center;
+        flex-wrap:wrap;
+      "
+    >
 
-        <!-- Profile Photo -->
-        <div class="photo" 
+      <!-- Email -->
+      <a href="mailto:kmmns0613@gmail.com"
+        style="
+          padding:6px;
+          border-radius:6px;
+          transition:0.2s ease;
+        "
+        onmouseover="this.style.background='var(--color-highlight)'"
+        onmouseout="this.style.background='transparent'"
+      >
+        <img src="email_icon.svg" alt="Email Icon" style="width:32px; height:32px;">
+      </a>
+
+      <!-- LinkedIn -->
+      <a href="https://www.linkedin.com/in/minsukim0613" target="_blank"
+        style="
+          padding:6px;
+          border-radius:6px;
+          transition:0.2s ease;
+        "
+        onmouseover="this.style.background='var(--color-highlight)'"
+        onmouseout="this.style.background='transparent'"
+      >
+        <img src="linkedin_icon.svg" alt="LinkedIn Icon" style="width:32px; height:32px;">
+      </a>
+
+      <!-- Instagram -->
+      <a href="https://www.instagram.com/kmmns0/" target="_blank"
+        style="
+          padding:6px;
+          border-radius:6px;
+          transition:0.2s ease;
+        "
+        onmouseover="this.style.background='var(--color-highlight)'"
+        onmouseout="this.style.background='transparent'"
+      >
+        <img src="instagram_icon.svg" alt="Instagram Icon" style="width:32px; height:32px;">
+      </a>
+
+    </div>
+
+    <!-- Main Flex Layout -->
+    <div style="
+      display:flex;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      max-width:900px;
+    ">
+
+      <!-- Leave a Message Box -->
+      <div style="
+        flex:1;
+        min-width:280px;
+        max-width:550px;
+      ">
+
+        <div class="card" style="width:100%;">
+
+          <h3 style="font-family: Georgia, serif; margin-top:0;">Leave a Message</h3>
+
+          <!-- Name -->
+          <input id="gb_name" type="text" placeholder="Your name"
             style="
-                width: min(320px, 40vw);
-                height: min(320px, 40vw);
-                border-radius: 12px;
-                overflow: hidden;
+              width:100%;
+              padding:12px;
+              margin-top:12px;
+              border-radius:6px;
+              border:1px solid #ccc;
+              background:#fafafa;
+              box-sizing:border-box;
             ">
-          <img src="contact_photo.jpeg"
-              alt="Profile Photo"
-              style="width: 100%; height: 100%; object-fit: cover;">
-        </div>
 
-        <!-- Contact Text + Icons -->
-        <div class="text-right">
-          <p class="large-body" style="margin-bottom:16px;">
-            Thank you for your interest in my work.  
-            Feel free to reach out anytime.
-          </p>
+          <!-- Affiliation -->
+          <input id="gb_affil" type="text" placeholder="Affiliation (optional)"
+            style="
+              width:100%;
+              padding:12px;
+              margin-top:12px;
+              border-radius:6px;
+              border:1px solid #ccc;
+              background:#fafafa;
+              box-sizing:border-box;
+            ">
 
-          <p style="margin:8px 0;">
-            📧  
-            <a class="link" href="mailto:kmmns0613@gmail.com">kmmns0613@gmail.com</a>
-          </p>
+          <!-- Message -->
+          <textarea id="gb_msg" placeholder="Write your message..."
+            style="
+              width:100%;
+              padding:12px;
+              margin-top:12px;
+              border-radius:6px;
+              border:1px solid #ccc;
+              background:#fafafa;
+              height:120px;
+              box-sizing:border-box;
+            "></textarea>
 
-          <p style="margin:8px 0;">
-            🔗  
-            <a class="link" href="https://www.linkedin.com/in/minsukim0613" target="_blank">LinkedIn</a>
-          </p>
+          <!-- Submit Button -->
+          <button class="submit-button" onclick="sendGuestbook()">Submit</button>
 
-          <p style="margin:8px 0;">
-            📱 +82-10-3209-1961
-          </p>
+          <p id="gb_status" style="margin-top:10px; font-size:14px;"></p>
 
         </div>
       </div>
@@ -351,6 +488,42 @@
         localStorage.setItem("theme", "dark");  // 저장
       }
     };
+
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxj6VyUdkR6kM-WpCHkuC_H9igQu2g8xwuxsY5lLvYz313jKTnT7HsSFJC0CC3ApvdgqA/exec";
+
+    async function sendGuestbook() {
+      const name = document.getElementById("gb_name").value.trim();
+      const affil = document.getElementById("gb_affil").value.trim();
+      const msg = document.getElementById("gb_msg").value.trim();
+      const status = document.getElementById("gb_status");
+
+      if (!name || !msg) {
+        status.innerHTML = "Please enter your name and a message.";
+        return;
+      }
+
+      status.innerHTML = "Sending...";
+
+      try {
+        const res = await fetch(WEBAPP_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            name: name,
+            affiliation: affil,
+            message: msg
+          }),
+          headers: { "Content-Type": "application/json" }
+        });
+
+        status.innerHTML = "Message sent!";
+        document.getElementById("gb_name").value = "";
+        document.getElementById("gb_affil").value = "";
+        document.getElementById("gb_msg").value = "";
+
+      } catch (err) {
+        status.innerHTML = "Error sending message. Please try again.";
+      }
+    }
   </script>
 
   <button onclick="toggleDarkMode()" style="position:fixed; bottom:20px; right:20px; z-index:999; padding:8px 12px; background:var(--color-accent); color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">🌓 Toggle Theme</button>
