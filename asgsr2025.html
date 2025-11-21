@@ -160,7 +160,7 @@
     .container {
       max-width: var(--container-max-width);
       padding: var(--container-padding);
-      padding-right: clamp(100px, 20vw, 160px);
+      padding-right: clamp(80px, 20vw, 160px);
       margin: 10px auto;
     }
 
@@ -211,6 +211,23 @@
 
     .accordion-collapse-btn:hover {
       color: var(--color-accent);
+    }
+
+    .submit-button {
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:6px;
+      font-size:var(--font-size-body);
+      background:var(--color-surface);
+      color:var(--color-text);
+      cursor:pointer;
+      transition:0.2s ease;
+    }
+
+    .submit-button:hover {
+      background:var(--color-accent);
+      color:white;
     }
 
     .collapsed header {
@@ -446,6 +463,70 @@
       <br><br>
       Thank you.
     </p>
+
+    <!-- Guestbook Box -->
+    <div style="
+      flex:1;
+      min-width:300px;
+      max-width:550px;   /* Contact 페이지처럼 최대 폭 고정 */
+      margin-top:30px;
+      margin-bottom:40px;
+      width:100%;
+    ">
+
+      <div class="card" style="width:100%;">
+
+        <h3 style="font-family: Georgia, serif; margin-top:0; margin-bottom:0;">
+          Share your thoughts
+        </h3>
+
+        <!-- Name -->
+        <input id="gb_name_asgsr" type="text" placeholder="Your name"
+          style="
+            width:100%;
+            padding:12px;
+            margin-top:12px;
+            border-radius:6px;
+            border:1px solid #ccc;
+            background:#fafafa;
+            box-sizing:border-box;
+          ">
+
+        <!-- Affiliation -->
+        <input id="gb_affil_asgsr" type="text" placeholder="Affiliation (optional)"
+          style="
+            width:100%;
+            padding:12px;
+            margin-top:12px;
+            border-radius:6px;
+            border:1px solid #ccc;
+            background:#fafafa;
+            box-sizing:border-box;
+          ">
+
+        <!-- Message -->
+        <textarea id="gb_msg_asgsr" placeholder="Write your message..."
+          style="
+            width:100%;
+            padding:12px;
+            margin-top:12px;
+            border-radius:6px;
+            border:1px solid #ccc;
+            background:#fafafa;
+            height:120px;
+            box-sizing:border-box;
+          "></textarea>
+
+        <!-- Submit Button -->
+        <button class="submit-button" onclick="sendASGSRGuestbook()"
+          style="margin-top: 12px;">
+          Send 🚀
+        </button>
+
+        <p id="gb_status_asgsr" style="margin-top:10px; font-size:14px;"></p>
+
+      </div>
+    </div>
 
     <!-- ⭐ History Section -->
     <div class="section-accordion">
@@ -790,6 +871,42 @@
       } else {
         document.documentElement.setAttribute("data-theme", "dark");
         localStorage.setItem("theme", "dark");
+      }
+    }
+
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbySvwRR8NwB6XS_E-mzcxgGE3PSiEqqRlnzKJX_TaIi2cOwTiTVEqItYGhb4umLjDDK0A/exec";
+
+    async function sendASGSRGuestbook() {
+      const name  = document.getElementById("gb_name_asgsr").value.trim();
+      const affil = document.getElementById("gb_affil_asgsr").value.trim();
+      const msg   = document.getElementById("gb_msg_asgsr").value.trim();
+      const status = document.getElementById("gb_status_asgsr");
+
+      if (!name || !msg) {
+        status.innerHTML = "Please enter your name and a message.";
+        return;
+      }
+
+      status.innerHTML = "Sending...";
+
+      try {
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("affiliation", affil);
+        formData.append("message", msg);
+
+        await fetch(WEBAPP_URL, {
+          method: "POST",
+          body: formData
+        });
+
+        status.innerHTML = "Message sent!";
+        document.getElementById("gb_name_asgsr").value = "";
+        document.getElementById("gb_affil_asgsr").value = "";
+        document.getElementById("gb_msg_asgsr").value = "";
+
+      } catch (err) {
+        status.innerHTML = "Error sending message. Please try again.";
       }
     }
   </script>
