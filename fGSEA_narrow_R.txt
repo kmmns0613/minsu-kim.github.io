@@ -1,0 +1,891 @@
+# ============================================================
+# fGSEA Pipeline (Reformatted for narrow-width editors)
+# Section 1: Path Settings + DEG loading + Ranking statistic
+# ============================================================
+
+suppressPackageStartupMessages({
+  library(readxl)
+  library(stringr)
+  library(dplyr)
+  library(fgsea)
+  library(ggplot2)
+  library(enrichplot)
+  library(clusterProfiler)
+  library(ReactomePA)
+  library(org.Mm.eg.db)
+  library(AnnotationDbi)
+  library(GO.db)
+})
+
+# -----------------------------
+# 1) Path Settings
+# -----------------------------
+deg_path <- "<PATH_TO_DEG_EXCEL_FILE>"
+
+gmt_dir  <- "<PATH_TO_MSigDB_GMT_DIRECTORY>"
+
+out_root <- "<OUTPUT_DIRECTORY_FOR_ALL_RESULTS>"
+dir.create(
+  out_root,
+  recursive    = TRUE,
+  showWarnings = FALSE
+)
+
+# -----------------------------
+# 2) Load DEG file + build ranked list
+# -----------------------------
+df <- read_xlsx(deg_path)
+
+col_symbol <- names(df)[
+  grepl("symbol", names(df), ignore.case = TRUE)
+][1]
+
+col_lfc <- names(df)[
+  grepl("log2", names(df), ignore.case = TRUE)
+][1]
+
+col_pval <- names(df)[
+  grepl("p.value|p_value|pvalue", names(df), ignore.case = TRUE)
+][1]
+
+if (any(is.na(c(col_symbol, col_lfc, col_pval)))) {
+  stop(
+    "ERROR: Could not detect SYMBOL/log2FC/p-value columns ",
+    "in the DEG file."
+  )
+}
+
+df2 <- df %>%
+  transmute(
+    SYMBOL = as.character(.data[[col_symbol]]),
+    log2FC = as.numeric(.data[[col_lfc]]),
+    pval   = as.numeric(.data[[col_pval]])
+  ) %>%
+  filter(
+    !is.na(SYMBOL),
+    !is.na(log2FC),
+    !is.na(pval)
+  )
+
+# Ranking statistic = sign(log2FC) × -log10(p)
+df2 <- df2 %>%
+  mutate(
+    rank_stat = sign(log2FC) *
+      -log10(pval + 1e-300)
+  )
+
+geneList <- tapply(
+  df2$rank_stat,
+  df2$SYMBOL,
+  function(x) x[which.max(abs(x))]
+)
+
+geneList <- sort(
+  as.numeric(geneList),
+  decreasing = TRUE
+)
+
+names(geneList) <- names(geneList)
+
+message(
+  sprintf(
+    "✓ Ranked genes ready: %d unique SYMBOLs detected.",
+    length(geneList)
+  )
+)
+
+# SYMBOL → ENTREZ
+entrez_map <- bitr(
+  names(geneList),
+  fromType = "SYMBOL",
+  toType   = "ENTREZID",
+  OrgDb    = org.Mm.eg.db
+)
+
+rank_entrez <- geneList[
+  entrez_map$SYMBOL
+]
+
+names(rank_entrez) <- entrez_map$ENTREZID
+
+rank_entrez <- sort(
+  rank_entrez[!is.na(rank_entrez)],
+  decreasing = TRUE
+)
+
+# ============================================================
+# Section 2: Ferroptosis keywords + GSEA result saving utility
+# ============================================================
+
+# -----------------------------
+# 3) Ferroptosis-related keyword list
+# -----------------------------
+ferro_keywords <- c(
+  "ferroptosis",
+  "iron", "heme","ferritin","transferrin",
+  "oxidative stress","reactive oxygen",
+  "nitric oxide",
+  "lipid","peroxidation",
+  "glutathione","redox",
+  "hydrogen peroxide",
+  "superoxide",
+  "mitochond",
+  "hypoxia",
+  "autophagy"
+)
+
+# -----------------------------
+# 4) Unified GSEA-saving function
+# ------------------------------------------------------------
+# Saves:
+#   - Full results CSV
+#   - Ferro-only subset CSV (filtered by keywords)
+#   - 3-panel ES plots (PNG/SVG)
+# ------------------------------------------------------------
+save_gsea_results <- function(
+  gsea_obj,
+  label,
+  out_dir
+) {
+
+  dir.create(
+    out_dir,
+    recursive    = TRUE,
+    showWarnings = FALSE
+  )
+
+  df <- as.data.frame(gsea_obj@result)
+
+  if (nrow(df) == 0) {
+    message("⚠ No enriched terms for ", label)
+    return(invisible(NULL))
+  }
+
+  # Sort by NES
+  df <- df %>%
+    arrange(desc(NES))
+
+  # Standardize column names
+  if ("pval" %in% names(df))
+    names(df)[names(df) == "pval"] <- "pvalue"
+
+  if ("padj" %in% names(df))
+    names(df)[names(df) == "padj"] <- "p.adjust"
+
+  # ---- Save full table ----
+  out_csv <- file.path(
+    out_dir,
+    paste0(label, "_fGSEA_results.csv")
+  )
+
+  write.csv(
+    df,
+    out_csv,
+    row.names = FALSE
+  )
+
+  message("✓ Saved full GSEA results: ", out_csv)
+
+  # -----------------------------
+  # Filter ferroptosis-related terms
+  # -----------------------------
+  ferro_idx <- Reduce(
+    `|`,
+    lapply(
+      ferro_keywords,
+      function(k) grepl(k, tolower(df$Description))
+    )
+  )
+
+  if (!any(ferro_idx)) {
+    return(invisible(NULL))
+  }
+
+  ferro_res <- df[ferro_idx, ]
+
+  ferro_csv <- file.path(
+    out_dir,
+    paste0(label, "_FERRO_related.csv")
+  )
+
+  write.csv(
+    ferro_res,
+    ferro_csv,
+    row.names = FALSE
+  )
+
+  message("🔍 Saved Ferro-only subset: ", ferro_csv)
+
+  # -----------------------------
+  # Save 3-panel ES plots
+  # -----------------------------
+  ferro_dir <- file.path(
+    out_dir,
+    "Ferro_only"
+  )
+
+  dir.create(
+    ferro_dir,
+    recursive    = TRUE,
+    showWarnings = FALSE
+  )
+
+  for (pid in ferro_res$ID) {
+
+    p <- tryCatch({
+
+      enrichplot::gseaplot2(
+        gsea_obj,
+        geneSetID     = pid,
+        subplots      = 1:3,
+        pvalue_table  = TRUE,
+        title         = ferro_res$Description[
+          ferro_res$ID == pid
+        ]
+      )
+
+    }, error = function(e) NULL)
+
+    if (is.null(p))
+      next
+
+    fname <- paste0(
+      label, "_",
+      gsub(
+        "[^A-Za-z0-9]+", "_",
+        ferro_res$Description[
+          ferro_res$ID == pid
+        ]
+      ),
+      "_3panel"
+    )
+
+    ggsave(
+      file.path(ferro_dir, paste0(fname, ".png")),
+      plot   = p,
+      width  = 6.5,
+      height = 6.5,
+      dpi    = 300
+    )
+
+    ggsave(
+      file.path(ferro_dir, paste0(fname, ".svg")),
+      plot   = p,
+      width  = 6.5,
+      height = 6.5
+    )
+  }
+
+  message("🎨 ES plots saved: ", ferro_dir)
+}
+
+# ============================================================
+# Section 3: GO BP/CC/MF builder + GO GSEA wrapper
+# ============================================================
+
+# -----------------------------
+# Build GO TERM2GENE / TERM2NAME sets (BP / CC / MF)
+# -----------------------------
+build_go_sets <- function(
+  ont = c("BP", "CC", "MF")
+) {
+
+  ont <- match.arg(ont)
+
+  all_keys <- keys(
+    org.Mm.eg.db,
+    keytype = "ENTREZID"
+  )
+
+  go_map <- AnnotationDbi::select(
+    org.Mm.eg.db,
+    keys     = all_keys,
+    columns  = c("GO", "ONTOLOGY"),
+    keytype  = "ENTREZID"
+  )
+
+  go_map <- go_map[
+    !is.na(go_map$GO) &
+      go_map$ONTOLOGY == ont,
+    c("GO", "ENTREZID")
+  ]
+
+  colnames(go_map) <- c("term", "gene")
+
+  go_ids <- unique(go_map$term)
+
+  go_name <- AnnotationDbi::select(
+    GO.db,
+    keys     = go_ids,
+    columns  = "TERM",
+    keytype  = "GOID"
+  )
+
+  colnames(go_name) <- c("term", "name")
+
+  list(
+    TERM2GENE = go_map,
+    TERM2NAME = go_name
+  )
+}
+
+# -----------------------------
+# GO GSEA runner (BP / CC / MF)
+# -----------------------------
+run_GO_fgsea <- function(
+  geneList_entrez,
+  ont = c("BP", "CC", "MF")
+) {
+
+  ont <- match.arg(ont)
+
+  go_sets <- build_go_sets(ont)
+
+  gsea_obj <- GSEA(
+    geneList    = geneList_entrez,
+    TERM2GENE   = go_sets$TERM2GENE,
+    TERM2NAME   = go_sets$TERM2NAME,
+    minGSSize   = 10,
+    maxGSSize   = 500,
+    pvalueCutoff = 1
+  )
+
+  # Standardize column names
+  if ("pval" %in% names(gsea_obj@result))
+    names(gsea_obj@result)[
+      names(gsea_obj@result) == "pval"
+    ] <- "pvalue"
+
+  if ("padj" %in% names(gsea_obj@result))
+    names(gsea_obj@result)[
+      names(gsea_obj@result) == "padj"
+    ] <- "p.adjust"
+
+  gsea_obj
+}
+
+# ============================================================
+# Section 4: Hallmark GSEA (fgseaMultilevel)
+# ============================================================
+
+# -----------------------------
+# 1) Load Hallmark GMT
+# -----------------------------
+mh_gmt_path <- file.path(
+  gmt_dir,
+  "<HALLMARK_GMT_FILE_NAME.gmt>"
+)
+
+mh_sets <- fgsea::gmtPathways(mh_gmt_path)
+
+# -----------------------------
+# 2) Run fgseaMultilevel
+# -----------------------------
+set.seed(42)
+
+fg_mh <- fgseaMultilevel(
+  pathways     = mh_sets,
+  stats        = geneList,
+  minSize      = 10,
+  maxSize      = 500,
+  nPermSimple  = 1e6
+)
+
+# -----------------------------
+# 3) Create Hallmark output directory
+# -----------------------------
+mh_dir <- file.path(out_root, "Hallmark")
+
+dir.create(
+  mh_dir,
+  recursive    = TRUE,
+  showWarnings = FALSE
+)
+
+# -----------------------------
+# 4) Convert results into a clean data frame
+# -----------------------------
+fg_mh_df <- as.data.frame(fg_mh)
+
+# Convert leadingEdge list → string
+if ("leadingEdge" %in% names(fg_mh_df)) {
+  fg_mh_df$leadingEdge <- sapply(
+    fg_mh_df$leadingEdge,
+    paste,
+    collapse = "; "
+  )
+}
+
+# Standardize p-value column names
+if ("pval" %in% names(fg_mh_df))
+  names(fg_mh_df)[names(fg_mh_df) == "pval"] <- "pvalue"
+
+if ("padj" %in% names(fg_mh_df))
+  names(fg_mh_df)[names(fg_mh_df) == "padj"] <- "p.adjust"
+
+# Add cleaner Description column
+fg_mh_df <- fg_mh_df %>%
+  mutate(
+    Description = gsub("_", " ", pathway)
+  ) %>%
+  select(
+    Description,
+    everything(),
+    -pathway
+  )
+
+# -----------------------------
+# 5) Save Hallmark full table
+# -----------------------------
+mh_out_csv <- file.path(
+  mh_dir,
+  "Hallmark_fGSEA_results.csv"
+)
+
+write.csv(
+  fg_mh_df,
+  mh_out_csv,
+  row.names = FALSE
+)
+
+message("✓ Saved Hallmark GSEA: ", mh_out_csv)
+
+# -----------------------------
+# 6) Ferro-only filtering
+# -----------------------------
+ferro_idx_mh <- Reduce(
+  `|`,
+  lapply(
+    ferro_keywords,
+    function(k) grepl(k, tolower(fg_mh_df$Description))
+  )
+)
+
+if (any(ferro_idx_mh)) {
+
+  ferro_res <- fg_mh_df[ferro_idx_mh, ]
+
+  ferro_csv <- file.path(
+    mh_dir,
+    "Hallmark_FERRO_related.csv"
+  )
+
+  write.csv(
+    ferro_res,
+    ferro_csv,
+    row.names = FALSE
+  )
+
+  message("🔍 Saved Hallmark Ferro-only subset: ", ferro_csv)
+
+  # -----------------------------
+  # 7) Ferro-only ES plots (fake_res rebuild)
+  # -----------------------------
+  ferro_dir <- file.path(
+    mh_dir,
+    "Ferro_only"
+  )
+
+  dir.create(
+    ferro_dir,
+    recursive    = TRUE,
+    showWarnings = FALSE
+  )
+
+  for (i in seq_len(nrow(ferro_res))) {
+
+    desc <- ferro_res$Description[i]
+
+    pname <- gsub(
+      " ",
+      "_",
+      desc
+    )
+
+    if (!(pname %in% names(mh_sets)))
+      next
+
+    term_df <- data.frame(
+      term = pname,
+      gene = mh_sets[[pname]]
+    )
+
+    fake_res <- suppressMessages(
+      clusterProfiler::GSEA(
+        geneList     = geneList,
+        TERM2GENE    = term_df,
+        minGSSize    = 1,
+        maxGSSize    = 1e5,
+        pvalueCutoff = 1
+      )
+    )
+
+    fake_res@result$pvalue   <- ferro_res$pvalue[i]
+    fake_res@result$p.adjust <- ferro_res$p.adjust[i]
+    fake_res@result$NES      <- ferro_res$NES[i]
+
+    p <- enrichplot::gseaplot2(
+      fake_res,
+      geneSetID    = pname,
+      subplots     = 1:3,
+      pvalue_table = TRUE,
+      title        = desc
+    )
+
+    fname <- paste0(
+      "Hallmark_",
+      gsub("[^A-Za-z0-9]+", "_", pname),
+      "_3panel"
+    )
+
+    ggsave(
+      file.path(ferro_dir, paste0(fname, ".png")),
+      plot   = p,
+      width  = 6.5,
+      height = 6.5,
+      dpi    = 300
+    )
+
+    ggsave(
+      file.path(ferro_dir, paste0(fname, ".svg")),
+      plot   = p,
+      width  = 6.5,
+      height = 6.5
+    )
+  }
+
+  message("🎨 Hallmark Ferro-only plots saved: ", ferro_dir)
+}
+
+# ============================================================
+# Section 5: GO BP / CC / MF — GSEA (Reformatted)
+# ============================================================
+
+# -----------------------------
+# 1) Build GO term2gene / term2name
+# -----------------------------
+build_go_sets <- function(ont = c("BP", "CC", "MF")) {
+
+  ont <- match.arg(ont)
+
+  all_keys <- keys(
+    org.Mm.eg.db,
+    keytype = "ENTREZID"
+  )
+
+  go_map <- AnnotationDbi::select(
+    org.Mm.eg.db,
+    keys    = all_keys,
+    columns = c("GO", "ONTOLOGY"),
+    keytype = "ENTREZID"
+  )
+
+  go_map <- go_map[
+    !is.na(go_map$GO) &
+    go_map$ONTOLOGY == ont,
+    c("GO", "ENTREZID")
+  ]
+
+  colnames(go_map) <- c("term", "gene")
+
+  go_ids <- unique(go_map$term)
+
+  go_name <- AnnotationDbi::select(
+    GO.db,
+    keys    = go_ids,
+    columns = "TERM",
+    keytype = "GOID"
+  )
+
+  colnames(go_name) <- c("term", "name")
+
+  list(
+    TERM2GENE = go_map,
+    TERM2NAME = go_name
+  )
+}
+
+# -----------------------------
+# 2) Run GO-GSEA (GSEA from clusterProfiler)
+# -----------------------------
+run_GO_fgsea <- function(
+  geneList_entrez,
+  ont = c("BP", "CC", "MF")
+) {
+
+  ont <- match.arg(ont)
+
+  go_sets <- build_go_sets(ont)
+
+  gsea_obj <- GSEA(
+    geneList     = geneList_entrez,
+    TERM2GENE    = go_sets$TERM2GENE,
+    TERM2NAME    = go_sets$TERM2NAME,
+    minGSSize    = 10,
+    maxGSSize    = 500,
+    pvalueCutoff = 1    # keep all terms
+  )
+
+  # Standardize column names
+  if ("pval" %in% names(gsea_obj@result))
+    names(gsea_obj@result)[names(gsea_obj@result) == "pval"] <- "pvalue"
+
+  if ("padj" %in% names(gsea_obj@result))
+    names(gsea_obj@result)[names(gsea_obj@result) == "padj"] <- "p.adjust"
+
+  gsea_obj
+}
+
+# -----------------------------
+# 3) Run BP / CC / MF + save using helper
+# -----------------------------
+bp_out <- file.path(out_root, "GO_BP")
+cc_out <- file.path(out_root, "GO_CC")
+mf_out <- file.path(out_root, "GO_MF")
+
+dir.create(bp_out, recursive=TRUE, showWarnings=FALSE)
+dir.create(cc_out, recursive=TRUE, showWarnings=FALSE)
+dir.create(mf_out, recursive=TRUE, showWarnings=FALSE)
+
+fg_gobp <- run_GO_fgsea(rank_entrez, "BP")
+save_gsea_results(fg_gobp, "GO_BP", bp_out)
+
+fg_gocc <- run_GO_fgsea(rank_entrez, "CC")
+save_gsea_results(fg_gocc, "GO_CC", cc_out)
+
+fg_gomf <- run_GO_fgsea(rank_entrez, "MF")
+save_gsea_results(fg_gomf, "GO_MF", mf_out)
+
+# ============================================================
+# Section 6: KEGG GSEA (Reformatted)
+# ============================================================
+
+# -----------------------------
+# 1) Run KEGG
+# -----------------------------
+ekegg <- gseKEGG(
+  geneList     = rank_entrez,
+  organism     = "mmu",
+  minGSSize    = 10,
+  maxGSSize    = 500,
+  pvalueCutoff = 1
+)
+
+# Convert ENTREZ → SYMBOL
+ekegg <- setReadable(
+  ekegg,
+  OrgDb  = org.Mm.eg.db,
+  keyType = "ENTREZID"
+)
+
+# -----------------------------
+# 2) Save KEGG results
+# -----------------------------
+kegg_out <- file.path(out_root, "KEGG")
+
+dir.create(
+  kegg_out,
+  recursive    = TRUE,
+  showWarnings = FALSE
+)
+
+save_gsea_results(
+  gsea_obj = ekegg,
+  label    = "KEGG",
+  out_dir  = kegg_out
+)
+
+# ============================================================
+# Section 7: Reactome GSEA (Reformatted)
+# ============================================================
+
+# -----------------------------
+# 1) Run Reactome
+# -----------------------------
+eReact <- gsePathway(
+  geneList     = rank_entrez,
+  organism     = "mouse",
+  minGSSize    = 10,
+  maxGSSize    = 500,
+  pvalueCutoff = 1
+)
+
+# Convert ENTREZ → SYMBOL
+eReact <- setReadable(
+  eReact,
+  OrgDb  = org.Mm.eg.db,
+  keyType = "ENTREZID"
+)
+
+# -----------------------------
+# 2) Save Reactome results
+# -----------------------------
+react_out <- file.path(out_root, "Reactome")
+
+dir.create(
+  react_out,
+  recursive    = TRUE,
+  showWarnings = FALSE
+)
+
+save_gsea_results(
+  gsea_obj = eReact,
+  label    = "Reactome",
+  out_dir  = react_out
+)
+
+# ============================================================
+# Section 8: FerrDb GSEA (Reformatted)
+# ============================================================
+
+# -----------------------------
+# 1) Load FerrDb gene lists
+# -----------------------------
+ferrdb_dir <- file.path(out_root, "FerrDb_GSEA")
+
+dir.create(
+  ferrdb_dir,
+  recursive    = TRUE,
+  showWarnings = FALSE
+)
+
+# User should provide these CSV paths
+ferrdb_files <- list(
+  Marker     = "<PATH_TO_FerrDb_Marker.csv>",
+  Driver     = "<PATH_TO_FerrDb_Driver.csv>",
+  Suppressor = "<PATH_TO_FerrDb_Suppressor.csv>"
+)
+
+normalize_symbol <- function(x) {
+  sapply(
+    x,
+    function(g) {
+      g <- tolower(g)
+      paste0(
+        toupper(substr(g, 1, 1)),
+        substr(g, 2, nchar(g))
+      )
+    }
+  )
+}
+
+# Load each FerrDb set
+ferrdb_sets <- lapply(
+  ferrdb_files,
+  function(f) {
+    df <- read.csv(f)
+    unique(normalize_symbol(df[, 2]))
+  }
+)
+
+message("FerrDb gene counts:")
+print(sapply(ferrdb_sets, length))
+
+# Convert to list for fgsea
+ferrdb_pathways <- list(
+  FerrDb_Marker     = ferrdb_sets$Marker,
+  FerrDb_Driver     = ferrdb_sets$Driver,
+  FerrDb_Suppressor = ferrdb_sets$Suppressor
+)
+
+# -----------------------------
+# 2) Run fgseaMultilevel for FerrDb
+# -----------------------------
+fg_ferrdb <- fgseaMultilevel(
+  pathways     = ferrdb_pathways,
+  stats        = geneList,
+  minSize      = 5,
+  maxSize      = 1000,
+  nPermSimple  = 1e6
+)
+
+# Convert to data frame
+fg_ferrdb_df <- as.data.frame(fg_ferrdb)
+
+if ("leadingEdge" %in% names(fg_ferrdb_df)) {
+  fg_ferrdb_df$leadingEdge <- sapply(
+    fg_ferrdb_df$leadingEdge,
+    paste,
+    collapse = "; "
+  )
+}
+
+if ("pval" %in% names(fg_ferrdb_df))
+  names(fg_ferrdb_df)[names(fg_ferrdb_df) == "pval"] <- "pvalue"
+
+if ("padj" %in% names(fg_ferrdb_df))
+  names(fg_ferrdb_df)[names(fg_ferrdb_df) == "padj"] <- "p.adjust"
+
+# Save table
+ferr_csv <- file.path(ferrdb_dir, "FerrDb_fGSEA_results.csv")
+
+write.csv(
+  fg_ferrdb_df,
+  ferr_csv,
+  row.names = FALSE
+)
+
+message("✓ Saved FerrDb GSEA: ", ferr_csv)
+
+# -----------------------------
+# 3) Generate FerrDb ES plots (fake_res reconstruction)
+# -----------------------------
+for (i in seq_len(nrow(fg_ferrdb_df))) {
+
+  pname <- fg_ferrdb_df$pathway[i]
+  genes <- ferrdb_pathways[[pname]]
+
+  if (length(genes) < 2)
+    genes <- c(genes, "DUMMYGENE")
+
+  term_df <- data.frame(
+    term = pname,
+    gene = genes
+  )
+
+  fake_res <- suppressMessages(
+    clusterProfiler::GSEA(
+      geneList     = geneList,
+      TERM2GENE    = term_df,
+      minGSSize    = 1,
+      maxGSSize    = 1e5,
+      pvalueCutoff = 1
+    )
+  )
+
+  fake_res@result$pvalue   <- fg_ferrdb_df$pvalue[i]
+  fake_res@result$p.adjust <- fg_ferrdb_df$p.adjust[i]
+  fake_res@result$NES      <- fg_ferrdb_df$NES[i]
+
+  p <- enrichplot::gseaplot2(
+    fake_res,
+    geneSetID    = pname,
+    subplots     = 1:3,
+    pvalue_table = TRUE,
+    title        = pname
+  )
+
+  fname <- paste0(
+    "FerrDb_",
+    gsub("[^A-Za-z0-9]+", "_", pname),
+    "_3panel"
+  )
+
+  ggsave(
+    file.path(ferrdb_dir, paste0(fname, ".png")),
+    plot   = p,
+    width  = 6.5,
+    height = 6.5,
+    dpi    = 300
+  )
+
+  ggsave(
+    file.path(ferrdb_dir, paste0(fname, ".svg")),
+    plot   = p,
+    width  = 6.5,
+    height = 6.5
+  )
+}
+
+message("🎨 FerrDb ES plots saved.")
+message("\n✓ All sections complete: Hallmark, GO, KEGG, Reactome, FerrDb")

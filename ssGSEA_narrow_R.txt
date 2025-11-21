@@ -1,0 +1,654 @@
+# ============================================================
+# ssGSEA Pipeline
+# - Hallmark (MSigDB GMT)
+# - GO (BP/CC/MF via OrgDb)
+# - KEGG (legacy ID-based)
+# - Reactome (GMT-based)
+# - FerrDb (Marker/Driver/Suppressor/All)
+# Saves: ssGSEA scores + FERRO-related subset
+# ============================================================
+
+suppressPackageStartupMessages({
+  library(Biobase)
+  library(GSVA)
+  library(readxl)
+  library(dplyr)
+  library(stringr)
+  library(tibble)
+  library(fgsea)
+  library(clusterProfiler)
+  library(ReactomePA)
+  library(org.Mm.eg.db)
+  library(AnnotationDbi)
+  library(GO.db)
+})
+
+# ============================================================
+# 0) Input paths / parameters
+# ============================================================
+
+region_files_dir <- "<PATH_TO_NORMALIZED_EXPRESSION_FILES>"
+
+out_root_ssgsea <- "<PATH_TO_OUTPUT_FOLDER_FOR_ssGSEA_RESULTS>"
+
+gmt_dir <- "<PATH_TO_MSigDB_GMT_FILES>"
+
+dir.create(
+  out_root_ssgsea,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+gmt_files <- list(
+  MH = file.path(
+    gmt_dir,
+    "<HALLMARK_GMT_FILENAME>.gmt"
+  ),
+  Reactome = file.path(
+    gmt_dir,
+    "<REACTOME_GMT_FILENAME>.gmt"
+  )
+)
+
+ferrdb_files <- list(
+  Marker     = "<PATH_TO_FERRDB_MARKER.csv>",
+  Driver     = "<PATH_TO_FERRDB_DRIVER.csv>",
+  Suppressor = "<PATH_TO_FERRDB_SUPPRESSOR.csv>"
+)
+
+ferro_keywords <- c(
+  "ferroptosis", "iron", "heme",
+  "ferritin", "transferrin",
+  "oxidative stress", "oxidative_stress", "oxidative-stress",
+  "reactive oxygen", "reactive_oxygen", "reactive-oxygen",
+  "nitric oxide", "nitric_oxide", "nitric-oxide",
+  "lipid", "peroxidation",
+  "glutathione", "redox",
+  "hydrogen peroxide", "hydrogen_peroxide", "hydrogen-peroxide",
+  "superoxide", "mitochond", "hypoxia",
+  "autophagy", "hif", "HIF"
+)
+
+# ============================================================
+# 1) GSVA version compatibility wrapper
+# ============================================================
+
+make_ssgsea_param <- function(
+  expr,
+  gsets,
+  kcdf = "Gaussian",
+  abs_ranking = TRUE,
+  min_sz = 5,
+  max_sz = 500
+){
+  # Use ssgseaParam (new) or gsvaParam (old)
+  if ("ssgseaParam" %in% getNamespaceExports("GSVA")) {
+    f <- get("ssgseaParam", asNamespace("GSVA"))
+    
+    args <- list(
+      exprData = expr,
+      geneSets = gsets
+    )
+    
+    fm <- names(formals(f))
+    
+    if ("kcdf" %in% fm)
+      args$kcdf <- kcdf
+    
+    if ("abs.ranking" %in% fm)
+      args$`abs.ranking` <- abs_ranking
+    
+    if ("absRanking" %in% fm)
+      args$absRanking <- abs_ranking
+    
+    if ("min.sz" %in% fm)
+      args$`min.sz` <- min_sz
+    
+    if ("minSz" %in% fm)
+      args$minSz <- min_sz
+    
+    if ("max.sz" %in% fm)
+      args$`max.sz` <- max_sz
+    
+    if ("maxSz" %in% fm)
+      args$maxSz <- max_sz
+    
+    return(do.call(f, args))
+  }
+  
+  # Older GSVA versions
+  if ("gsvaParam" %in% getNamespaceExports("GSVA")) {
+    f <- get("gsvaParam", asNamespace("GSVA"))
+    
+    return(
+      do.call(
+        f,
+        list(
+          exprData = expr,
+          geneSets = gsets,
+          method   = "ssgsea"
+        )
+      )
+    )
+  }
+  
+  stop("GSVA version not supported for ssGSEA.")
+}
+
+# ============================================================
+# 2) Utility functions
+# ============================================================
+
+read_expr_matrix <- function(f){
+  df <- read_xlsx(f)
+  
+  gcol <- names(df)[
+    grepl(
+      "symbol|gene|targetname",
+      names(df),
+      ignore.case = TRUE
+    )
+  ][1]
+  
+  num_cols <- setdiff(names(df), gcol)
+  
+  df[num_cols] <- lapply(df[num_cols], as.numeric)
+  
+  expr <- df %>%
+    rename(SYMBOL = all_of(gcol)) %>%
+    filter(!is.na(SYMBOL) & SYMBOL != "") %>%
+    group_by(SYMBOL) %>%
+    summarise(
+      across(
+        everything(),
+        ~ mean(.x, na.rm = TRUE)
+      ),
+      .groups = "drop"
+    ) %>%
+    column_to_rownames("SYMBOL") %>%
+    as.matrix()
+  
+  expr[is.na(expr)] <- 0
+  storage.mode(expr) <- "numeric"
+  
+  expr
+}
+
+normalize_symbol <- function(x){
+  sapply(
+    x,
+    function(g){
+      g <- trimws(g)
+      g <- tolower(g)
+      paste0(
+        toupper(substr(g, 1, 1)),
+        substr(g, 2, nchar(g))
+      )
+    }
+  )
+}
+
+load_gmt_list <- function(path){
+  fgsea::gmtPathways(path)
+}
+
+load_ferrdb_lists <- function(files){
+  lapply(
+    files,
+    function(f){
+      x <- read.csv(
+        f,
+        header = TRUE,
+        stringsAsFactors = FALSE
+      )[,2]
+      
+      unique(normalize_symbol(x))
+    }
+  )
+}
+
+# ============================================================
+# 3) Build GO / KEGG / Reactome / FerrDb genesets
+# ============================================================
+
+build_go_sets <- function(ont = c("BP", "CC", "MF")) {
+  ont <- match.arg(ont)
+  
+  all_keys <- keys(
+    org.Mm.eg.db,
+    keytype = "ENTREZID"
+  )
+  
+  go_map <- AnnotationDbi::select(
+    org.Mm.eg.db,
+    keys     = all_keys,
+    columns  = c("GO", "ONTOLOGY"),
+    keytype  = "ENTREZID"
+  )
+  
+  go_map <- go_map[
+    !is.na(go_map$GO) & go_map$ONTOLOGY == ont,
+    c("GO", "ENTREZID")
+  ]
+  
+  colnames(go_map) <- c("GOID", "ENTREZID")
+  
+  go_name <- AnnotationDbi::select(
+    GO.db,
+    keys     = unique(go_map$GOID),
+    columns  = "TERM",
+    keytype  = "GOID"
+  )
+  
+  colnames(go_name) <- c("ID", "Description")
+  
+  entrez2sym <- bitr(
+    unique(go_map$ENTREZID),
+    fromType = "ENTREZID",
+    toType   = "SYMBOL",
+    OrgDb    = org.Mm.eg.db
+  )
+  
+  go_map$SYMBOL <- entrez2sym$SYMBOL[
+    match(go_map$ENTREZID, entrez2sym$ENTREZID)
+  ]
+  
+  go_map <- go_map[!is.na(go_map$SYMBOL), ]
+  
+  go_sets <- split(
+    go_map$SYMBOL,
+    go_map$GOID
+  )
+  
+  list(
+    sets = go_sets,
+    desc = go_name
+  )
+}
+
+# -----------------------------
+# KEGG (legacy ID-based)
+# -----------------------------
+
+message("Building KEGG gene sets (legacy method)…")
+
+id_map <- bitr(
+  keys(org.Mm.eg.db, keytype = "ENTREZID"),
+  fromType = "ENTREZID",
+  toType   = "SYMBOL",
+  OrgDb    = org.Mm.eg.db
+)
+
+kk <- clusterProfiler::download_KEGG("mmu")
+
+kegg_df   <- kk$KEGGPATHID2EXTID
+kname_df  <- kk$KEGGPATHID2NAME
+
+kegg_sets <- split(
+  kegg_df$to,
+  kegg_df$from
+)
+
+kname_map <- setNames(
+  kname_df$to,
+  kname_df$from
+)
+
+names(kegg_sets) <- kname_map[names(kegg_sets)]
+
+kegg_sets <- lapply(
+  kegg_sets,
+  function(genes){
+    genes <- gsub("mmu:", "", genes)
+    
+    syms <- id_map$SYMBOL[
+      match(genes, id_map$ENTREZID)
+    ]
+    
+    unique(na.omit(syms))
+  }
+)
+
+kegg_sets <- kegg_sets[
+  sapply(kegg_sets, length) >= 10
+]
+
+kegg_id2desc <- kname_df %>%
+  rename(
+    ID          = from,
+    Description = to
+  )
+
+message(
+  sprintf(
+    "✓ KEGG gene sets loaded: %d pathways",
+    length(kegg_sets)
+  )
+)
+
+# -----------------------------
+# Reactome (GMT)
+# -----------------------------
+
+message("Loading Reactome gene sets (GMT)…")
+
+reactome_sets_id <- load_gmt_list(
+  gmt_files$Reactome
+)
+
+gmt_df <- read.delim(
+  gmt_files$Reactome,
+  header   = FALSE,
+  sep      = "\t",
+  quote    = "",
+  fill     = TRUE,
+  stringsAsFactors = FALSE
+)
+
+colnames(gmt_df)[1:2] <- c("ID", "Description")
+
+reactome_id_to_desc <- setNames(
+  gmt_df$Description,
+  gmt_df$ID
+)
+
+names(reactome_sets_id) <-
+  reactome_id_to_desc[names(reactome_sets_id)]
+
+# -----------------------------
+# FerrDb (Marker / Driver / Suppressor / All)
+# -----------------------------
+
+ferrdb_raw <- load_ferrdb_lists(ferrdb_files)
+
+ferrdb_sets <- list(
+  FerrDb_Marker     = ferrdb_raw$Marker,
+  FerrDb_Driver     = ferrdb_raw$Driver,
+  FerrDb_Suppressor = ferrdb_raw$Suppressor,
+  FerrDb_All        = unique(c(
+    ferrdb_raw$Marker,
+    ferrdb_raw$Driver,
+    ferrdb_raw$Suppressor
+  ))
+)
+
+cat("FerrDb gene counts:\n")
+print(sapply(ferrdb_sets, length))
+
+# ============================================================
+# 4) Run ssGSEA and save results
+# ============================================================
+
+run_ssgsea_and_save <- function(expr,
+                                pathways,
+                                out_dir,
+                                label,
+                                ferro_keywords,
+                                desc_df = NULL) {
+  
+  dir.create(
+    out_dir,
+    recursive    = TRUE,
+    showWarnings = FALSE
+  )
+  
+  # -----------------------------
+  # Filter gene sets by overlap
+  # -----------------------------
+  pathways2 <- lapply(
+    pathways,
+    function(v) intersect(
+      rownames(expr),
+      unique(v)
+    )
+  )
+  
+  pathways2 <- pathways2[
+    sapply(pathways2, length) >= 5
+  ]
+  
+  if (length(pathways2) == 0) {
+    message("⚠ No usable gene sets for ", label)
+    return(invisible(NULL))
+  }
+  
+  # -----------------------------
+  # ssGSEA computation
+  # -----------------------------
+  param <- make_ssgsea_param(expr, pathways2)
+  
+  res <- GSVA::gsva(param)
+  
+  df_out <- as.data.frame(res)
+  df_out <- rownames_to_column(df_out, "ID")
+  
+  # -----------------------------
+  # Map descriptions (GO, KEGG, Reactome, etc.)
+  # -----------------------------
+  if (!is.null(desc_df)) {
+    
+    if (grepl("^GO_", label)) {
+      df_out$Description <- desc_df$Description[
+        match(df_out$ID, desc_df$ID)
+      ]
+      
+    } else if (label == "KEGG") {
+      df_out$Description <- df_out$ID
+      df_out$ID <- kegg_id2desc$ID[
+        match(df_out$Description, kegg_id2desc$Description)
+      ]
+      
+    } else if (label == "Reactome") {
+      desc_lookup <- setNames(
+        desc_df$ID,
+        desc_df$Description
+      )
+      
+      df_out$Description <- df_out$ID
+      df_out$ID <- desc_lookup[df_out$Description]
+      
+    } else {
+      df_out$Description <- gsub("_", " ", df_out$ID)
+    }
+    
+  } else {
+    df_out$Description <- gsub("_", " ", df_out$ID)
+  }
+  
+  df_out <- df_out %>%
+    relocate(ID, Description)
+  
+  # Remove ID for Hallmark/FerrDb
+  if (label %in% c("Hallmark", "FerrDb")) {
+    df_out <- df_out %>% select(-ID)
+  }
+  
+  # -----------------------------
+  # Save full score table
+  # -----------------------------
+  out_csv <- file.path(
+    out_dir,
+    paste0("ssGSEA_scores_", label, ".csv")
+  )
+  
+  write.csv(
+    df_out,
+    out_csv,
+    row.names = FALSE
+  )
+  
+  message("✓ Saved: ", out_csv)
+  
+  # -----------------------------
+  # Save ferroptosis-related subset
+  # -----------------------------
+  ferro_idx <- Reduce(
+    `|`,
+    lapply(
+      ferro_keywords,
+      function(k) grepl(k, tolower(df_out$Description))
+    )
+  )
+  
+  if (any(ferro_idx)) {
+    
+    ferro_res <- df_out[ferro_idx, ]
+    
+    ferro_csv <- file.path(
+      out_dir,
+      paste0("ssGSEA_scores_", label, "_FERRO_related.csv")
+    )
+    
+    write.csv(
+      ferro_res,
+      ferro_csv,
+      row.names = FALSE
+    )
+    
+    message("🔍 Saved (Ferro subset): ", ferro_csv)
+  }
+}
+
+# ============================================================
+# 5) Automatic batch execution for all region files
+# ============================================================
+
+input_files <- list.files(
+  region_files_dir,
+  pattern    = "^[^~].*\\.xlsx$",
+  full.names = TRUE
+)
+
+if (length(input_files) == 0)
+  stop("No .xlsx files found in: ", region_files_dir)
+
+for (path in input_files) {
+  
+  cond <- tools::file_path_sans_ext(
+    basename(path)
+  )
+  
+  message(
+    "\n====== Running ssGSEA for region: [",
+    cond,
+    "] ======"
+  )
+  
+  # -----------------------------
+  # Load expression matrix
+  # -----------------------------
+  expr <- read_expr_matrix(path)
+  
+  region_dir <- file.path(
+    out_root_ssgsea,
+    cond
+  )
+  
+  dir.create(
+    region_dir,
+    recursive    = TRUE,
+    showWarnings = FALSE
+  )
+  
+  # -----------------------------
+  # Hallmark
+  # -----------------------------
+  mh_sets <- load_gmt_list(
+    gmt_files$MH
+  )
+  
+  run_ssgsea_and_save(
+    expr,
+    mh_sets,
+    file.path(region_dir, "Hallmark"),
+    "Hallmark",
+    ferro_keywords
+  )
+  
+  # -----------------------------
+  # GO BP
+  # -----------------------------
+  go_bp <- build_go_sets("BP")
+  
+  run_ssgsea_and_save(
+    expr,
+    go_bp$sets,
+    file.path(region_dir, "GO_BP"),
+    "GO_BP",
+    ferro_keywords,
+    go_bp$desc
+  )
+  
+  # -----------------------------
+  # GO CC
+  # -----------------------------
+  go_cc <- build_go_sets("CC")
+  
+  run_ssgsea_and_save(
+    expr,
+    go_cc$sets,
+    file.path(region_dir, "GO_CC"),
+    "GO_CC",
+    ferro_keywords,
+    go_cc$desc
+  )
+  
+  # -----------------------------
+  # GO MF
+  # -----------------------------
+  go_mf <- build_go_sets("MF")
+  
+  run_ssgsea_and_save(
+    expr,
+    go_mf$sets,
+    file.path(region_dir, "GO_MF"),
+    "GO_MF",
+    ferro_keywords,
+    go_mf$desc
+  )
+  
+  # -----------------------------
+  # KEGG (legacy)
+  # -----------------------------
+  run_ssgsea_and_save(
+    expr,
+    kegg_sets,
+    file.path(region_dir, "KEGG"),
+    "KEGG",
+    ferro_keywords,
+    kegg_id2desc
+  )
+  
+  # -----------------------------
+  # Reactome
+  # -----------------------------
+  run_ssgsea_and_save(
+    expr,
+    reactome_sets_id,
+    file.path(region_dir, "Reactome"),
+    "Reactome",
+    ferro_keywords,
+    desc_df = data.frame(
+      ID          = names(reactome_id_to_desc),
+      Description = unname(reactome_id_to_desc)
+    )
+  )
+  
+  # -----------------------------
+  # FerrDb (Marker / Driver / Suppressor / All)
+  # -----------------------------
+  run_ssgsea_and_save(
+    expr,
+    ferrdb_sets,
+    file.path(region_dir, "FerrDb"),
+    "FerrDb",
+    ferro_keywords
+  )
+  
+  message("✓ Finished: ", cond)
+}
+
+message(
+  "\nAll ssGSEA results saved under: ",
+  out_root_ssgsea
+)

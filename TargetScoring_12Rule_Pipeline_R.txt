@@ -1,0 +1,559 @@
+# ============================================================
+# DG Target Gene Scoring — 12-Rule Conservative Weighted System
+#   • Outputs:
+#       - Score table (CSV)
+#       - Stacked bar plot (PNG + SVG)
+#       - Component heatmap (PNG + SVG)
+# ============================================================
+
+suppressPackageStartupMessages({
+  library(readxl);  library(dplyr);   library(tidyr);  
+  library(stringr); library(ggplot2); library(readr);  
+  library(forcats); library(scales)
+})
+
+# ------------------------------------------------------------
+# 0) User Input: All file paths should be customized
+# ------------------------------------------------------------
+user_input <- list(
+  deg_gc_flt         = "<GC_vs_FLT_DEG_XLSX>",
+  deg_buoe_flt       = "<SAL_vs_BuOE_FLT_DEG_XLSX>",
+  
+  kegg_fgsea_gcflt   = "<GC_vs_FLT_KEGG_fGSEA_CSV>",
+  kegg_fer_le_gcflt  = "<GC_vs_FLT_KEGG_Ferro_LE_XLSX>",
+  kegg_ad_le_gcflt   = "<GC_vs_FLT_KEGG_AD_LE_XLSX>",
+  kegg_ros_le_gcflt  = "<GC_vs_FLT_KEGG_ROS_LE_XLSX>",
+  
+  kegg_ad_le_buoe    = "<SAL_vs_BuOE_KEGG_AD_LE_XLSX>",
+  kegg_ros_le_buoe   = "<SAL_vs_BuOE_KEGG_ROS_LE_XLSX>",
+  
+  react_iron_le      = "<GC_vs_FLT_Reactome_Iron_LE_XLSX>",
+  react_no_le        = "<GC_vs_FLT_Reactome_NO_LE_XLSX>",
+  react_autophagy_le = "<GC_vs_FLT_Reactome_Autophagy_LE_XLSX>",
+  
+  miniset_g          = "<MiniSet_HedgesG_CSV>",
+  
+  ferrdb_driver      = "<FerrDb_Driver_XLSX>",
+  ferrdb_marker      = "<FerrDb_Marker_XLSX>",
+  ferrdb_suppressor  = "<FerrDb_Suppressor_XLSX>",
+  ferrdb_fgsea       = "<FerrDb_fGSEA_CSV>",
+  
+  ferr_le_driver     = "<FerrDb_Driver_LE_XLSX>",
+  ferr_le_marker     = "<FerrDb_Marker_LE_XLSX>",
+  ferr_le_suppressor = "<FerrDb_Suppressor_LE_XLSX>",
+  
+  outdir             = "<OUTPUT_DIRECTORY>"
+)
+
+dir.create(user_input$outdir, recursive = TRUE, showWarnings = FALSE)
+
+# ------------------------------------------------------------
+# 1) Parameters & axis definitions
+# ------------------------------------------------------------
+alpha_deg <- 0.05
+topN      <- 20
+
+axis_sets <- list(
+  Iron_overload = c("Tfrc","Ftl1","Fth1","Hmox1",
+                    "Ncoa4","Slc11a2","Slc39a14"),
+  Lipid_Peroxidation = c("Acsl3","Acsl4","Acsl6",
+                          "Lpcat3","Por","Nox4"),
+  GSH_GPX4_Antioxidant = c("Gclm","Gpx4","Gclc",
+                           "Slc3a2","Gss","Slc7a11",
+                           "Nfe2l2")
+)
+
+# Base weights (conservative)
+role_base_weight <- c(
+  Driver     = +0.5,
+  Marker     = +0.3,
+  Suppressor = -0.2
+)
+
+# ------------------------------------------------------------
+# 2) Utility functions
+# ------------------------------------------------------------
+title_case <- function(x){
+  sapply(
+    x,
+    function(s){
+      if(is.na(s)) return(NA_character_)
+      paste0(
+        toupper(substr(s,1,1)),
+        tolower(substr(s,2,nchar(s)))
+      )
+    },
+    USE.NAMES = FALSE
+  )
+}
+
+standardize_deg <- function(path_xlsx){
+  df <- read_xlsx(path_xlsx)
+  
+  nm <- tolower(names(df))
+  names(df) <- nm
+  
+  sym_candidates <- c(
+    "symbol","targetname","gene","target"
+  )
+  sym_col <- sym_candidates[
+    sym_candidates %in% nm
+  ][1]
+  
+  l2_idx   <- grep("log2fc", nm)
+  padj_idx <- c(
+    grep("adj\\.p\\.value", nm),
+    grep("p\\.adjust",     nm),
+    grep("^padj$",         nm),
+    grep("^qvalue$",       nm)
+  )
+  
+  tibble(
+    symbol = title_case(as.character(df[[sym_col]])),
+    log2fc = suppressWarnings(
+      as.numeric(df[[l2_idx[1]]])
+    ),
+    p_adj  = suppressWarnings(
+      as.numeric(df[[padj_idx[1]]])
+    )
+  )
+}
+
+read_le_symbols <- function(path_xlsx){
+  df <- read_xlsx(path_xlsx)
+  cand <- c(
+    "SYMBOL","Symbol","symbol",
+    "gene","Gene","target","Target",
+    "targetname","TargetName"
+  )
+  sym <- cand[cand %in% names(df)][1]
+  title_case(as.character(df[[sym]]))
+}
+
+# ------------------------------------------------------------
+# 3) Load DEG and LE gene data
+# ------------------------------------------------------------
+deg_gc  <- standardize_deg(user_input$deg_gc_flt)
+deg_buo <- standardize_deg(user_input$deg_buoe_flt)
+
+deg_up <- unique(
+  deg_gc$symbol[
+    deg_gc$log2fc > 0 & deg_gc$p_adj < alpha_deg
+  ]
+)
+
+buoe_down <- unique(
+  deg_buo$symbol[
+    deg_buo$log2fc < 0 & deg_buo$p_adj < alpha_deg
+  ]
+)
+
+# Leading-edge
+kegg_fer_gcflt <- read_le_symbols(user_input$kegg_fer_le_gcflt)
+kegg_ad_gcflt  <- read_le_symbols(user_input$kegg_ad_le_gcflt)
+kegg_ros_gcflt <- read_le_symbols(user_input$kegg_ros_le_gcflt)
+
+kegg_ad_buoe   <- read_le_symbols(user_input$kegg_ad_le_buoe)
+kegg_ros_buoe  <- read_le_symbols(user_input$kegg_ros_le_buoe)
+
+react_iron     <- read_le_symbols(user_input$react_iron_le)
+react_no       <- read_le_symbols(user_input$react_no_le)
+react_autoph   <- read_le_symbols(user_input$react_autophagy_le)
+
+# MiniSet weighting
+gtab <- read_csv(user_input$miniset_g, show_col_types = FALSE)
+
+axis_w <- gtab %>%
+  transmute(Axis, g = pmax(g, 0)) %>%
+  mutate(w = g / sum(g))
+
+axis_w <- setNames(axis_w$w, axis_w$Axis)
+
+axis_map <- bind_rows(
+  lapply(
+    names(axis_sets),
+    function(ax){
+      tibble(
+        symbol = title_case(axis_sets[[ax]]),
+        Axis   = ax
+      )
+    }
+  )
+)
+
+axis_w_df <- axis_map %>%
+  mutate(weight = as.numeric(axis_w[Axis])) %>%
+  group_by(symbol) %>%
+  summarise(
+    AxisScore = sum(weight, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# ------------------------------------------------------------
+# 4) FerrDb roles + GSEA eligibility
+# ------------------------------------------------------------
+ferrdb_roles_raw <- bind_rows(
+  read_xlsx(user_input$ferrdb_driver)     %>% mutate(Role="Driver"),
+  read_xlsx(user_input$ferrdb_marker)     %>% mutate(Role="Marker"),
+  read_xlsx(user_input$ferrdb_suppressor) %>% mutate(Role="Suppressor")
+)
+
+sym_cand <- c(
+  "SYMBOL","Symbol","symbol","gene","Gene"
+)
+sym_col <- sym_cand[
+  sym_cand %in% names(ferrdb_roles_raw)
+][1]
+
+ferrdb_roles <- ferrdb_roles_raw %>%
+  transmute(
+    Gene = title_case(as.character(.data[[sym_col]])),
+    Role = Role
+  ) %>%
+  distinct(Gene, Role)
+
+# fGSEA full set
+ferr_fgsea <- read_csv(
+  user_input$ferrdb_fgsea,
+  show_col_types = FALSE
+)
+
+sig_ferr <- ferr_fgsea %>%
+  filter(p.adjust < 0.05) %>%
+  pull(pathway)
+
+allow_driver_bonus     <- any(grepl("Driver",     sig_ferr, TRUE))
+allow_marker_bonus     <- any(grepl("Marker",     sig_ferr, TRUE))
+allow_suppressor_bonus <- any(grepl("Suppressor", sig_ferr, TRUE))
+
+# Leading-edge FerrDb
+ferr_le <- list(
+  Driver     = read_le_symbols(user_input$ferr_le_driver),
+  Marker     = read_le_symbols(user_input$ferr_le_marker),
+  Suppressor = read_le_symbols(user_input$ferr_le_suppressor)
+)
+
+# ------------------------------------------------------------
+# 5) Build candidate gene universe
+# ------------------------------------------------------------
+all_candidates <- unique(c(
+  deg_up, buoe_down,
+  
+  kegg_fer_gcflt,
+  kegg_ad_gcflt,
+  kegg_ad_buoe,
+  
+  kegg_ros_gcflt,
+  kegg_ros_buoe,
+  
+  react_iron,
+  react_no,
+  react_autoph,
+  
+  axis_map$symbol,
+  ferrdb_roles$Gene
+))
+
+score_df <- tibble(
+  Gene = all_candidates
+)
+
+# ------------------------------------------------------------
+# 6) Rule-based scoring — conservative version
+# ------------------------------------------------------------
+# DEG (upregulated in FLT)
+score_df <- score_df %>%
+  mutate(
+    S_DEG_up =
+      if_else(Gene %in% deg_up, 0.3, 0)
+  )
+
+# BuOE reversal (signal decreases)
+score_df <- score_df %>%
+  mutate(
+    S_BuOE_rev =
+      if_else(
+        Gene %in% intersect(deg_up, buoe_down),
+        S_DEG_up * 1.2,
+        0
+      )
+  )
+
+# Leading-edge (KEGG)
+score_df <- score_df %>%
+  mutate(
+    S_KEGG_Ferro   = if_else(Gene %in% kegg_fer_gcflt, 1.0, 0),
+    S_KEGG_AD      = if_else(Gene %in% kegg_ad_gcflt,  0.25, 0),
+    S_KEGG_AD_bonus =
+      if_else(
+        Gene %in% intersect(kegg_ad_gcflt, kegg_ad_buoe),
+        0.15,
+        0
+      ),
+    S_KEGG_ROS      = if_else(Gene %in% kegg_ros_gcflt, 0.4, 0),
+    S_KEGG_ROS_bonus =
+      if_else(
+        Gene %in% intersect(kegg_ros_gcflt, kegg_ros_buoe),
+        0.25,
+        0
+      )
+  )
+
+# Leading-edge (Reactome)
+score_df <- score_df %>%
+  mutate(
+    S_React_Iron   = if_else(Gene %in% react_iron,   0.4, 0),
+    S_React_NO     = if_else(Gene %in% react_no,     0.2, 0),
+    S_React_Autoph = if_else(Gene %in% react_autoph, 0.3, 0)
+  )
+
+# MiniSet axis weight (scaled 0–0.7)
+axis_w_df <- axis_w_df %>%
+  mutate(
+    S_Axis = pmax(0, AxisScore - 0.2) / 0.8,
+    S_Axis = pmin(S_Axis, 0.7)
+  ) %>%
+  select(symbol, S_Axis)
+
+score_df <- score_df %>%
+  left_join(
+    axis_w_df,
+    by = c("Gene" = "symbol")
+  ) %>%
+  mutate(S_Axis = coalesce(S_Axis, 0))
+
+# FerrDb roles
+role_base_weight <- c(
+  Driver     = +0.22,
+  Marker     = +0.11,
+  Suppressor = -0.1
+)
+
+ferr_base <- ferrdb_roles %>%
+  mutate(Base = recode(Role, !!!as.list(role_base_weight)))
+
+ferr_bonus <- ferrdb_roles %>%
+  mutate(
+    eligible = case_when(
+      Role == "Driver" ~
+        allow_driver_bonus     & (Gene %in% ferr_le$Driver),
+      Role == "Marker" ~
+        allow_marker_bonus     & (Gene %in% ferr_le$Marker),
+      Role == "Suppressor" ~
+        allow_suppressor_bonus & (Gene %in% ferr_le$Suppressor),
+      TRUE ~ FALSE
+    ),
+    Bonus = if_else(
+      eligible,
+      recode(Role, !!!as.list(role_base_weight)) * 2,
+      0
+    )
+  ) %>%
+  select(Gene, Role, Bonus)
+
+# Total FerrDb scoring
+ferr_sum <- ferr_base %>%
+  left_join(ferr_bonus, by = c("Gene","Role")) %>%
+  mutate(Bonus = coalesce(Bonus, 0)) %>%
+  group_by(Gene) %>%
+  summarise(
+    S_FerrDb_Base  = sum(Base,  na.rm = TRUE),
+    S_FerrDb_Bonus = sum(Bonus, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    S_FerrDb_Total = S_FerrDb_Base + S_FerrDb_Bonus
+  )
+
+score_df <- score_df %>%
+  left_join(ferr_sum, by = "Gene") %>%
+  mutate(
+    S_FerrDb_Base  = coalesce(S_FerrDb_Base, 0),
+    S_FerrDb_Bonus = coalesce(S_FerrDb_Bonus, 0),
+    S_FerrDb_Total = coalesce(S_FerrDb_Total, 0)
+  )
+
+# ------------------------------------------------------------
+# 7) Total score and ranking
+# ------------------------------------------------------------
+score_df <- score_df %>%
+  mutate(
+    S_total =
+      S_DEG_up +
+      S_BuOE_rev +
+      S_KEGG_Ferro +
+      S_KEGG_AD + S_KEGG_AD_bonus +
+      S_KEGG_ROS + S_KEGG_ROS_bonus +
+      S_React_Iron + S_React_NO + S_React_Autoph +
+      S_Axis +
+      S_FerrDb_Total
+  ) %>%
+  arrange(desc(S_total), Gene)
+
+out_csv <- file.path(
+  user_input$outdir,
+  "TargetScore_table_verified.csv"
+)
+
+write.csv(score_df, out_csv, row.names = FALSE)
+
+# ------------------------------------------------------------
+# 8) Visualization — Stacked bar plot
+# ------------------------------------------------------------
+top_tbl <- score_df %>%
+  slice_head(n = topN)
+
+plot_long <- top_tbl %>%
+  select(
+    Gene,
+    S_DEG_up, S_BuOE_rev,
+    S_KEGG_Ferro, S_KEGG_AD, S_KEGG_AD_bonus,
+    S_KEGG_ROS, S_KEGG_ROS_bonus,
+    S_React_Iron, S_React_NO, S_React_Autoph,
+    S_Axis,
+    S_FerrDb_Base,
+    S_FerrDb_Bonus
+  ) %>%
+  mutate(
+    Gene = fct_reorder(Gene, top_tbl$S_total)
+  ) %>%
+  pivot_longer(
+    -Gene,
+    names_to  = "Component",
+    values_to = "Value"
+  )
+
+comp_labels <- c(
+  S_DEG_up          = "DEG↑ (0.3)",
+  S_BuOE_rev        = "BuOE↓ (×1.2)",
+  S_KEGG_Ferro      = "KEGG:Ferro (1.0)",
+  S_KEGG_AD         = "KEGG:AD (0.25)",
+  S_KEGG_AD_bonus   = "KEGG:AD bonus (0.15)",
+  S_KEGG_ROS        = "KEGG:ROS (0.4)",
+  S_KEGG_ROS_bonus  = "KEGG:ROS bonus (0.25)",
+  S_React_Iron      = "Reactome:Iron (0.4)",
+  S_React_NO        = "Reactome:NO/NOS3 (0.2)",
+  S_React_Autoph    = "Reactome:Autophagy (0.3)",
+  S_Axis            = "Axis (0–0.7)",
+  S_FerrDb_Base     = "FerrDb base (+0.22/+0.11/−0.1)",
+  S_FerrDb_Bonus    = "FerrDb LE bonus (×2)"
+)
+
+plot_long$Component <- factor(
+  plot_long$Component,
+  levels = rev(names(comp_labels)),
+  labels = rev(unname(comp_labels))
+)
+
+cols <- c(
+  "DEG↑ (0.3)"                         = "#ff7033",
+  "BuOE↓ (×1.2)"                       = "#ffb57d",
+  "KEGG:Ferro (1.0)"                   = "#00fcb1",
+  "KEGG:AD (0.25)"                     = "#02d45c",
+  "KEGG:AD bonus (0.15)"               = "#91e691",
+  "KEGG:ROS (0.4)"                     = "#fc0065",
+  "KEGG:ROS bonus (0.25)"              = "#fb9a99",
+  "Reactome:Iron (0.4)"                = "#ffe30d",
+  "Reactome:NO/NOS3 (0.2)"             = "#fff087",
+  "Reactome:Autophagy (0.3)"           = "#c51bde",
+  "Axis (0–0.7)"                        = "#02d3d9",
+  "FerrDb base (+0.22/+0.11/−0.1)"     = "#2e88d1",
+  "FerrDb LE bonus (×2)"               = "#94c7eb"
+)
+
+p_bar <- ggplot(plot_long,
+  aes(x = Gene, y = Value, fill = Component)) +
+  geom_col(color = "black", width = 0.8) +
+  coord_flip() +
+  scale_fill_manual(
+    values = cols,
+    guide  = guide_legend(reverse = TRUE, ncol = 1)
+  ) +
+  labs(
+    title = sprintf(
+      "DG Target Ranking (Top %d)\n12-Rule Conservative Score",
+      topN
+    ),
+    x = NULL,
+    y = "Score (sum of components)"
+  ) +
+  theme_bw(base_size = 11) +
+  theme(
+    plot.title      = element_text(
+      hjust = 0.5,
+      face  = "bold"
+    ),
+    legend.position = "right"
+  )
+
+bar_png <- file.path(user_input$outdir, "TargetScore_rank_bar.png")
+bar_svg <- sub(".png$", ".svg$", bar_png)
+
+ggsave(bar_png, p_bar, width = 9, height = 9, dpi = 300)
+ggsave(bar_svg, p_bar, width = 9, height = 9, dpi = 300)
+
+# ------------------------------------------------------------
+# 9) Heatmap (component-level)
+# ------------------------------------------------------------
+tile_df <- top_tbl %>%
+  select(
+    Gene,
+    S_DEG_up, S_BuOE_rev,
+    S_KEGG_Ferro, S_KEGG_AD, S_KEGG_AD_bonus,
+    S_KEGG_ROS, S_KEGG_ROS_bonus,
+    S_React_Iron, S_React_NO, S_React_Autoph,
+    S_Axis,
+    S_FerrDb_Base,
+    S_FerrDb_Bonus
+  ) %>%
+  mutate(Gene = factor(Gene, levels = rev(Gene))) %>%
+  pivot_longer(
+    -Gene,
+    names_to  = "Component",
+    values_to = "Score"
+  ) %>%
+  mutate(
+    Component = factor(
+      Component,
+      levels = names(comp_labels),
+      labels = unname(comp_labels)
+    )
+  )
+
+p_tile <- ggplot(tile_df,
+  aes(x = Component, y = Gene, fill = Score)) +
+  geom_tile(color = "white", size = 0.3) +
+  scale_fill_gradientn(
+    colors = c("#f5f5f5", "#fee8c8",
+               "#fdbb84", "#e34a33"),
+    limits = c(0, max(tile_df$Score, na.rm = TRUE)),
+    oob    = scales::squish
+  ) +
+  labs(
+    title = "Component-wise Contribution (Top Targets)",
+    x = NULL, y = NULL, fill = "Score"
+  ) +
+  theme_bw(base_size = 10) +
+  theme(
+    plot.title = element_text(
+      hjust = 0.5,
+      face  = "bold"
+    ),
+    axis.text.x = element_text(
+      angle = 35,
+      hjust = 1
+    )
+  )
+
+heat_png <- file.path(user_input$outdir, "TargetScore_heatmap.png")
+heat_svg <- sub(".png$", ".svg$", heat_png)
+
+ggsave(heat_png, p_tile, width = 7, height = 5, dpi = 300)
+ggsave(heat_svg, p_tile, width = 7, height = 5, dpi = 300)
+
+cat(
+  "✓ Completed:\n",
+  "  - Score table:      ", out_csv, "\n",
+  "  - Ranking bar plot: ", bar_png, " / ", bar_svg, "\n",
+  "  - Heatmap:          ", heat_png, " / ", heat_svg, "\n"
+)

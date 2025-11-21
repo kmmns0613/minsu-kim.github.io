@@ -1,0 +1,237 @@
+# ============================================================
+# 🧠 Mini-set Effect Size + Sample Distribution (Positive direction: FLT − GC)
+#   - Forest plot: keep original settings
+#   - Violin/Boxplot order: GC_SAL → FLT_SAL
+# ============================================================
+
+suppressPackageStartupMessages({
+  library(readxl)
+  library(dplyr)
+  library(effectsize)
+  library(ggplot2)
+  library(tidyr)
+  library(ggbeeswarm)
+})
+
+# ------------------------------------------------------------
+# 1) Input expression file
+# ------------------------------------------------------------
+expr_path <- "<PATH_TO_Q3_NORMALIZED_EXPRESSION_EXCEL>"
+expr_df <- read_xlsx(expr_path)
+
+gene_col <- grep("targetname|symbol|gene", names(expr_df), ignore.case = TRUE, value = TRUE)[1]
+stopifnot(!is.na(gene_col))
+
+expr_df <- as.data.frame(expr_df)
+rownames(expr_df) <- expr_df[[gene_col]]
+expr_df <- expr_df[, setdiff(names(expr_df), gene_col), drop = FALSE]
+expr_df[] <- lapply(expr_df, as.numeric)
+
+# ------------------------------------------------------------
+# 2) Assign sample groups
+# ------------------------------------------------------------
+sample_names <- colnames(expr_df)
+
+group <- dplyr::case_when(
+  grepl("GC_SAL",  sample_names, ignore.case = TRUE) ~ "GC_SAL",
+  grepl("GC_BUOE", sample_names, ignore.case = TRUE) ~ "GC_BuOE",
+  grepl("FLT_SAL", sample_names, ignore.case = TRUE) ~ "FLT_SAL",
+  grepl("FLT_BUOE",sample_names, ignore.case = TRUE) ~ "FLT_BuOE",
+  TRUE ~ "Unknown"
+)
+
+cat("✓ Group distribution:\n"); print(table(group))
+
+# ------------------------------------------------------------
+# 3) Define comparison pair
+# ------------------------------------------------------------
+compare_groups <- c("GC_SAL","FLT_SAL")
+
+sel <- group %in% compare_groups
+expr_sub  <- expr_df[, sel, drop = FALSE]
+group_sub_raw <- factor(group[sel], levels = compare_groups)
+
+# Determine which group should be the “positive direction”
+want_positive_group <- grep("^FLT_", compare_groups, value = TRUE)[1]
+if (is.na(want_positive_group)) {
+  want_positive_group <- compare_groups[2]
+}
+
+pos_first_levels <- c(want_positive_group, setdiff(compare_groups, want_positive_group))
+group_sub <- relevel(group_sub_raw, ref = want_positive_group)
+
+cat("\n✓ Comparison (positive direction first): ", 
+    paste(pos_first_levels, collapse = " − "), "\n")
+print(table(group_sub))
+
+# ------------------------------------------------------------
+# 4) Define mini-axes (gene sets)
+# ------------------------------------------------------------
+mini_axes <- list(
+  Iron_overload         = c("Tfrc", "Ftl1", "Fth1", "Hmox1", "Ncoa4","Slc11a2","Slc39a14"),
+  Lipid_Peroxidation    = c("Acsl3","Acsl4","Acsl6", "Lpcat3", "Por", "Nox4"),
+  GSH_GPX4_Antioxidant  = c("Gclm", "Gpx4", "Gclc", "Slc3a2", "Gss","Slc7a11","Nfe2l2")
+)
+
+# ------------------------------------------------------------
+# 5) Compute Hedges' g for each axis
+# ------------------------------------------------------------
+compute_axis_g <- function(axis_name, axis_genes, expr, group_fac, pos_first_levels) {
+  
+  genes_in <- intersect(axis_genes, rownames(expr))
+  cat(sprintf("[%s] Number of overlapping genes: %d\n", axis_name, length(genes_in)))
+  if (length(genes_in) < 2) return(NULL)
+  
+  axis_score <- colMeans(expr[genes_in, , drop = FALSE])
+  df <- data.frame(Group = group_fac, Score = axis_score)
+  
+  means  <- tapply(df$Score, df$Group, mean, na.rm = TRUE)
+  sds    <- tapply(df$Score, df$Group, sd,   na.rm = TRUE)
+  ns     <- tapply(df$Score, df$Group, length)
+  
+  pos_g <- pos_first_levels[1]
+  neg_g <- pos_first_levels[2]
+  
+  mean_diff <- as.numeric(means[pos_g] - means[neg_g])
+  
+  cat(sprintf("   mean(%s)=%.4f ± %.4f, mean(%s)=%.4f ± %.4f, Δ=%.4f (%s − %s)\n",
+              pos_g, means[pos_g], sds[pos_g],
+              neg_g, means[neg_g], sds[neg_g],
+              mean_diff, pos_g, neg_g))
+  
+  gtab <- tryCatch(
+    effectsize::hedges_g(Score ~ Group, data = df, ci = 0.95),
+    error = function(e){
+      message(sprintf("⚠ %s: Hedges' g failed - %s", axis_name, e$message))
+      return(NULL)
+    }
+  )
+  if (is.null(gtab)) return(NULL)
+  
+  data.frame(
+    Axis     = axis_name,
+    g        = gtab$Hedges_g,
+    CI_low   = gtab$CI_low,
+    CI_high  = gtab$CI_high,
+    Mean_Pos = unname(means[pos_g]),
+    SD_Pos   = unname(sds[pos_g]),
+    N_Pos    = unname(ns[pos_g]),
+    Mean_Neg = unname(means[neg_g]),
+    SD_Neg   = unname(sds[neg_g]),
+    N_Neg    = unname(ns[neg_g]),
+    MeanDiff = mean_diff,
+    Direction = sprintf("%s - %s", pos_g, neg_g),
+    stringsAsFactors = FALSE
+  )
+}
+
+results <- dplyr::bind_rows(lapply(names(mini_axes), function(ax){
+  compute_axis_g(ax, mini_axes[[ax]], expr_sub, group_sub, pos_first_levels)
+}))
+
+if (nrow(results) == 0) stop("❌ No results produced.")
+
+print(results)
+
+# ------------------------------------------------------------
+# 6) Save numerical results
+# ------------------------------------------------------------
+save_dir <- "<OUTPUT_DIRECTORY_FOR_MINISET_RESULTS>"
+dir.create(save_dir, recursive = TRUE, showWarnings = FALSE)
+
+out_csv <- file.path(
+  save_dir,
+  paste0("<REGION>_MiniSet_HedgesG_", paste(pos_first_levels, collapse = "_minus_"), ".csv")
+)
+
+write.csv(results, out_csv, row.names = FALSE)
+cat("✓ Numerical results saved: ", out_csv, "\n")
+
+# ------------------------------------------------------------
+# 7) Forest plot
+# ------------------------------------------------------------
+results$Axis <- factor(results$Axis, levels = rev(results$Axis))
+
+plt <- ggplot(results, aes(x = Axis, y = g)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = CI_low, ymax = CI_high), width = 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray40") +
+  coord_flip() +
+  labs(
+    title = sprintf("<REGION> Mini-set Effect Size (%s − %s)", 
+                    pos_first_levels[1], pos_first_levels[2]),
+    y = "Effect size (Hedges’ g; positive = higher in first group)",
+    x = "Ferroptosis Axis"
+  ) +
+  theme_bw(base_size = 13)
+
+ggsave(file.path(
+  save_dir,
+  paste0("<REGION>_MiniSet_ForestPlot_", paste(pos_first_levels, collapse = "_minus_"), ".png")
+), plt, width = 7, height = 4.5, dpi = 300)
+
+ggsave(file.path(
+  save_dir,
+  paste0("<REGION>_MiniSet_ForestPlot_", paste(pos_first_levels, collapse = "_minus_"), ".svg")
+), plt, width = 7, height = 4.5)
+
+cat("✓ Forest plot saved → ", save_dir, "\n")
+
+# ------------------------------------------------------------
+# 8) Violin/Box plots + Wilcoxon test
+# ------------------------------------------------------------
+stat_results <- list()
+
+for (axis_name in names(mini_axes)) {
+  
+  genes_in <- intersect(mini_axes[[axis_name]], rownames(expr_sub))
+  if (length(genes_in) < 2) next
+  
+  axis_score <- colMeans(expr_sub[genes_in, , drop = FALSE])
+  df <- data.frame(Group = group_sub_raw, Score = axis_score)
+  
+  df$Group <- factor(df$Group, levels = c("GC_SAL","FLT_SAL"))
+  
+  wtest <- wilcox.test(Score ~ Group, data = df, exact = FALSE)
+  stat_results[[axis_name]] <- data.frame(
+    Axis = axis_name,
+    p_value = wtest$p.value
+  )
+  
+  p <- ggplot(df, aes(x = Group, y = Score, fill = Group)) +
+    geom_violin(trim = FALSE, alpha = 0.6) +
+    geom_boxplot(width = 0.15, outlier.shape = NA, fill = "white", color = "black") +
+    geom_quasirandom(aes(color = Group),
+                     width = 0.15, varwidth = TRUE,
+                     size = 2, alpha = 0.8, groupOnX = TRUE) +
+    scale_fill_manual(values = c("GC_SAL" = "#ff7300", "FLT_SAL" = "#00ff91")) +
+    scale_color_manual(values = c("GC_SAL" = "black", "FLT_SAL" = "black")) +
+    labs(
+      title = paste0(axis_name, " axis (GC_SAL vs FLT_SAL)"),
+      y = "Mean normalized expression",
+      x = ""
+    ) +
+    theme_bw(base_size = 13) +
+    theme(legend.position = "none")
+  
+  ggsave(file.path(save_dir, 
+                   paste0("<REGION>_", axis_name, "_Violin_GC_SAL_vs_FLT_SAL.png")),
+         p, width = 4.5, height = 4.5, dpi = 300)
+  
+  ggsave(file.path(save_dir, 
+                   paste0("<REGION>_", axis_name, "_Violin_GC_SAL_vs_FLT_SAL.svg")),
+         p, width = 4.5, height = 4.5)
+}
+
+if (length(stat_results) > 0) {
+  stat_df <- do.call(rbind, stat_results)
+  stat_df$p_adj <- p.adjust(stat_df$p_value, method = "fdr")
+  
+  write.csv(
+    stat_df,
+    file.path(save_dir, "<REGION>_MiniSet_Wilcoxon_GC_SAL_vs_FLT_SAL.csv"),
+    row.names = FALSE
+  )
+  
+  cat("\n✓ Wilcoxon test results saved → ", save_dir, "\n")
+}

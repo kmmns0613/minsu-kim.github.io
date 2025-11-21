@@ -197,6 +197,22 @@
       padding-left: 4px;
     }
 
+    .accordion-collapse-btn {
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: right;
+      font-size: var(--font-size-small);
+      color: var(--color-muted);
+      cursor: pointer;
+      padding: 6px 4px;
+      transition: color 0.2s ease;
+    }
+
+    .accordion-collapse-btn:hover {
+      color: var(--color-accent);
+    }
+
     .collapsed header {
       height: 120px;
     }
@@ -285,8 +301,6 @@
       padding: 20px 30px;
       border-radius: 10px;
       max-width: 700px;
-      max-height: 80vh;
-      overflow-y: auto;
       box-shadow: var(--shadow-light);
     }
 
@@ -309,6 +323,7 @@
       user-select: none;
       pointer-events: none;
       margin: 0;
+      word-break: break-word;
     }
 
     .close-btn {
@@ -327,6 +342,42 @@
       color: var(--color-text);
     }
 
+    /* ==== Image Zoom Modal ==== */
+    .img-modal {
+      display: none;
+      position: fixed;
+      z-index: 20000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .img-modal-content {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.3);
+    }
+
+    .img-close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 40px;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .img-close:hover { color: #ffbb00; }
+
+    /* Dark theme compatibility */
+    [data-theme="dark"] .img-modal {
+      background: rgba(0,0,0,0.85);
+    }
+
     .code-btn {
       background: var(--color-accent);
       color: var(--code-btn-fg);
@@ -339,6 +390,7 @@
       transition: background-color 0.3s ease;
     }
     .code-btn:hover { background-color: #e0a700; }
+
   </style>
 
   <script>
@@ -456,6 +508,13 @@
           <br><br>
           <Strong>5. Scoring System</Strong>
           <br><br>
+
+          <img src="DG_ScoringRules.svg"
+               alt="DG Scoring System"
+               class="zoomable"
+               style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px;" />
+
+          <br><br>
           Finally, I constructed a scoring framework integrating leading-edge gene frequency, pathway consistency, effect sizes (Hedge’s g), and FerrDb annotations to identify high-confidence molecular targets of spaceflight-induced ferroptosis.
           The detailed scoring logic is provided in the Code Snippets section.
         </p>
@@ -473,7 +532,11 @@
 
         <button class="code-btn" onclick="openModal('fgsea')">① fGSEA Code</button>
         <button class="code-btn" onclick="openModal('ssgsea')">② ssGSEA / GSVA Code</button>
-        <button class="code-btn" onclick="openModal('ferrdb')">③ FerrDb Scoring Logic</button>
+        <button class="code-btn" onclick="openModal('ferrokeyword')">③ Ferroptosis-related Keywords</button>
+        <button class="code-btn" onclick="openModal('lecoexp')">④ LE genes Co-expression Test</button>
+        <button class="code-btn" onclick="openModal('miniset')">⑤ FerroMiniSet_HedgesG</button>
+        <button class="code-btn" onclick="openModal('correlation')">⑥ 2D Pathway Correlation + Hotelling Test</button>
+        <button class="code-btn" onclick="openModal('score')">⑦ Custom Target Ranking</button>
     </div>
 
     <style>
@@ -498,6 +561,12 @@
       <h3 id="modalTitle"></h3>
       <div id="modalText"></div>
     </div>
+  </div>
+
+  <!-- ⭐ 여기에 이미지 확대용 모달 추가하면 가장 안전함 -->
+  <div class="img-modal" id="imgModal">
+    <span class="img-close" id="imgModalClose">&times;</span>
+    <img class="img-modal-content" id="imgModalImage">
   </div>
 
   <script>
@@ -536,14 +605,31 @@
     /* ⭐ Universal Accordion Toggle */
     function toggleAccordion(id) {
       const box = document.getElementById(id);
-
       if (!box) return;
 
-      if (box.style.maxHeight) {
+      // 이미 열려있는 경우(접기)
+      if (box.style.maxHeight && box.style.maxHeight !== "0px") {
         box.style.maxHeight = null;
-      } else {
-        box.style.maxHeight = box.scrollHeight + "px";
+        return;
       }
+
+      // ▼ 닫혀 있는 경우(열기)
+      // Collapse 버튼이 없다면 먼저 추가
+      if (!box.querySelector(".accordion-collapse-btn")) {
+        const btn = document.createElement("button");
+        btn.className = "accordion-collapse-btn";
+        btn.innerText = "Collapse";
+        btn.onclick = () => {
+          box.style.maxHeight = null;
+        };
+        box.appendChild(btn);
+      }
+
+      // 버튼이 추가된 뒤 레이아웃이 갱신된 후 높이를 계산해야
+      // 첫 번째 열림에도 버튼이 정상적으로 보인다.
+      requestAnimationFrame(() => {
+        box.style.maxHeight = box.scrollHeight + "px";
+      });
     }
 
     let isCollapsed = false;
@@ -566,42 +652,31 @@
     const modalData = {
       fgsea: {
         title: "① fGSEA Code",
-        text: `
-<pre>
-# fGSEA
-# 여기에는 실제 fGSEA 분석에 사용한 R 코드를 붙여 넣으시면 됩니다.
-
-fGSEA
-</pre>
-        `
+        text: `<pre id="code-fgsea"></pre>`
       },
       ssgsea: {
         title: "② ssGSEA / GSVA Code",
-        text: `
-<pre>
-# ssGSEA / GSVA
-# 여기에는 실제 ssGSEA 또는 GSVA에 사용한 R 코드를 붙여 넣으시면 됩니다.
-
-ssGSEA
-</pre>
-        `
+        text: `<pre id="code-ssgsea"></pre>`
       },
-      ferrdb: {
-        title: "③ FerrDb Scoring Logic",
-        text: `
-<pre>
-# FerrDb Composite Score (Example)
-library(dplyr)
-
-ferro_score &lt;- expr %&gt;%
-  mutate(
-    total =
-      rowMeans(select(., markers)) +
-      rowMeans(select(., drivers)) -
-      rowMeans(select(., suppressors))
-  )
-</pre>
-        `
+      ferrokeyword: {
+        title: "③ Ferroptosis-related Keywords",
+        text: `<pre id="code-ferrokeyword"></pre>`
+      },
+      lecoexp: {
+        title: "④ LE genes Co-expression Test",
+        text: `<pre id="code-lecoexp"></pre>`
+      },
+      miniset: {
+        title: "⑤ FerroMiniSet_HedgesG",
+        text: `<pre id="code-miniset"></pre>`
+      },
+      correlation: {
+        title: "⑥ 2D Pathway Correlation + Hotelling Test",
+        text: `<pre id="code-correlation"></pre>`
+      },
+      score: {
+        title: "⑦ Custom Target Ranking",
+        text: `<pre id="code-score"></pre>`
       }
     };
 
@@ -611,6 +686,56 @@ ferro_score &lt;- expr %&gt;%
 
       document.getElementById("modalTitle").innerText = data.title;
       document.getElementById("modalText").innerHTML = data.text;
+      // ▼ txt 파일 로딩
+      if (key === "fgsea") {
+        fetch("fGSEA_narrow_R.txt")
+          .then(res => res.text())
+          .then(content => {
+            document.getElementById("code-fgsea").textContent = content;
+          });
+      }
+      if (key === "ssgsea") {
+        fetch("ssGSEA_narrow_R.txt")
+          .then(res => res.text())
+          .then(content => {
+            document.getElementById("code-ssgsea").textContent = content;
+          });
+      }
+      if (key === "ferrokeyword") {
+        fetch("Ferroptosis-related_Keywords.txt")
+          .then(res => res.text())
+          .then(content => {
+            document.getElementById("code-ferrokeyword").textContent = content;
+          });
+      }
+      if (key === "lecoexp") {
+        fetch("FerroLE_Coexpression_PermutationTest_R.txt")
+          .then(res => res.text())
+          .then(content => {
+            document.getElementById("code-lecoexp").textContent = content;
+          });
+      }
+      if (key === "miniset") {
+        fetch("FerroMiniSet_HedgesG_Pipeline_R.txt")
+          .then(res => res.text())
+          .then(content => {
+            document.getElementById("code-miniset").textContent = content;
+          });
+      }
+      if (key === "correlation") {
+        fetch("Pathway2D_Corr_Hotelling_Pipeline_R.txt")
+          .then(res => res.text())
+          .then(content => {
+            document.getElementById("code-correlation").textContent = content;
+          });
+      }
+      if (key === "score") {
+        fetch("TargetScoring_12Rule_Pipeline_R.txt")
+          .then(res => res.text())
+          .then(content => {
+            document.getElementById("code-score").textContent = content;
+          });
+      }
       document.getElementById("modal").style.display = "flex";
     }
 
@@ -624,6 +749,31 @@ ferro_score &lt;- expr %&gt;%
       if (event.target === modal) {
         closeModal();
       }
+    });
+
+    // ====== Image Zoom Modal ======
+    document.addEventListener("DOMContentLoaded", () => {
+      const modal = document.getElementById("imgModal");
+      const modalImg = document.getElementById("imgModalImage");
+      const modalClose = document.getElementById("imgModalClose");
+
+      // 모든 zoomable 이미지에 적용
+      document.querySelectorAll("img.zoomable").forEach(img => {
+        img.addEventListener("click", () => {
+          modal.style.display = "flex";
+          modalImg.src = img.src;   // 클릭한 이미지 그대로 확대
+        });
+      });
+
+      // 닫기 버튼
+      modalClose.addEventListener("click", () => {
+        modal.style.display = "none";
+      });
+
+      // 모달 외부 클릭 시 닫기
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.style.display = "none";
+      });
     });
 
     // ===== Copy / Selection Disable (기존 유지) =====

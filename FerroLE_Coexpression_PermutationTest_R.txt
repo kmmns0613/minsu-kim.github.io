@@ -1,0 +1,114 @@
+# ============================================================
+# 🧠 Ferroptosis Leading-edge Gene Co-expression Permutation Test
+#     • Base R version (no ggplot dependency)
+#     • Outputs: PNG + SVG
+#     • Shows Observed statistic + p-value
+# ============================================================
+
+suppressPackageStartupMessages({
+  library(readxl)
+  library(dplyr)
+})
+
+# ------------------------------------------------------------
+# 1) Input file paths
+# ------------------------------------------------------------
+expr_path <- "<PATH_TO_Q3_NORMALIZED_EXPRESSION_EXCEL>"
+le_path   <- "<PATH_TO_LEADING_EDGE_GENE_EXCEL>"
+
+# ------------------------------------------------------------
+# 2) Output directory
+# ------------------------------------------------------------
+out_dir <- "<OUTPUT_DIRECTORY_FOR_RESULTS>"
+dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+
+# ------------------------------------------------------------
+# 3) Load data
+# ------------------------------------------------------------
+expr <- read_xlsx(expr_path)
+gene_col <- grep("gene|symbol|target", names(expr), ignore.case = TRUE, value = TRUE)[1]
+stopifnot(!is.na(gene_col))
+
+expr <- as.data.frame(expr)
+rownames(expr) <- expr[[gene_col]]
+expr <- expr[, setdiff(names(expr), gene_col), drop = FALSE]
+expr[] <- lapply(expr, as.numeric)
+
+# Load leading-edge genes
+le_df <- read_xlsx(le_path)
+ferro_le <- unique(na.omit(le_df$Symbol))
+cat(sprintf("✓ Leading-edge genes loaded: %d genes\n", length(ferro_le)))
+
+# ------------------------------------------------------------
+# 4) Compute observed statistic (mean pairwise correlation)
+# ------------------------------------------------------------
+mat <- expr[intersect(rownames(expr), ferro_le), , drop = FALSE]
+if (nrow(mat) < 3) stop("❌ Leading-edge genes not found in the expression matrix")
+
+rmat <- cor(t(mat), method = "spearman")
+T_obs <- mean(rmat[upper.tri(rmat)], na.rm = TRUE)
+cat(sprintf("Observed mean correlation (T_obs) = %.4f\n", T_obs))
+
+# ------------------------------------------------------------
+# 5) Permutation test (10,000 iterations)
+# ------------------------------------------------------------
+set.seed(123)
+n_perm <- 10000
+
+all_genes <- setdiff(rownames(expr), ferro_le)
+
+perm_T <- replicate(n_perm, {
+  rand_genes <- sample(all_genes, length(ferro_le))
+  rand_mat <- expr[rand_genes, , drop = FALSE]
+  mean(cor(t(rand_mat), method = "spearman")[upper.tri(rmat)], na.rm = TRUE)
+})
+
+perm_p <- mean(perm_T >= T_obs)
+cat(sprintf("Permutation p-value = %.5f (n = %d)\n", perm_p, n_perm))
+
+# ------------------------------------------------------------
+# 6) Save results
+# ------------------------------------------------------------
+result_df <- data.frame(
+  N_genes = length(ferro_le),
+  T_obs = T_obs,
+  perm_p = perm_p,
+  n_perm = n_perm,
+  stringsAsFactors = FALSE
+)
+
+write.csv(result_df,
+          file.path(out_dir, "<REGION>_Ferro_LE_coexpression_permutation_result.csv"),
+          row.names = FALSE)
+
+# ------------------------------------------------------------
+# 7) Visualization (Histogram of null + observed value)
+# ------------------------------------------------------------
+hist_title  <- "Permutation-based Null Distribution of Mean Pairwise Correlation"
+hist_xlabel <- "Mean pairwise Spearman correlation (random gene sets)"
+
+# --- PNG ---
+png(file.path(out_dir, "<REGION>_Ferro_LE_coexpression_hist.png"),
+    width = 800, height = 600)
+
+h <- hist(perm_T, breaks = 60, col = "gray80", border = "white",
+          main = hist_title, xlab = hist_xlabel)
+abline(v = T_obs, col = "red", lwd = 2)
+text(T_obs, max(h$counts) * 0.9,
+     sprintf("Observed = %.3f\np = %.4g", T_obs, perm_p),
+     pos = 4, col = "red", cex = 1)
+dev.off()
+
+# --- SVG ---
+svg(file.path(out_dir, "<REGION>_Ferro_LE_coexpression_hist.svg"),
+    width = 8, height = 6)
+
+h <- hist(perm_T, breaks = 60, col = "gray80", border = "white",
+          main = hist_title, xlab = hist_xlabel)
+abline(v = T_obs, col = "red", lwd = 2)
+text(T_obs, max(h$counts) * 0.9,
+     sprintf("Observed = %.3f\np = %.4g", T_obs, perm_p),
+     pos = 4, col = "red", cex = 1)
+dev.off()
+
+cat(sprintf("\n✓ Results saved under:\n  %s\n", out_dir))

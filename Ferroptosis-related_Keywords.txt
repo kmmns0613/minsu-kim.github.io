@@ -1,0 +1,16 @@
+# -----------------------------
+# Ferroptosis-related keyword list
+# -----------------------------
+ferro_keywords <- c(
+  "ferroptosis",
+  "iron", "heme","ferritin","transferrin",
+  "oxidative stress","reactive oxygen",
+  "nitric oxide",
+  "lipid","peroxidation",
+  "glutathione","redox",
+  "hydrogen peroxide",
+  "superoxide",
+  "mitochond",
+  "hypoxia",
+  "autophagy"
+)

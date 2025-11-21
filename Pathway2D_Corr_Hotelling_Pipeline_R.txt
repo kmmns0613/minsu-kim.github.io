@@ -1,0 +1,387 @@
+# ============================================================
+# 🔬 2D Pathway Score Correlation + Group Difference Test
+#     - Pairwise Spearman correlation
+#     - Group-specific compactness (2D variance)
+#     - Hotelling's T² test for 2D mean difference
+#     - Saves PNG + SVG scatter plots
+# ============================================================
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(stringr)
+})
+
+# ------------------------------------------------------------
+# 1) User Input
+# ------------------------------------------------------------
+ferr_path <- "<PATH_TO_FIRST_ssGSEA_CSV>"     # e.g., ferroptosis
+comp_path <- "<PATH_TO_SECOND_ssGSEA_CSV>"    # e.g., ROS, OXPHOS
+
+ferr_desc <- "<FIRST_PATHWAY_NAME>"
+comp_desc <- "<SECOND_PATHWAY_NAME>"
+
+# ------------------------------------------------------------
+# 2) Determine Source Label
+# ------------------------------------------------------------
+get_source_name <- function(path) {
+  if (grepl("FerrDb",   path, TRUE)) return("FerrDb")
+  if (grepl("KEGG",     path, TRUE)) return("KEGG")
+  if (grepl("Hallmark", path, TRUE)) return("HALLMARK")
+  if (grepl("Reactome", path, TRUE)) return("Reactome")
+  return("Unknown")
+}
+
+ferr_source <- get_source_name(ferr_path)
+comp_source <- get_source_name(comp_path)
+
+out_dir <- file.path(
+  "<OUTPUT_DIRECTORY>",
+  paste0(
+    ferr_source, "_", gsub(" ", "_", ferr_desc),
+    "_vs_",
+    comp_source, "_", gsub(" ", "_", comp_desc),
+    "_Pairwise"
+  )
+)
+
+dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+
+cat("\n===== Source Check =====\n")
+cat("First  dataset: ", ferr_source, "\n")
+cat("Second dataset: ", comp_source, "\n\n")
+
+# ------------------------------------------------------------
+# 3) Load & Reshape ssGSEA CSV
+# ------------------------------------------------------------
+ferr <- read.csv(
+  ferr_path,
+  check.names = FALSE,
+  colClasses   = "character"
+)
+
+comp <- read.csv(
+  comp_path,
+  check.names = FALSE,
+  colClasses   = "character"
+)
+
+ferr_long <- ferr %>%
+  pivot_longer(
+    -Description,
+    names_to  = "sample",
+    values_to = "FerrDb"
+  ) %>%
+  filter(grepl(ferr_desc, Description, TRUE)) %>%
+  mutate(FerrDb = as.numeric(FerrDb)) %>%
+  select(sample, FerrDb)
+
+comp_long <- comp %>%
+  pivot_longer(
+    -Description,
+    names_to  = "sample",
+    values_to = "CompScore"
+  ) %>%
+  filter(grepl(comp_desc, Description, TRUE)) %>%
+  mutate(CompScore = as.numeric(CompScore)) %>%
+  select(sample, CompScore)
+
+scores <- inner_join(ferr_long, comp_long, by = "sample") %>%
+  mutate(
+    Group = case_when(
+      grepl("GC_SAL",   sample, TRUE) ~ "GC_SAL",
+      grepl("FLT_SAL",  sample, TRUE) ~ "FLT_SAL",
+      grepl("FLT_BuOE", sample, TRUE) ~ "FLT_BuOE",
+      grepl("GC_BuOE",  sample, TRUE) ~ "GC_BuOE",
+      TRUE ~ "Other"
+    )
+  )
+
+cat("===== Sample Count per Group =====\n")
+print(table(scores$Group))
+
+# ------------------------------------------------------------
+# 4) Helper Functions
+# ------------------------------------------------------------
+
+# 2D compactness around centroid
+.compactness_xy <- function(x, y) {
+  x  <- as.numeric(x)
+  y  <- as.numeric(y)
+  cx <- mean(x, TRUE)
+  cy <- mean(y, TRUE)
+  mean((x - cx)^2 + (y - cy)^2, TRUE)
+}
+
+# Hotelling's T² test (2D; two-group only)
+hotelling_2d <- function(df_xy_grp) {
+  
+  groups <- unique(df_xy_grp$Group)
+  if (length(groups) != 2) {
+    return(
+      list(T2 = NA, F = NA, df1 = NA, df2 = NA, p = NA)
+    )
+  }
+  
+  A <- df_xy_grp %>%
+    filter(Group == groups[1]) %>%
+    select(FerrDb, CompScore)
+  
+  B <- df_xy_grp %>%
+    filter(Group == groups[2]) %>%
+    select(FerrDb, CompScore)
+  
+  n1 <- nrow(A)
+  n2 <- nrow(B)
+  p  <- 2
+  
+  if (n1 < 2 || n2 < 2) {
+    return(
+      list(T2 = NA, F = NA, df1 = NA, df2 = NA, p = NA)
+    )
+  }
+  
+  m1 <- colMeans(A, TRUE)
+  m2 <- colMeans(B, TRUE)
+  d  <- as.numeric(m1 - m2)
+  
+  S1 <- cov(A)
+  S2 <- cov(B)
+  
+  Spooled <- ((n1 - 1) * S1 + (n2 - 1) * S2) /
+             (n1 + n2 - 2)
+  
+  if (det(Spooled) <= 1e-12) {
+    Spooled <- Spooled + diag(1e-8, p)
+  }
+  
+  T2 <- (n1 * n2) / (n1 + n2) *
+        t(d) %*% solve(Spooled) %*% d
+  T2 <- as.numeric(T2)
+  
+  df1 <- p
+  df2 <- n1 + n2 - p - 1
+  
+  if (df2 <= 0) {
+    return(
+      list(T2 = T2, F = NA, df1 = df1, df2 = df2, p = NA)
+    )
+  }
+  
+  Fval <- (df2 * T2) / (df1 * (n1 + n2 - 2))
+  pval <- 1 - pf(Fval, df1, df2)
+  
+  list(
+    T2 = T2,
+    F  = Fval,
+    df1 = df1,
+    df2 = df2,
+    p = pval
+  )
+}
+
+# ------------------------------------------------------------
+# 5) Main Analysis Function
+# ------------------------------------------------------------
+analyze_pair <- function(
+  df_pair,
+  title,
+  outfile_prefix,
+  x_label,
+  y_label
+) {
+  # Spearman correlation
+  ct <- suppressWarnings(
+    cor.test(
+      df_pair$FerrDb,
+      df_pair$CompScore,
+      method = "spearman"
+    )
+  )
+  
+  r_val  <- round(ct$estimate, 3)
+  p_r    <- signif(ct$p.value, 4)
+  R2_val <- round(r_val^2, 3)
+  
+  # Compactness (per group)
+  comp_tbl <- df_pair %>%
+    group_by(Group) %>%
+    summarize(
+      compactness =
+        round(.compactness_xy(FerrDb, CompScore), 6),
+      .groups = "drop"
+    )
+  
+  comp_text <- paste(
+    paste(comp_tbl$Group, comp_tbl$compactness),
+    collapse = " | "
+  )
+  
+  # Hotelling's T² (only if 2 groups)
+  hot <- if (n_distinct(df_pair$Group) == 2) {
+    hotelling_2d(df_pair)
+  } else {
+    list(T2 = NA, F = NA, df1 = NA, df2 = NA, p = NA)
+  }
+  
+  # Console output
+  cat("\n===== ", title, " =====\n", sep = "")
+  cat("n =", nrow(df_pair),
+      "| Spearman r =", r_val,
+      "(p =", p_r, "), R² =", R2_val, "\n")
+  
+  cat("Hotelling T² = ", round(hot$T2, 4),
+      ", F = ", round(hot$F, 4),
+      " (df1 = ", hot$df1,
+      ", df2 = ", hot$df2,
+      "), p = ", signif(hot$p, 4), "\n", sep = "")
+  
+  cat("Compactness → ", comp_text, "\n", sep = "")
+  
+  # Plot
+  palette <- c(
+    "GC_SAL"   = "#ff7300",
+    "FLT_SAL"  = "#00ff91",
+    "FLT_BuOE" = "#00f7ff"
+  )
+  
+  p <- ggplot(
+    df_pair,
+    aes(
+      x     = CompScore,
+      y     = FerrDb,
+      color = Group
+    )
+  ) +
+    geom_point(size = 3) +
+    stat_ellipse(
+      type     = "norm",
+      level    = 0.95,
+      linetype = 2,
+      linewidth = 0.6,
+      color    = "black"
+    ) +
+    geom_smooth(
+      method   = "lm",
+      se       = FALSE,
+      color    = "black",
+      linewidth = 0.7
+    ) +
+    scale_color_manual(values = palette) +
+    labs(
+      title = title,
+      subtitle = paste0(
+        "r = ", r_val, ", p = ", p_r,
+        ", R² = ", R2_val,
+        "\nHotelling T² = ", round(hot$T2,4),
+        " (F = ", round(hot$F,4),
+        ", p = ", signif(hot$p,4), ")",
+        "\nCompactness → ", comp_text
+      ),
+      x = x_label,
+      y = y_label
+    ) +
+    theme_bw(base_size = 13) +
+    theme(
+      legend.position = "right",
+      plot.title      = element_text(face = "bold")
+    )
+  
+  # Save PNG + SVG
+  ggsave(
+    file.path(out_dir, paste0(outfile_prefix, ".png")),
+    p,
+    width  = 5,
+    height = 4,
+    dpi    = 400
+  )
+  
+  ggsave(
+    file.path(out_dir, paste0(outfile_prefix, ".svg")),
+    p,
+    width  = 5,
+    height = 4
+  )
+  
+  tibble(
+    Comparison     = outfile_prefix,
+    n              = nrow(df_pair),
+    Spearman_r     = r_val,
+    Spearman_p     = p_r,
+    R2             = R2_val,
+    Hotelling_T2   = round(hot$T2,  6),
+    Hotelling_F    = round(hot$F,   6),
+    Hotelling_df1  = hot$df1,
+    Hotelling_df2  = hot$df2,
+    Hotelling_p    = signif(hot$p, 6),
+    Compactness    = comp_text
+  )
+}
+
+# ------------------------------------------------------------
+# 6) Run Comparisons
+# ------------------------------------------------------------
+x_label <- paste0(comp_source,  ": ", comp_desc,  " ssGSEA score")
+y_label <- paste0(ferr_source, ": ", ferr_desc, " ssGSEA score")
+
+results <- list()
+
+# GC_SAL vs FLT_SAL
+df_spaceflight <- scores %>%
+  filter(Group %in% c("GC_SAL", "FLT_SAL"))
+
+results[[1]] <- analyze_pair(
+  df_spaceflight,
+  paste0(
+    "<REGION>: ",
+    ferr_source, "_", ferr_desc,
+    " vs ",
+    comp_source, "_", comp_desc,
+    " (GC_SAL vs FLT_SAL)"
+  ),
+  paste0(
+    "<REGION>_",
+    ferr_desc, "_vs_", comp_desc,
+    "_GCvsFLT"
+  ),
+  x_label, y_label
+)
+
+# FLT_SAL vs FLT_BuOE
+df_buoe <- scores %>%
+  filter(Group %in% c("FLT_SAL", "FLT_BuOE"))
+
+results[[2]] <- analyze_pair(
+  df_buoe,
+  paste0(
+    "<REGION>: ",
+    ferr_source, "_", ferr_desc,
+    " vs ",
+    comp_source, "_", comp_desc,
+    " (FLT_SAL vs FLT_BuOE)"
+  ),
+  paste0(
+    "<REGION>_",
+    ferr_desc, "_vs_", comp_desc,
+    "_FLTvsBuOE"
+  ),
+  x_label, y_label
+)
+
+# ------------------------------------------------------------
+# 7) Save Results
+# ------------------------------------------------------------
+res_df <- bind_rows(results)
+
+write.csv(
+  res_df,
+  file.path(out_dir, "Correlation_and_Hotelling_results.csv"),
+  row.names = FALSE
+)
+
+cat("\n✓ All analyses complete.\n")
+cat("✓ Results saved to:\n  ", out_dir, "\n\n")
+
+print(res_df)
