@@ -30,15 +30,14 @@
 </head>
 <body>
 
-<h1>Guestbook Messages (Private Only)</h1>
+<h1>Guestbook Messages <br>(Private Only)</h1>
 <p>This page shows messages submitted during ASGSR 2025.</p>
 
 <table id="gbTable">
   <thead>
     <tr>
-      <th>Timestamp</th>
-      <th>Name</th>
-      <th>Affiliation</th>
+      <th style="width:180px;">Time</th>
+      <th style="width:160px;">Name / Affiliation</th>
       <th>Message</th>
     </tr>
   </thead>
@@ -47,7 +46,33 @@
 
 <script>
   const READ_URL =
-    "https://script.google.com/macros/s/AKfycbxj6VyUdkR6kM-WpCHkuC_H9igQu2g8xwuxsY5lLvYz313jKTnT7HsSFJC0CC3ApvdgqA/exec?read=true";
+    "https://script.google.com/macros/s/AKfycbySvwRR8NwB6XS_E-mzcxgGE3PSiEqqRlnzKJX_TaIi2cOwTiTVEqItYGhb4umLjDDK0A/exec?read=true";
+
+  function formatTimes(timestamp) {
+    const date = new Date(timestamp);
+
+    // 한국시간 (KST, +9)
+    const korea = date.toLocaleString("ko-KR", {
+      timeZone: "Asia/Seoul",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+    // 미국 (MST Arizona, UTC-7)
+    const usa = date.toLocaleString("en-US", {
+      timeZone: "America/Phoenix",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+    return { korea, usa };
+  }
 
   async function loadData() {
     const res = await fetch(READ_URL);
@@ -56,21 +81,39 @@
     const tbody = document.querySelector("#gbTable tbody");
     tbody.innerHTML = "";
 
-    data.forEach((row, i) => {
-      if (i === 0) return; // header row skip
+    // ---- 최신 메시지부터 표시 ----
+    const rows = data.slice(1).reverse();
+
+    rows.forEach(row => {
+      const timestamp = row[0];
+      const name = row[1];
+      const affiliation = row[2] || "";
+      const message = row[3];
+
+      const { korea, usa } = formatTimes(timestamp);
+
+      // ---- HTML 구성 ----
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${row[0]}</td>
-        <td>${row[1]}</td>
-        <td>${row[2]}</td>
-        <td>${row[3]}</td>
+        <td style="width:180px;">
+          ${korea}<br>
+          <span style="font-size:13px; color:#777;">${usa}</span>
+        </td>
+
+        <td style="width:160px;">
+          ${name}<br>
+          <span style="font-size:13px; color:#777;">${affiliation}</span>
+        </td>
+
+        <td style="width:auto; max-width:600px; white-space:normal; line-height:1.5;">
+          ${message}
+        </td>
       `;
       tbody.appendChild(tr);
     });
   }
 
   loadData();
-  // 30초마다 자동 갱신
   setInterval(loadData, 30000);
 </script>
 
