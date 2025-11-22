@@ -293,8 +293,8 @@
 
   <nav>
     <a href="index.html">Home</a>
+    <a href="journey.html">Journey</a>
     <a href="updates.html">Updates</a>
-    <a href="biography.html">Biography</a>
     <a href="skills.html">Skills</a>
     <a href="publications.html">Publications</a>
     <a href="contact.html" class="active">Contact</a>
@@ -305,7 +305,8 @@
 
     <!-- Intro Message -->
     <p style="
-      margin-bottom:18px;
+      margin-top: 10px;  
+      margin-bottom: 15px;
       font-size:clamp(18px, 3vw, 24px);
       font-family: Georgia, serif;
       line-height:1.5;
@@ -314,12 +315,80 @@
       Meaningful conversations always move us forward.
     </p>
 
-    <!-- Top Icon Bar -->
+    
+
+    <!-- Main Flex Layout -->
+    <div style="
+      display:flex;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      max-width:900px;
+    ">
+
+      <!-- Leave a Message Box -->
+      <div style="
+        flex:1;
+        min-width:280px;
+        max-width:550px;
+      ">
+
+        <div class="card" style="width:100%;">
+
+          <h3 style="font-family: Georgia, serif; margin-top: 10px; margin-bottom: 4px;">Leave a Message</h3>
+
+          <!-- Name -->
+          <input id="gb_name" type="text" placeholder="Your name"
+            style="
+              width:100%;
+              padding:12px;
+              margin-top:4px;
+              border-radius:6px;
+              border:1px solid #ccc;
+              background:#fafafa;
+              box-sizing:border-box;
+            ">
+
+          <!-- Affiliation -->
+          <input id="gb_affil" type="text" placeholder="Affiliation (optional)"
+            style="
+              width:100%;
+              padding:12px;
+              margin-top:4px;
+              border-radius:6px;
+              border:1px solid #ccc;
+              background:#fafafa;
+              box-sizing:border-box;
+            ">
+
+          <!-- Message -->
+          <textarea id="gb_msg" placeholder="Write your message..."
+            style="
+              width:100%;
+              padding:12px;
+              margin-top:4px;
+              border-radius:6px;
+              border:1px solid #ccc;
+              background:#fafafa;
+              height:120px;
+              box-sizing:border-box;
+            "></textarea>
+
+          <!-- Submit Button -->
+          <button class="submit-button" onclick="sendGuestbook()">Send 🚀</button>
+
+          <p id="gb_status" style="margin-top: 4px; font-size:14px;"></p>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Icon Bar -->
     <div class="contact-icon-row"
       style="
         display:flex;
         gap:20px;
-        margin:10px 0 26px 0;
+        margin: 0 0 0 0;
         align-items:center;
         flex-wrap:wrap;
       "
@@ -363,72 +432,6 @@
       >
         <img src="instagram_icon.svg" alt="Instagram Icon" style="width:32px; height:32px;">
       </a>
-
-    </div>
-
-    <!-- Main Flex Layout -->
-    <div style="
-      display:flex;
-      flex-wrap:wrap;
-      align-items:flex-start;
-      max-width:900px;
-    ">
-
-      <!-- Leave a Message Box -->
-      <div style="
-        flex:1;
-        min-width:280px;
-        max-width:550px;
-      ">
-
-        <div class="card" style="width:100%;">
-
-          <h3 style="font-family: Georgia, serif; margin-top:0; margin-bottom: 4px;">Leave a Message</h3>
-
-          <!-- Name -->
-          <input id="gb_name" type="text" placeholder="Your name"
-            style="
-              width:100%;
-              padding:12px;
-              margin-top:12px;
-              border-radius:6px;
-              border:1px solid #ccc;
-              background:#fafafa;
-              box-sizing:border-box;
-            ">
-
-          <!-- Affiliation -->
-          <input id="gb_affil" type="text" placeholder="Affiliation (optional)"
-            style="
-              width:100%;
-              padding:12px;
-              margin-top:12px;
-              border-radius:6px;
-              border:1px solid #ccc;
-              background:#fafafa;
-              box-sizing:border-box;
-            ">
-
-          <!-- Message -->
-          <textarea id="gb_msg" placeholder="Write your message..."
-            style="
-              width:100%;
-              padding:12px;
-              margin-top:12px;
-              border-radius:6px;
-              border:1px solid #ccc;
-              background:#fafafa;
-              height:120px;
-              box-sizing:border-box;
-            "></textarea>
-
-          <!-- Submit Button -->
-          <button class="submit-button" onclick="sendGuestbook()">Send 🚀</button>
-
-          <p id="gb_status" style="margin-top:10px; font-size:14px;"></p>
-
-        </div>
-      </div>
 
     </div>
   </div>

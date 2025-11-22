@@ -123,6 +123,51 @@
       margin-top: 4px;
     }
 
+    .timeline {
+      position: relative;
+      margin: 20px 0 50px 30px;
+      padding-left: 35px;
+      border-left: 3px solid var(--color-accent);
+    }
+
+    .timeline-item {
+      margin-bottom: 28px;
+      position: relative;
+    }
+
+    .timeline-icon {
+      width: 38px;
+      height: 38px;
+      background: var(--color-bg);
+      border: 2px solid var(--color-accent);
+      border-radius: 50%;
+      position: absolute;
+      left: -58px;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .timeline-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .timeline-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .timeline-text {
+      font-size: var(--font-size-body);
+      color: var(--color-text);
+      line-height: 1.6;
+    }
+
     nav {
       display: none;
     }
@@ -258,8 +303,8 @@
 
   <nav>
     <a href="index.html">Home</a>
+    <a href="journey.html" class="active">Journey</a>
     <a href="updates.html">Updates</a>
-    <a href="biography.html" class="active">Biography</a>
     <a href="skills.html">Skills</a>
     <a href="publications.html">Publications</a>
     <a href="contact.html">Contact</a>
@@ -267,14 +312,86 @@
 
   <div class="container">
     <!-- 여기에 페이지별 내용 삽입 -->
-    <h1>Biography</h1>
+    <h1>Professional Journey</h1>
+
+    <h2>Timeline</h2>
+
+    <div class="timeline">
+
+      <!-- 2013–2019 Undergraduate -->
+      <div class="timeline-item">
+        <div class="timeline-icon">
+          <img src="Konkuk_logo.jpg">
+        </div>
+        <div class="timeline-title">2013–2019 — B.S. in Biomedical Engineering</div>
+        <div class="timeline-text">
+          Entered Konkuk University in March 2013 and completed the undergraduate program in February 2019.
+        </div>
+      </div>
+
+      <!-- 2018 Lab Join -->
+      <div class="timeline-item">
+        <div class="timeline-icon">
+          <img src="Konkuk_logo.jpg">
+        </div>
+        <div class="timeline-title">2018 — Joined TBI Research Laboratory</div>
+        <div class="timeline-text">
+          Began research in January 2018, establishing a mouse model of traumatic brain injury (CCI model).
+        </div>
+      </div>
+
+      <!-- 2019–2025 Graduate School -->
+      <div class="timeline-item">
+        <div class="timeline-icon">
+          <img src="Konkuk_logo.jpg">
+        </div>
+        <div class="timeline-title">2019–2025 — M.S./Ph.D. in Bioscience</div>
+        <div class="timeline-text">
+          Studied astrocyte mitochondrial protection by Korean red ginseng and the anti-inflammatory effects of a recombinant protein in traumatic brain injury.
+        </div>
+      </div>
+
+      <!-- Feb–Apr 2025 Postdoc -->
+      <div class="timeline-item">
+        <div class="timeline-icon">
+          <img src="Konkuk_logo.jpg">
+        </div>
+        <div class="timeline-title">2025 — Postdoctoral Researcher</div>
+        <div class="timeline-text">
+          Worked briefly as a postdoctoral researcher to complete TBI projects after earning the Ph.D. in February 2025.
+        </div>
+      </div>
+
+      <!-- July 2025 Omics & Space Biology -->
+      <div class="timeline-item">
+        <div class="timeline-icon">
+          <img src="space_icon.png">
+        </div>
+        <div class="timeline-title">2025–Present — Transition to Space Biology</div>
+        <div class="timeline-text">
+          Began independent omics learning in July 2025 and currently researching spaceflight-induced ferroptosis using NASA GeneLab datasets.
+        </div>
+      </div>
+
+    </div>
+
+    <h2>Biography</h2>
+
     <!-- 또는 Publications -->
     <p class="intro-paragraph">
-      Hello, I’m <mark class="highlight">Dr. Minsu Kim</mark>, a neuroscientist exploring how the brain adapts under extreme conditions—from traumatic brain injury to spaceflight. I earned my Ph.D. in Biomedical Science from Konkuk University (Seoul, South Korea) in February 2025, where my research centered on astrocytic protein alterations and immune regulation following traumatic brain injury. During this time, I gained extensive experience in rodent handling, molecular assays, and mechanistic investigations of neuroinflammation and mitochondrial function. 
-    </p>
-
-    <p class="intro-paragraph">
-      I am currently seeking a <mark class="highlight"><strong>postdoctoral position</strong></mark> in the field of <mark class="highlight"><strong>space biology</strong></mark>, with a strong interest in how long-term spaceflight influences molecular and cellular pathways in the brain. My future work aims to investigate astrocyte ferroptosis, blood-brain barrier dynamics, and glial responses to cosmic radiation and microgravity. By bridging neurotrauma and space biology, I hope to uncover conserved stress responses of the brain across radically different environments.
+      Hello, I’m <mark class="highlight">Dr. Minsu Kim</mark>, a neuroscientist studying how the brain responds to extreme conditions—from traumatic injury to long-duration spaceflight. 
+      I first majored in Biomedical Engineering at Konkuk University, where I completed my B.S. degree in February 2019. 
+      I joined my laboratory in January 2018 and began establishing a mouse model of traumatic brain injury, which became the foundation of my early research career.
+      <br><br>
+      In March 2019, I entered the Graduate School of Bioscience at Konkuk University and focused on astrocyte biology in traumatic brain injury. 
+      My master’s and doctoral work examined two major directions: 
+      the mitochondrial protective effects of Korean red ginseng in astrocytes, and the ability of a pre-administrated recombinant protein (publication pending) to preserve blood–brain barrier integrity and reduce inflammation following injury. 
+      Through this work, I gained extensive experience in rodent handling, molecular assays, and mechanistic studies of neuroinflammation and mitochondrial function.
+      <br><br>
+      After completing my Ph.D. in February 2025, I continued as a short-term postdoctoral researcher in the same lab through April 2025 to finalize ongoing projects. 
+      During this time—and especially from July 2025 onward—I began independently learning omics analysis to transition into the field I had long aspired to pursue: <mark class="highlight"><strong>space biology</strong></mark>. 
+      I am currently preparing for a <mark class="highlight"><strong>postdoctoral position</strong></mark> in long-duration spaceflight neuroscience, with a focus on astrocyte ferroptosis, blood–brain barrier regulation, and glial responses to cosmic radiation and microgravity. 
+      My goal is to bridge neurotrauma and space biology to reveal conserved stress-response mechanisms shared across dramatically different environments.
     </p>
   </div>
 

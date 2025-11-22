@@ -48,10 +48,11 @@
   const READ_URL =
     "https://script.google.com/macros/s/AKfycbySvwRR8NwB6XS_E-mzcxgGE3PSiEqqRlnzKJX_TaIi2cOwTiTVEqItYGhb4umLjDDK0A/exec?read=true";
 
+  let latestStamp = null;  // 가장 최근 메시지 timestamp 저장
+
   function formatTimes(timestamp) {
     const date = new Date(timestamp);
 
-    // 한국시간 (KST, +9)
     const korea = date.toLocaleString("ko-KR", {
       timeZone: "Asia/Seoul",
       year: "numeric",
@@ -61,7 +62,6 @@
       minute: "2-digit"
     });
 
-    // 미국 (MST Arizona, UTC-7)
     const usa = date.toLocaleString("en-US", {
       timeZone: "America/Phoenix",
       year: "numeric",
@@ -74,17 +74,29 @@
     return { korea, usa };
   }
 
-  async function loadData() {
+  async function loadData(force = false) {
     const res = await fetch(READ_URL);
-    const data = await res.json();   // Sheet 데이터 (2D array)
+    const data = await res.json();   
+
+    const rows = data.slice(1);
+    if (rows.length === 0) return;
+
+    const newest = rows[rows.length - 1][0];  // 마지막 행 timestamp
+
+    // 새 메시지가 없으면 업데이트 스킵
+    if (!force && latestStamp === newest) {
+      console.log("No new messages. Skipping update.");
+      return;
+    }
+
+    // 새 메시지가 있거나 force=true이면 업데이트 실행
+    latestStamp = newest;
 
     const tbody = document.querySelector("#gbTable tbody");
     tbody.innerHTML = "";
 
-    // ---- 최신 메시지부터 표시 ----
-    const rows = data.slice(1).reverse();
-
-    rows.forEach(row => {
+    // 최신순 출력
+    rows.reverse().forEach(row => {
       const timestamp = row[0];
       const name = row[1];
       const affiliation = row[2] || "";
@@ -92,29 +104,35 @@
 
       const { korea, usa } = formatTimes(timestamp);
 
-      // ---- HTML 구성 ----
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td style="width:180px;">
           ${korea}<br>
           <span style="font-size:13px; color:#777;">${usa}</span>
         </td>
-
         <td style="width:160px;">
           ${name}<br>
           <span style="font-size:13px; color:#777;">${affiliation}</span>
         </td>
-
         <td style="width:auto; max-width:600px; white-space:normal; line-height:1.5;">
           ${message}
         </td>
       `;
       tbody.appendChild(tr);
     });
+
+    console.log("Messages updated.");
   }
 
-  loadData();
-  setInterval(loadData, 30000);
+  // 최초 1회는 강제로 전체 로딩
+  loadData(true);
+
+  // 이후부터는 변화 발생 시에만 업데이트
+  async function checkNewMessages() {
+    loadData(false);
+  }
+
+  setInterval(checkNewMessages, 30000);
 </script>
 
 </body>

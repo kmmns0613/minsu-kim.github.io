@@ -1,5 +1,5 @@
 터미널 푸시 명령어
 
 git add .
-git commit -m "Update Favicon 251122"
+git commit -m "Update Journey 251122"
 git push
