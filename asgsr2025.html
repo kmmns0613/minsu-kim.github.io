@@ -17,6 +17,15 @@
 
     gtag('config', 'G-Y5KHEV62JH');
   </script>
+
+  <!-- ASGSR 2025 종료 후: 자동으로 Home으로 이동 -->
+  <script>
+    (function () {
+      var params = window.location.search || "";
+      var hash   = window.location.hash || "";
+      window.location.replace("index.html" + params + hash);
+    })();
+  </script>
   <style>
     :root {
       --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -451,6 +460,14 @@
 </head>
 
 <body>
+  <noscript>
+    <p>
+      This page is no longer active. Please visit the main page:
+      <a href="index.html">Go to Home</a>
+    </p>
+  </noscript>
+
+
   <header>
     <div class="quote-banner">
       <em>“Somewhere, something incredible is waiting to be known.”</em>
