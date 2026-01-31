@@ -235,7 +235,7 @@
 
     .update-item:hover {
       background: var(--color-accent);
-      color: white;
+      color: var(--color-bg);
     }
 
     .update-title {
@@ -261,7 +261,7 @@
     /* 이미지 스타일 */
     .update-image {
       max-width: 370px;      /* PC에서 가로 260px */
-      max-height: 200px;
+      max-height: 280px;
       width: auto;
       height: auto;
       border-radius: 8px;
@@ -285,6 +285,46 @@
         width: 100%;
       }
     }
+
+    /* ===== Updates: slide container (Skills와 동일 컨셉) ===== */
+    .update-slide {
+      position: relative;
+      width: 100%;
+      max-width: 370px;      /* 기존 update-image 폭과 맞춤 */
+      max-height: 370px;
+      aspect-ratio: 16 / 16;  /* 원하시면 4/3로 바꿔도 됩니다 */
+      background-color: none;
+      overflow: hidden;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .update-slide img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: none;
+    }
+
+    .update-slide img.active { display: block; }
+
+    .update-slide .slide-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(0,0,0,0.4);
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 4px;
+    }
+
+    .update-slide .slide-btn.prev { left: 8px; }
+    .update-slide .slide-btn.next { right: 8px; }
   </style>  
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -319,10 +359,41 @@
   <div class="container">
     <h1>Updates</h1>
 
-    <!-- ASGSR 2025 -->
+    <!-- ASGSR 2025 - Post-Conference Update-->
     <div class="update-item" onclick="toggleContent('u1')">
-      <div class="update-title">• ASGSR 2025</div>
+      <div class="update-title">• ASGSR 2025 — Post-Conference Update</div>
       <div class="update-content" id="u1">
+        <div class="update-inner">
+          <div class="update-slide" id="u1slide">
+            <img src="presentation1.jpeg" class="active">
+            <img src="ASGSR2025_3.jpeg">
+            <img src="ASGSR2025_2.jpeg">
+            <img src="ASGSR2025_1.jpeg">
+            <img src="Landscape.jpeg">
+            <img src="Dinner.jpeg">
+
+            <button class="slide-btn prev" onclick="prevSlide('u1slide'); event.stopPropagation();">❮</button>
+            <button class="slide-btn next" onclick="nextSlide('u1slide'); event.stopPropagation();">❯</button>
+          </div>
+          <div class="update-text">
+            I recently presented my work at the <strong><em>American Society for Gravitational and Space Research (ASGSR) 2025</em></strong>, where I shared transcriptomic evidence suggesting that the brain may become more vulnerable following long-duration spaceflight.<br><br>
+
+            Presenting in the <strong><em>“Neuro–Immune Crosstalk &amp; Omics”</em></strong> session also enabled in-depth discussions on how spaceflight-induced molecular stress may intersect with mitochondrial dysfunction, disrupted iron homeostasis, and long-term neurodegenerative risk.<br><br>
+
+            This was my first international conference presentation, and it was a meaningful milestone that helped me clarify my direction as a researcher. 
+            I was inspired by the passion and depth of many presentations, and I was especially grateful for the opportunity to connect with outstanding scientists I had long hoped to meet. 
+            Hearing about newly launched institutes and well-structured, multi-year research roadmaps further strengthened my motivation to contribute to this field. 
+            Moving forward, I will focus even more on preparing for the next steps of my research journey.
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASGSR 2025 -->
+    <div class="update-item" onclick="toggleContent('u2')">
+      <div class="update-title">• ASGSR 2025</div>
+      <div class="update-content" id="u2">
         <div class="update-inner">
           <img src="asgsr_photo.jpg" class="update-image">
           <div class="update-text">
@@ -347,9 +418,9 @@
     </div>
 
     <!-- Project Hail Mary -->
-    <div class="update-item" onclick="toggleContent('u2')">
+    <div class="update-item" onclick="toggleContent('u3')">
       <div class="update-title">• Book Recommendation – Project Hail Mary</div>
-      <div class="update-content" id="u2">
+      <div class="update-content" id="u3">
         <div class="update-inner">
           <img src="Project_Hail_Mary.jpg" class="update-image">
           <div class="update-text">
@@ -430,6 +501,26 @@
         document.documentElement.setAttribute("data-theme", "dark");
         localStorage.setItem("theme", "dark");
       }
+    }
+
+    function nextSlide(containerId) {
+      const container = document.getElementById(containerId);
+      const slides = container.querySelectorAll("img");
+      let index = Array.from(slides).findIndex(img => img.classList.contains("active"));
+
+      slides[index].classList.remove("active");
+      index = (index + 1) % slides.length;
+      slides[index].classList.add("active");
+    }
+
+    function prevSlide(containerId) {
+      const container = document.getElementById(containerId);
+      const slides = container.querySelectorAll("img");
+      let index = Array.from(slides).findIndex(img => img.classList.contains("active"));
+
+      slides[index].classList.remove("active");
+      index = (index - 1 + slides.length) % slides.length;
+      slides[index].classList.add("active");
     }
 
   </script>

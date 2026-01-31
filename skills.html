@@ -25,7 +25,7 @@
 
       /* Font Sizes (Home 기준) */
       --font-size-h1: clamp(28px, 4vw, 40px);
-      --font-size-h2: clamp(22px, 3vw, 30px);
+      --font-size-h2: clamp(20px, 3vw, 30px);
       --font-size-body-lg: clamp(17px, 2vw, 22px);
       --font-size-body: clamp(15px, 1.5vw, 17px);
       --font-size-small: clamp(13px, 1.2vw, 14px);
@@ -46,6 +46,7 @@
       --color-surface: #f0f0f0;        /* Skills 기존값 유지 */
       --color-menu-bg: #fafafa;
       --skill-btn-fg: #ffffff;
+      --color-skill-btn-active: #ffd94f;
 
       /* Others */
       --radius: 16px;                  /* Skills 기존값 유지 */
@@ -60,6 +61,7 @@
       --color-surface: #2a2a2a;
       --color-menu-bg: #1a1a1a;
       --skill-btn-fg: #000000;
+      --color-skill-btn-active: #ffbb00;
       --shadow-light: 0 2px 6px rgba(255,255,255,0.08);
     }
 
@@ -191,10 +193,10 @@
       position: relative;
       width: 100%;
       aspect-ratio: 4 / 3;
-      max-width: 600px;
-      max-height: 450px;
+      max-width: 400px;
+      max-height: 375px;
       margin: 0 auto;
-      background-color: #eee;
+      background-color: none;
       overflow: hidden;
     }
 
@@ -228,7 +230,7 @@
     .sub-section { margin-bottom: 18px; }
     .sub-section h3 {
       margin: 0 0 8px;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 600;
       color: var(--color-accent);
     }
@@ -242,9 +244,15 @@
       margin: 3px;
       cursor: pointer;
       font-size: 14px;
+      font-weight: 400;
       transition: background-color 0.3s ease;
     }
-    .skill-btn:hover { background-color: #e0a700; }
+    .skill-btn:hover { 
+      background-color: var(--color-skill-btn-active);
+      color: var(--color-text);
+      font-weight: 520;
+      box-shadow: var(--shadow-light);
+     }
 
     /* Popup Modal */
     .modal {
@@ -278,6 +286,10 @@
     .modal-content h3 {
       margin-top: 0;
       color: var(--color-accent);
+    }
+
+    .deemphasized {
+      color: #666;   /* 또는 var(--text-muted) */
     }
 
     .close-btn {
@@ -378,32 +390,30 @@
     <!-- 1️⃣ Wet Lab Techniques -->
     <div class="card">
       <div class="slide-container" id="slide1">
-        <img src="wetlab1.png" class="active">
-        <img src="wetlab2.jpeg">
-        <img src="wetlab3.jpeg">
-        <img src="wetlab4.jpeg">
-        <img src="wetlab5.jpg">
-        <img src="wetlab6.jpg">
+        <img src="CCI_equipment.png" class="active">
+        <img src="TBI.jpeg">
+        <img src="MouseBrain.jpeg">
+        <img src="Permeability_Assay.jpeg">
+        <img src="Forceps.jpeg">
+        <img src="section.jpeg">
+        <img src="Astrocyte.jpeg">
+        <img src="Macrophage.jpeg">
         <button class="slide-btn prev" onclick="prevSlide('slide1')">❮</button>
         <button class="slide-btn next" onclick="nextSlide('slide1')">❯</button>
       </div>
 
       <div class="skills-list">
-        <h2>1. Wet Lab Techniques</h2>
+        <h2>1. Experimental Neurobiology</h2>
         <div class="sub-section">
-          <h3>in vivo</h3>
-          <button class="skill-btn" onclick="openModal('brain_surgery')">Brain surgery</button>
-          <button class="skill-btn" onclick="openModal('brain_section')">Brain section</button>
+          <h3><strong>in vivo</strong></h3>
+          <button class="skill-btn" onclick="openModal('TBI_modeling')">TBI modeling (CCI)</button>
+          <button class="skill-btn" onclick="openModal('Perfusion')">Cardiac perfusion</button>
+          <button class="skill-btn" onclick="openModal('brain_section')">Tissue processing & cryosectioning</button>
         </div>
         <div class="sub-section">
-          <h3>in vitro</h3>
-          <button class="skill-btn" onclick="openModal('cell_culture')">Cell culture</button>
-        </div>
-        <div class="sub-section">
-          <h3>protein level experiments</h3>
-          <button class="skill-btn" onclick="openModal('Mito_Fraction')">Mitochondria Fraction</button>
-          <button class="skill-btn" onclick="openModal('western_blot')">Western blot</button>
-          <button class="skill-btn" onclick="openModal('ihc')">Immunohistochemistry</button>
+          <h3><strong>in vitro</strong></h3>
+          <button class="skill-btn" onclick="openModal('AC_culture')">Astrocyte culture</button>
+          <button class="skill-btn" onclick="openModal('raw264_7_cell_culture')">Raw 264.7 Cell culture</button>
         </div>
       </div>
     </div>
@@ -411,18 +421,28 @@
     <!-- 2️⃣ Imaging & Quantification -->
     <div class="card">
       <div class="slide-container" id="slide2">
-        <img src="imaging1.png" class="active">
+        <img src="IF.png" class="active">
+        <img src="imaging1.png">
         <img src="imaging2.png">
+        <img src="IF2.jpg">
+        <img src="IF3.png">
+        <img src="westernblot.png">
         <button class="slide-btn prev" onclick="prevSlide('slide2')">❮</button>
         <button class="slide-btn next" onclick="nextSlide('slide2')">❯</button>
       </div>
 
       <div class="skills-list">
-        <h2>2. Measurement & Quantification</h2>
+        <h2>2. Quantitative Imaging & Molecular Readout</h2>
         <div class="sub-section">
-          <h3>ImageJ</h3>
-          <button class="skill-btn" onclick="openModal('Intensity_measure')">Protein Intensity measurement</button>
+          <h3><strong>Imaging-based analysis</strong></h3>
+          <button class="skill-btn" onclick="openModal('IF')">Immunofluorescence</button>
           <button class="skill-btn" onclick="openModal('morph_analysis')">Cell morphology analysis</button>
+          <button class="skill-btn" onclick="openModal('Intensity_measure')">Fluorescence intensity quantification</button>
+        </div>
+        <div class="sub-section">
+          <h3><strong>protein-level assays</strong></h3>
+          <button class="skill-btn" onclick="openModal('Mito_Fraction')">Mitochondria Fraction</button>
+          <button class="skill-btn" onclick="openModal('western_blot')">Western blot analysis</button>                    
         </div>
       </div>
     </div>
@@ -430,27 +450,32 @@
     <!-- 3️⃣ Statistical Analysis -->
     <div class="card">
       <div class="slide-container" id="slide3">
-        <img src="analysis1.png" class="active">
-        <img src="analysis2.png">
-        <img src="analysis3.png">
-        <img src="analysis5.png">
-        <img src="analysis6.jpg">
+        <img src="quantification.png" class="active">
+        <img src="quantification2.png">
+        <img src="GSEA_ESplot.png">
+        <img src="Heatmap.png">
+        <img src="ORA.png">
+        <img src="correlation.png">
         <button class="slide-btn prev" onclick="prevSlide('slide3')">❮</button>
         <button class="slide-btn next" onclick="nextSlide('slide3')">❯</button>
       </div>
 
       <div class="skills-list">
-        <h2>3. Statistical Analysis</h2>
+        <h2>3. Quantitative & Omics-Based Analysis</h2>
         <div class="sub-section">
-          <h3>Python with AI</h3>
+          <h3><strong>Quantitative Data Analysis & Visualization</strong></h3>
           <button class="skill-btn" onclick="openModal('statistical')">Statistical Analysis & Visualization</button>
-          <button class="skill-btn" onclick="openModal('volcano')">Volcano plot</button>
         </div>
         <div class="sub-section">
-          <h3>R with AI</h3>
+          <h3><strong>Pathway-Level Enrichment Analysis (R)</strong></h3>
           <button class="skill-btn" onclick="openModal('fgsea')">fGSEA</button>
           <button class="skill-btn" onclick="openModal('ssgsea')">ssGSEA</button>
           <button class="skill-btn" onclick="openModal('ora')">ORA</button>
+        </div>
+        <div class="sub-section">
+          <h3><strong>Mechanistic & Systems-Level Interpretation</strong></h3>
+          <button class="skill-btn" onclick="openModal('hedgesg')">Effect Size–Based Mechanistic Analysis</button>
+          <button class="skill-btn" onclick="openModal('correlation')">Pathway Correlation Analysis</button>
         </div>
       </div>
     </div>
@@ -528,7 +553,7 @@
     }
 
     const modalData = {
-      brain_surgery: {
+      TBI_modeling: {
         title: "Controlled Cortical Impact (CCI) for Traumatic Brain Injury Modeling",
         text: "<strong>1. Anesthesia & Positioning</strong><br>Male C57BL/6 mice (8–10 weeks old) are anesthetized with 2% inhaled isoflurane in a 7:3 mixture of N₂O and O₂ using an isoflurane vaporizer. The head is secured in a stereotaxic frame to ensure stability during surgery.<br><br>" +
               "<strong>2. Cranial Exposure</strong><br>While maintaining anesthesia, the scalp is incised to expose the skull.<br><br>" +
@@ -536,12 +561,20 @@
               "<strong>4. Cortical Impact</strong><br>After adjusting the impactor tip height to zero based on the brain surface, a controlled cortical impact is delivered at a depth of 2 mm with a velocity of 5 m/s.<br><br>" +
               "<strong>5. Post-Injury Care</strong><br>Hemorrhage is gently cleared, and the scalp is rapidly sutured. Mice are allowed to recover for a defined period based on experimental design.<br><br>" + 
               "<strong>6. Tissue Collection</strong><br>At the experimental endpoint, mice are anesthetized with 1.5% isoflurane in N₂O gas and transcardially perfused with saline. Brains are then extracted, rapidly frozen, and stored at −80 °C for subsequent analysis."},
+      Perfusion: {
+        title: "Fresh-Frozen Cardiac Perfusion",
+        text: "<strong>1. perfusion</strong><br>aaa<br><br>" +
+              "<strong>6. Tissue Collection</strong><br>ds"},
       brain_section: { 
         title: "Brain Tissue Preparation for Immunohistochemistry", 
         text: "<strong>1. Mounting the Brain</strong><br>The frozen brain (−80 °C) is mounted in Optimal cutting temperature (OCT) compound on the cryostat chuck with careful orientation along the coronal plane. The blade direction and target region must be considered to preserve structural fidelity. The cryostat chamber is pre-cooled to −30 °C.<br><br>" +
               "<strong>2. Frozen Sectioning</strong><br>The brain is sectioned slowly and evenly. Slices are transferred directly onto pre-chilled (−30 °C) glass slides, ensuring immediate adhesion using gentle heat. Care must be taken to avoid tissue curling or OCT contamination of the region of interest.<br><br>" +
               "<strong>3. Post-section Handling</strong><br>Slides are stored at −30 °C for gradual cooling and then transferred to −80 °C for long-term storage. Sudden freezing should be avoided to prevent detachment during later immunostaining."},
-      cell_culture: { 
+      AC_culture: {
+        title: "Fresh-Frozen Cardiac Perfusion",
+        text: "<strong>1. perfusion</strong><br>aaa<br><br>" +
+              "<strong>6. Tissue Collection</strong><br>ds"},
+      raw264_7_cell_culture: { 
         title: "Raw 264.7 Cell Culture", 
         text: "<strong>1. Thawing</strong><br>" +
               "Thaw frozen Raw 264.7 cells rapidly in a 37 °C water bath after wiping with 70% ethanol. While thawing, pre-warm a T75 flask containing 10 mL of complete medium (DMEM high glucose + 10% FBS + 1% penicillin-streptomycin) in a CO₂ incubator for at least 15 minutes.<br><br>" +
@@ -554,7 +587,39 @@
               "<strong>3. Freezing</strong><br>" +
               "For cryopreservation, prepare freezing medium (90% FBS + 10% DMSO). After reaching ~90–95% confluency, gently scrape and collect cells as described above.<br><br>" +
               "Aliquot 1–1.5 mL of cell suspension into each cryovial. Wrap in tissue and place immediately into a −80 °C freezer for initial freezing. After ~3 days, transfer to liquid nitrogen for long-term storage."},
-      Mito_Fraction: { 
+      IF: { 
+        title: "Immunofluorescence (brain & retinal tissue) with PFA Fixation", 
+        text: "<strong>1. Fixation</strong><br>Frozen brain slides are air-dried and compartmentalized with a PAP pen. 4% paraformaldehyde (PFA) is applied (100 μL per section, 15 min, RT), then rinsed in 1× PBS.<br><br>" +
+              "<strong>2. Washing</strong><br>Slides are sequentially washed in PBS-T (Tween 20; 0.1%, 0.2%, then 0.1%) with shaking (10 min per wash, RT).<br><br>" +
+              "<strong>3. Blocking</strong><br>Blocking solution (3% BSA in PBS-Triton X-100 0.1%) is applied (100 μL per section, 1 h, RT).<br><br>" +
+              "<strong>4. Primary Antibody</strong><br>After blocking, primary antibody solution (1:300 in BSA buffer) is added (100 μL per section) and incubated overnight at 4 °C.<br><br>" +
+              "<strong>5. Washing</strong><br>Repeat the same washing steps as before (Step 2).<br><br>" +
+              "<strong>6. Secondary Antibody</strong><br>Apply secondary antibody (1:300) for 1 h at RT in the dark.<br><br>" +
+              "<strong>7. Final Wash</strong><br>Repeat washing steps again under light-protected conditions.<br><br>" +
+              "<strong>8. Mounting</strong><br>Mount with DAPI-containing solution, avoid bubbles, cover with cover glass, and incubate >2 h at 4 °C.<br><br>" +
+              "<strong>9. Imaging</strong><br>Detect under a fluorescence microscope. Protect from light throughout the staining and mounting process." },
+      morph_analysis: { 
+        title: "Cell Morphology and Protein Intensity Analysis", 
+        text: "<strong>1. ROI Extraction</strong><br>" +
+              "From microscopy images, regions of interest (ROIs) were extracted corresponding to all cells double-positive for a specific cell marker and DAPI. Each ROI was assigned a unique identifier.<br><br>" +
+              "<strong>2. Morphological Quantification</strong><br>" +
+              "For each ROI, morphological parameters such as roundness and aspect ratio were measured using built-in analysis tools.<br><br>" +
+              "<strong>3. Protein Intensity Measurement</strong><br>" +
+              "The same ROIs were used to quantify signal intensities of co-stained proteins. This allowed direct pairing of morphological features with expression levels on a per-cell basis.<br><br>" +
+              "<strong>4. Normalization and Comparative Analysis</strong><br>" +
+              "Protein intensity values were converted into z-scores using the mean and sample standard deviation of all ROIs within the same experimental group to enable standardized comparisons between groups." },
+      Intensity_measure: { 
+        title: "Protein Intensity Measurement Using ImageJ", 
+        text: "<strong>1. Open Image and Select Channel</strong><br>" +
+              "Load the fluorescence or DAB-stained image into ImageJ. If the image is multi-channel (e.g., RGB), split channels and select the appropriate one for quantification.<br><br>" +
+              "<strong>2. ROI Definition</strong><br>" +
+              "Define the region of interest (ROI) corresponding to specific cells or tissue regions to be analyzed. Register this information in the ROI Manager.<br><br>" +
+              "<strong>3. Remove Unwanted Areas and Define Metric</strong><br>" +
+              "Delete irrelevant background regions outside the target area and specify the measurement parameter to be used for quantification.<br><br>" +
+              "<strong>4. Measure Intensity</strong><br>" +
+              "Use <em>Analyze → Measure</em> or press <kbd>M</kbd> to calculate intensity metrics. 'Integrated Density' is typically used as a representative value for protein expression.<br><br>" +
+              "<strong>This process can be automated using ImageJ Macros.</strong>" },
+       Mito_Fraction: { 
         title: "Mitochondrial Fractionation Using Mannitol–Sucrose Buffer", 
         text: "<strong>Mannitol–Sucrose Buffer (pH 7.4)</strong><br>" +
               "210 mM mannitol + 70 mM sucrose + 5 mM MOPS + 1 mM EDTA + protease inhibitor cocktail.<br><br>" +
@@ -571,7 +636,7 @@
               "<strong>6. Washing</strong><br>" +
               "Resuspend the mitochondrial pellet in Mannitol–Sucrose buffer, then centrifuge again at 10,000 × g for 20 minutes to remove contaminants.<br><br>" +
               "<strong>7. Mitochondrial Lysis</strong><br>" +
-              "Resuspend the washed mitochondrial pellet in lysis buffer (e.g., 1% Triton X‑100). Incubate on ice for 15 minutes, then centrifuge at 15,000 rpm for 15 minutes. The supernatant contains mitochondrial proteins ready for downstream analysis."},
+              "Resuspend the washed mitochondrial pellet in lysis buffer (e.g., 1% Triton X‑100). Incubate on ice for 15 minutes, then centrifuge at 15,000 rpm for 15 minutes. The supernatant contains mitochondrial proteins ready for downstream analysis."},                          
       western_blot: { 
         title: "Western Blot", 
         text: "<strong>1. Protein Extraction</strong><br>" +
@@ -606,41 +671,10 @@
 
               "<strong>11. Signal Detection</strong><br>" +
               "Treat membranes with ECL substrate evenly, incubate for 1 minute, and detect chemiluminescent signal using appropriate imaging equipment." },
-      ihc: { 
-        title: "Immunohistochemistry with PFA Fixation", 
-        text: "<strong>1. Fixation</strong><br>Frozen brain slides are air-dried and compartmentalized with a PAP pen. 4% paraformaldehyde (PFA) is applied (100 μL per section, 15 min, RT), then rinsed in 1× PBS.<br><br>" +
-              "<strong>2. Washing</strong><br>Slides are sequentially washed in PBS-T (Tween 20; 0.1%, 0.2%, then 0.1%) with shaking (10 min per wash, RT).<br><br>" +
-              "<strong>3. Blocking</strong><br>Blocking solution (3% BSA in PBS-Triton X-100 0.1%) is applied (100 μL per section, 1 h, RT).<br><br>" +
-              "<strong>4. Primary Antibody</strong><br>After blocking, primary antibody solution (1:300 in BSA buffer) is added (100 μL per section) and incubated overnight at 4 °C.<br><br>" +
-              "<strong>5. Washing</strong><br>Repeat the same washing steps as before (Step 2).<br><br>" +
-              "<strong>6. Secondary Antibody</strong><br>Apply secondary antibody (1:300) for 1 h at RT in the dark.<br><br>" +
-              "<strong>7. Final Wash</strong><br>Repeat washing steps again under light-protected conditions.<br><br>" +
-              "<strong>8. Mounting</strong><br>Mount with DAPI-containing solution, avoid bubbles, cover with cover glass, and incubate >2 h at 4 °C.<br><br>" +
-              "<strong>9. Imaging</strong><br>Detect under a fluorescence microscope. Protect from light throughout the staining and mounting process." },
-      Intensity_measure: { 
-        title: "Protein Intensity Measurement Using ImageJ", 
-        text: "<strong>1. Open Image and Select Channel</strong><br>" +
-              "Load the fluorescence or DAB-stained image into ImageJ. If the image is multi-channel (e.g., RGB), split channels and select the appropriate one for quantification.<br><br>" +
-              "<strong>2. ROI Definition</strong><br>" +
-              "Define the region of interest (ROI) corresponding to specific cells or tissue regions to be analyzed. Register this information in the ROI Manager.<br><br>" +
-              "<strong>3. Remove Unwanted Areas and Define Metric</strong><br>" +
-              "Delete irrelevant background regions outside the target area and specify the measurement parameter to be used for quantification.<br><br>" +
-              "<strong>4. Measure Intensity</strong><br>" +
-              "Use <em>Analyze → Measure</em> or press <kbd>M</kbd> to calculate intensity metrics. 'Integrated Density' is typically used as a representative value for protein expression.<br><br>" +
-              "<strong>This process can be automated using ImageJ Macros.</strong>" },
-      morph_analysis: { 
-        title: "Cell Morphology and Protein Intensity Analysis", 
-        text: "<strong>1. ROI Extraction</strong><br>" +
-              "From microscopy images, regions of interest (ROIs) were extracted corresponding to all cells double-positive for a specific cell marker and DAPI. Each ROI was assigned a unique identifier.<br><br>" +
-              "<strong>2. Morphological Quantification</strong><br>" +
-              "For each ROI, morphological parameters such as roundness and aspect ratio were measured using built-in analysis tools.<br><br>" +
-              "<strong>3. Protein Intensity Measurement</strong><br>" +
-              "The same ROIs were used to quantify signal intensities of co-stained proteins. This allowed direct pairing of morphological features with expression levels on a per-cell basis.<br><br>" +
-              "<strong>4. Normalization and Comparative Analysis</strong><br>" +
-              "Protein intensity values were converted into z-scores using the mean and sample standard deviation of all ROIs within the same experimental group to enable standardized comparisons between groups." },
       statistical: { 
-        title: "Statistical Analysis & Visualization", 
-        text: "<strong>1. Data Input and Preprocessing</strong><br>" +
+        title: "Statistical Analysis & Visualization (Python)", 
+        text: "<em class=\"deemphasized\">This tool was developed to support quantitative interpretation of wet-lab experiments such as western blotting and immunofluorescence assays.</em><br><br>" +
+              "<strong>1. Data Input and Preprocessing</strong><br>" +
               "The tool loads a wide-format Excel file and automatically transforms it into long-format for analysis. Non-numeric and missing values are excluded, and group labels are standardized as ordered categorical variables.<br><br>" +
               "<strong>2. Statistical Analysis Logic</strong><br>" +
               "Depending on the number of groups and sample consistency:<br>" +
@@ -653,21 +687,6 @@
               "Plots support bar, dot, and errorbar overlays. Colors for bars and dots can be changed interactively by clicking, and axis labels and layout settings are adjustable through a settings menu.<br><br>" +
               "<strong>5. Export and Reporting</strong><br>" +
               "Plots are saved in TIFF and SVG formats. If statistical analysis is valid, an HTML report is auto-generated, including raw data, analysis summaries, plots, and annotations.<br><br>" +
-              "<strong>* Script is available upon request.</strong>" },
-      volcano: { 
-        title: "Volcano Plot GUI – Interactive DEG Visualization by Role", 
-        text: "<strong>1. Input and Preprocessing</strong><br>" +
-              "Loads an Excel file containing differential expression results. It automatically detects paired log₂ fold change (Log2fc_) and adjusted p-value (Adj.p.value_) columns, then extracts gene annotations and role assignments. Duplicate genes are merged by combining role labels.<br><br>" +
-              "<strong>2. Role-based Classification</strong><br>" +
-              "Each gene is categorized based on a refined 'Role' column. Genes with multiple role labels (e.g., 'Driver,Marker') are treated as distinct role combinations. Additional categories like Up-Unassigned and Down-Unassigned are generated for significant DEGs without known roles.<br><br>" +
-              "<strong>3. Volcano Plot Logic</strong><br>" +
-              "The scatter plot displays Log2FC (x-axis) vs. –log₁₀(p-value) (y-axis), dynamically scaling for p-values equal to zero. Genes are colored by role group, with adjustable dot size, symbol labels, and cutoff thresholds. If 'Use Role Colors' is off, a simpler up/down/other scheme is used.<br><br>" +
-              "<strong>4. Role-specific Gene Display</strong><br>" +
-              "For each role combination, users can choose to annotate top N genes with SYMBOL labels. Role-specific dot size, label visibility, and colors are editable in real time via the 'Settings' window.<br><br>" +
-              "<strong>5. Interactive Customization</strong><br>" +
-              "Users can adjust axis labels, font sizes, cutoff lines, legend position, and color schemes interactively. All updates are instantly reflected on the plot.<br><br>" +
-              "<strong>6. Export Functions</strong><br>" +
-              "Plots can be exported as PNG and SVG. The gene list passing current cutoff criteria (by role and regulation direction) can also be saved.<br><br>" +
               "<strong>* Script is available upon request.</strong>" },
       fgsea: { 
         title: "fGSEA Multi-Database Analysis Pipeline", 
@@ -710,6 +729,61 @@
               "Results are saved to structured output folders, with CSV files for each pathway and regulation direction. Keyword-based filtering (e.g., oxidative stress, iron metabolism) is applied to extract focused subsets.<br><br>" +
               "<strong>5. Fully Automated Workflow</strong><br>" +
               "The pipeline iterates through all detected input files and produces annotated enrichment results for both up- and down-regulated genes, ensuring scalability across experimental conditions.<br><br>" +
+              "<em>The R script can be provided upon request.</em>"},
+      hedgesg: { 
+        title: "Effect size–based mechanistic analysis", 
+        text: "<em class=\"deemphasized\">This analysis framework summarizes complex gene expression changes into interpretable pathway- or mechanism-level effects using effect size metrics, enabling biologically meaningful comparisons beyond p-values.</em><br><br>" +
+
+              "<strong>1. Input data processing</strong><br>" +
+              "Loads a normalized gene expression matrix from spreadsheet files and automatically detects gene identifier columns. Expression values are converted to numeric format and structured for downstream group-wise comparison.<br><br>" +
+
+              "<strong>2. Sample grouping and comparison setup</strong><br>" +
+              "Assigns samples to experimental groups based on metadata encoded in sample names. For each analysis, the comparison direction is explicitly defined to ensure consistent interpretation of effect size signs across datasets.<br><br>" +
+
+              "<strong>3. Pathway or mechanism-level feature construction</strong><br>" +
+              "Defines compact gene sets representing specific biological processes or mechanistic axes. For each gene set, overlapping genes are extracted and aggregated to generate a single quantitative score per sample, reducing high-dimensional expression data to interpretable features.<br><br>" +
+
+              "<strong>4. Sample-level score generation</strong><br>" +
+              "Computes per-sample scores by summarizing expression values across genes within each gene set. This step produces pathway-level or mechanism-level readouts suitable for direct comparison between experimental groups.<br><br>" +
+
+              "<strong>5. Effect size estimation</strong><br>" +
+              "Calculates Hedges’ g with confidence intervals for each pathway-level feature to quantify the magnitude of differences between groups. This provides a standardized measure of biological impact that is robust to small sample sizes.<br><br>" +
+
+              "<strong>6. Tabular output for downstream interpretation</strong><br>" +
+              "Exports structured result tables including effect sizes, confidence intervals, group means, variability estimates, and sample counts. Outputs are organized by comparison and experimental context to support reproducibility.<br><br>" +
+
+              "<strong>7. Effect size–centric visualization</strong><br>" +
+              "Generates forest plots summarizing effect sizes across multiple pathways or mechanisms, enabling rapid identification of processes showing the strongest directional shifts.<br><br>" +
+
+              "<strong>8. Distribution-level validation</strong><br>" +
+              "Produces violin and box plots with per-sample points to visualize group separation and within-group variability. Nonparametric tests are optionally applied as a complementary check on score distributions.<br><br>" +
+
+              "<em>The R script can be provided upon request.</em>"},
+      correlation: { 
+        title: "Pathway correlation and multivariate separation analysis", 
+        text: "<em class=\"deemphasized\">This framework evaluates coordinated behavior between biological pathways by integrating correlation structure, group-level dispersion, and multivariate separation in pathway score space.</em><br><br>" +
+
+              "<strong>1. Input pathway score integration</strong><br>" +
+              "Loads pathway-level enrichment score tables generated from single-sample analyses. Two pathway scores of interest are selected and aligned by sample identity to construct a paired dataset for joint analysis.<br><br>" +
+
+              "<strong>2. Sample annotation and grouping</strong><br>" +
+              "Assigns samples to experimental groups based on metadata encoded in sample names. This enables direct comparison of pathway relationships across different experimental conditions or perturbations.<br><br>" +
+
+              "<strong>3. Pairwise correlation analysis</strong><br>" +
+              "Computes Spearman rank correlation between paired pathway scores to assess whether two biological processes exhibit coordinated activation or suppression across samples, independent of distributional assumptions.<br><br>" +
+
+              "<strong>4. Pathway score space visualization</strong><br>" +
+              "Projects samples into a two-dimensional pathway score space and visualizes group structure using scatter plots, linear trend lines, and confidence ellipses. This provides an intuitive view of pathway coupling and group-specific organization.<br><br>" +
+
+              "<strong>5. Group compactness assessment</strong><br>" +
+              "Quantifies within-group dispersion by measuring the average squared distance of samples from the group centroid in pathway score space. This captures how tightly or diffusely pathway states are regulated within each condition.<br><br>" +
+
+              "<strong>6. Multivariate group separation testing</strong><br>" +
+              "Applies Hotelling’s T² test to evaluate whether the joint distribution of pathway scores differs significantly between two groups, providing a multivariate analogue to univariate mean comparison.<br><br>" +
+
+              "<strong>7. Structured output and reproducible reporting</strong><br>" +
+              "Exports correlation statistics, compactness metrics, and multivariate test results as structured tables, alongside publication-ready figures saved in both raster and vector formats.<br><br>" +
+
               "<em>The R script can be provided upon request.</em>"}
     };
 
