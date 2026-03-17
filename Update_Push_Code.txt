@@ -1,5 +1,5 @@
 터미널 푸시 명령어
 
 git add .
-git commit -m "Update Presentation1.jpeg 260311"
+git commit -m "Update Minjae_share 260318"
 git push
