@@ -490,7 +490,7 @@
       word-break: break-word;
       font-family: var(--font-system);
       font-size: var(--font-size-small);
-      line-height: 1.6;
+      line-height: 1.4;
     }
 
     .demo-section {
@@ -635,6 +635,12 @@
       display: none;
     }
 
+    .note-block {
+      display: block;
+      line-height: 1.8;
+      margin-top: 6px;
+    }
+
   </style>
 
   <script>
@@ -703,34 +709,38 @@
         </p>
 
         <pre><strong>Requirements:</strong>
-    - <span class="highlight">macOS</span>
-    - <span class="highlight">R (version 4.5 or later)</span>
+  - <span class="highlight">macOS</span>
+  - <span class="highlight">R (version 4.5 or later)</span>
 
-    <strong>How to run:</strong>
-    1. Download OmicsForge.app.zip
-    2. Unzip
-    3. Double-click OmicsForge.app
+<strong>How to run:</strong>
+  1. Download OmicsForge.app.zip
+  2. Unzip
+  3. Double-click OmicsForge.app
 
-    On launch, a web browser will open automatically 
-    to run the application.
+  On launch, a web browser will open automatically to run 
+  the application.
 
-    If blocked:
-    Right-click → Open → Open
+<strong>If macOS blocks the app:</strong>
+<span class="small-note"><em>This warning appears because the app is not signed with an Apple developer certificate.</em></span>
 
-    If the app does not launch, run it from Terminal:
+  1. Open <span class="highlight">System Settings → Privacy & Security</span>
+  2. Scroll down to the security section
+  3. Click <span class="highlight">"Open Anyway"</span>
 
-    ~/Desktop/OmicsForge.app/Contents/MacOS/run
+  Alternative method:
+  Right-click → Open → Open
 
-    <strong>Make sure R is properly installed and 
-    accessible from Terminal.</strong>
+<strong>If the app still does not launch, run from Terminal:</strong>
 
-    This version includes all required packages for immediate use.
-    No additional installation is required.
+  ~/Desktop/OmicsForge.app/Contents/MacOS/run
 
-    Tested on Apple Silicon M4 macOS environments.
-
-    First launch may take a few seconds 
-    while the environment initializes.</pre>
+<strong>Make sure R is properly installed and accessible from Terminal.</strong>
+<span class="note-block"><em>
+- This version includes all required packages for immediate use.
+- No additional installation is required.
+- Tested on Apple Silicon M4 macOS environments.
+- First launch may take a few seconds 
+- while the environment initializes.</em></span></pre>
       </div>
 
       <div class="demo-section">
@@ -740,7 +750,7 @@
         <div class="demo-block">
           <h3 class="demo-subtitle">Video</h3>
 
-          <div class="video-placeholder">
+          <div>
             <video class="video-frame" controls>
               <source src="omicsforge_data/OmicsForge_Introduction.mp4" type="video/mp4">
             </video>
