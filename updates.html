@@ -360,12 +360,45 @@
   <div class="container">
     <h1>Updates</h1>
 
-    <!-- ASGSR 2025 - Post-Conference Update-->
+    <!-- OmicsForge release Update-->
     <div class="update-item" onclick="toggleContent('u1')">
-      <div class="update-title">• ASGSR 2025 — Post-Conference Update</div>
+      <div class="update-title">• OmicsForge Release Update</div>
       <div class="update-content" id="u1">
         <div class="update-inner">
           <div class="update-slide" id="u1slide">
+            <img src="omicsforge_data/Main_Interface_1_update.png" class="active">
+            <img src="omicsforge_data/Main_Interface_2_update.png">
+            <img src="omicsforge_data/Main_Interface_3_update.png">
+            <img src="omicsforge_data/prerankedgsea_0.png">
+            <img src="omicsforge_data/ssgsea_0.png">
+            <img src="omicsforge_data/esplot_0.png">
+            <img src="omicsforge_data/volcanoplot_0.png">
+
+            <button class="slide-btn prev" onclick="prevSlide('u1slide'); event.stopPropagation();">❮</button>
+            <button class="slide-btn next" onclick="nextSlide('u1slide'); event.stopPropagation();">❯</button>
+          </div>
+          <div class="update-text">
+            I began working with transcriptomics analysis last year, learning independently while analyzing <strong><em>NASA GeneLab datasets</em></strong>. One of the biggest challenges I faced was the requirement for <strong><em>R coding</em></strong>, which created a significant barrier in the early stages.<br><br>
+
+            This experience led me to think that there should be a more intuitive way to perform transcriptomics analysis without requiring coding. Based on that idea, I developed <strong><em>OmicsForge</em></strong>, a modular application that integrates transcriptomics analysis and visualization into a single workflow.<br><br>
+
+            The current version is available for <strong><em>macOS</em></strong> and includes core modules such as <strong><em>preranked GSEA, ssGSEA, ES plots, and volcano plots</em></strong>. Each module is designed to be directly usable in real research scenarios while maintaining clarity and reproducibility.<br><br>
+
+            I plan to expand OmicsForge with additional modules and ultimately develop it into a <strong><em>multi-omics analysis platform</em></strong>.<br><br>
+
+            I am currently seeking <strong><em>postdoctoral opportunities</em></strong> where I can further apply and develop this approach.<br>
+            Please feel free to reach out if you are interested.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASGSR 2025 - Post-Conference Update-->
+    <div class="update-item" onclick="toggleContent('u2')">
+      <div class="update-title">• ASGSR 2025 — Post-Conference Update</div>
+      <div class="update-content" id="u2">
+        <div class="update-inner">
+          <div class="update-slide" id="u2slide">
             <img src="Presentation1.jpeg" class="active">
             <img src="ASGSR2025_3.jpeg">
             <img src="ASGSR2025_2.jpeg">
@@ -373,8 +406,8 @@
             <img src="Landscape.jpeg">
             <img src="Dinner.jpeg">
 
-            <button class="slide-btn prev" onclick="prevSlide('u1slide'); event.stopPropagation();">❮</button>
-            <button class="slide-btn next" onclick="nextSlide('u1slide'); event.stopPropagation();">❯</button>
+            <button class="slide-btn prev" onclick="prevSlide('u2slide'); event.stopPropagation();">❮</button>
+            <button class="slide-btn next" onclick="nextSlide('u2slide'); event.stopPropagation();">❯</button>
           </div>
           <div class="update-text">
             I recently presented my work at the <strong><em>American Society for Gravitational and Space Research (ASGSR) 2025</em></strong>, where I shared transcriptomic evidence suggesting that the brain may become more vulnerable following long-duration spaceflight.<br><br>
@@ -392,9 +425,9 @@
     </div>
 
     <!-- ASGSR 2025 -->
-    <div class="update-item" onclick="toggleContent('u2')">
+    <div class="update-item" onclick="toggleContent('u3')">
       <div class="update-title">• ASGSR 2025</div>
-      <div class="update-content" id="u2">
+      <div class="update-content" id="u3">
         <div class="update-inner">
           <img src="asgsr_photo.jpg" class="update-image">
           <div class="update-text">
@@ -419,9 +452,9 @@
     </div>
 
     <!-- Project Hail Mary -->
-    <div class="update-item" onclick="toggleContent('u3')">
+    <div class="update-item" onclick="toggleContent('u4')">
       <div class="update-title">• Book Recommendation – Project Hail Mary</div>
-      <div class="update-content" id="u3">
+      <div class="update-content" id="u4">
         <div class="update-inner">
           <img src="Project_Hail_Mary.jpg" class="update-image">
           <div class="update-text">
