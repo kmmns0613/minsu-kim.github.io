@@ -1,0 +1,54 @@
+=====================================================
+Step 1: Species & DEG File
+=====================================================
+
+Upload a DEG table (CSV, TSV, TXT, XLS, or XLSX) and select the target species.
+The module automatically detects key columns such as gene IDs, log2FC, and p-values.
+
+Gene ID types are registered and standardized internally, enabling consistent mapping across all downstream steps.
+This step defines the data structure that will be used for filtering, labeling, and visualization.
+
+=====================================================
+Step 2: Plot design
+=====================================================
+
+Define significance thresholds and configure the overall structure of the volcano plot.
+
+You can set cutoffs for log2FC and p-value (or adjusted p-value),
+and genes are automatically classified into up-regulated, down-regulated, and non-significant groups.
+
+All changes are applied immediately, allowing you to refine the plot design interactively before adding labels.
+
+=====================================================
+Step 3: Gene labels
+=====================================================
+
+Add and manage gene labels using multiple selection strategies.
+
+Four methods are available for selecting genes:
+	•	Top N filter
+Selects top genes based on log2FC or adjusted p-value, with optional direction-specific filtering.
+	•	Gene search
+Allows direct search across registered gene ID types, with automatic cross-ID mapping.
+	•	Gene list upload
+Accepts user-defined gene lists and matches them to the current DEG dataset.
+	•	Pathway search
+Retrieves genes from selected pathways within predefined collections (e.g., GO, KEGG),
+and maps them onto the volcano plot.
+
+Each label set can be customized with its own title, color, border style, and text visibility.
+Individual gene positions can also be adjusted to improve readability.
+
+All label sets are managed within a unified system and applied directly to the preview without rerunning the analysis.
+
+=====================================================
+Step 4: Export
+=====================================================
+
+Finalize and export your volcano plot in publication-ready format.
+
+You can control figure size using different units (e.g., px, cm, inch),
+and the preview will adapt to reflect the selected dimensions.
+
+Plots can be exported as PNG and SVG files,
+and all outputs are saved automatically with a structured directory and timestamp for reproducibility.

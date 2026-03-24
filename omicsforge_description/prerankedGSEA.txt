@@ -1,0 +1,62 @@
+=====================================================
+Step 1. Species & DEG File
+=====================================================
+
+Select the target species and upload a DEG table (CSV, TSV, TXT, XLS, or XLSX).
+For Excel files, you can choose the appropriate sheet before loading.
+
+The module automatically detects the header row, which is useful when files contain extra titles or notes.
+If necessary, the header row can be manually adjusted.
+
+After loading, a preview of the raw table is displayed to confirm that the data has been read correctly.
+
+=====================================================
+Step 2. Column Detection
+=====================================================
+
+Assign the required columns for analysis, including gene ID, gene ID type, and ranking values.
+
+The module suggests candidate columns for gene IDs, statistics, log2FC, and p-values,
+but all assignments can be manually adjusted if needed.
+
+You can generate the ranked list in two ways:
+	•	Use a statistic column directly (e.g., t-statistic)
+	•	Combine log2FC and p-value to create a ranking
+
+Before proceeding, a preview of the selected columns is provided.
+
+The module then builds a clean ranked gene list by normalizing gene IDs,
+removing invalid entries, resolving duplicates, and recording the ranking process.
+
+=====================================================
+Step 3. Collection & Run (fgsea)
+=====================================================
+
+Select pathway collections such as GO, KEGG, Reactome, MSigDB, or custom gene sets.
+
+Each collection can be configured independently, including gene set size filters,
+number of permutations, and p-value cutoff.
+
+Custom gene sets can be uploaded and automatically converted to the selected gene ID type.
+
+When running the analysis, fgsea is executed for each collection,
+and the module manages gene set filtering and overlap to ensure consistent results.
+
+The output includes enrichment statistics (ES, NES, p-values),
+leading-edge genes for interpretation, and exportable result files (Excel and RDS).
+
+=====================================================
+Preview & Workflow Control
+=====================================================
+
+At each step, the module provides a preview of the current state,
+including the raw table, selected columns, ranked gene list, and selected collections.
+
+This allows you to verify each stage before moving forward without rerunning the analysis.
+
+=====================================================
+Purpose
+=====================================================
+
+This module is designed to move directly from DEG results to pathway-level interpretation.
+It minimizes manual preprocessing while preserving key analytical controls for reproducible analysis.

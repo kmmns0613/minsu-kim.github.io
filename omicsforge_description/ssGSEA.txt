@@ -1,0 +1,52 @@
+=====================================================
+Step 1: Species & Expression File
+=====================================================
+
+Select the target species and upload a normalized expression matrix.
+The matrix should contain gene expression values across samples.
+
+After loading the file, define the header row if needed.
+This step ensures that the data structure is correctly interpreted
+before building the ssGSEA matrix.
+
+=====================================================
+Step 2: Column Detection & Matrix Build
+=====================================================
+
+Assign the required columns for analysis.
+
+Select the gene ID column and specify the identifier type.
+Choose the expression columns that will be used for ssGSEA.
+
+If TPM values contain zeros, you can enable an option
+to add +1 to all values for stable score computation.
+
+Click “Confirm columns & build ssGSEA matrix”
+to generate the analysis-ready matrix.
+
+=====================================================
+Step 3: Collection & Run (ssGSEA)
+=====================================================
+
+Select gene set collections for ssGSEA analysis.
+
+Available collections depend on the selected species
+and require an active internet connection.
+You can also upload custom collections if needed.
+
+Each collection can be configured independently.
+After setup, click “Run ssGSEA” to execute the analysis.
+
+The module saves results automatically for each collection.
+
+=====================================================
+Results & Export
+=====================================================
+
+Results are organized into structured outputs.
+
+The Report contains all analysis settings and metadata.
+The ssGSEA results are saved separately for each collection.
+
+These outputs can be used directly for downstream visualization
+or integrated into further analysis workflows.

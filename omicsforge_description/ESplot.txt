@@ -1,0 +1,37 @@
+=====================================================
+Step 1: Load fgsea bundle (.rds)
+=====================================================
+
+Upload the preranked GSEA result (.rds) file generated from the Preranked GSEA module.
+After loading the file, set an adjusted p-value cutoff to filter significant pathways.
+This step defines which pathways will be available for visualization.
+
+=====================================================
+Step 2: Register pathway keywords
+=====================================================
+
+Use search and tag filters to find pathways of interest.
+You can select multiple pathways at once, and an ES plot will be generated for each selection.
+This allows direct comparison of enrichment patterns across pathways.
+
+=====================================================
+Step 3: Confirmed pathways
+=====================================================
+
+Refine the ES plots using the interactive preview.
+
+You can adjust colors either globally or for individual pathways,
+and optionally display leading-edge genes to highlight key contributors.
+Multiple ES plots can also be combined into a single figure for comparative visualization.
+
+All changes are applied instantly in the preview without rerunning the analysis.
+
+=====================================================
+Step 4: Export plots
+=====================================================
+
+Finalize and export your ES plots in publication-ready format.
+
+You can control figure size using different units (e.g., px or inch),
+and export either individual plots or combined figures with consistent layout.
+
