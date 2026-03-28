@@ -406,6 +406,33 @@
       background: rgba(0,0,0,0.85);
     }
 
+    .img-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 24px;
+      z-index: 20001;
+    }
+
+    .img-nav:hover {
+      background: rgba(0,0,0,0.7);
+    }
+
+    .img-nav.prev {
+      left: 24px;
+    }
+
+    .img-nav.next {
+      right: 24px;
+    }
+
     .code-btn {
       background: var(--color-accent);
       color: var(--code-btn-fg);
@@ -466,13 +493,28 @@
       background-color: #e5c23f;
     }
 
-    .download-demo-grid {
+    .release-grid {
       display: grid;
-      grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr);
+      grid-template-columns: repeat(2, minmax(280px, 1fr));
+      gap: 24px;
+      align-items: stretch;
+      margin-top: 18px;
+      margin-bottom: 24px;
+    }
+
+    .demo-wide-section {
+      background: var(--color-surface);
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-light);
+      margin-bottom: 30px;
+    }
+
+    .demo-wide-grid {
+      display: grid;
+      grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr);
       gap: 24px;
       align-items: start;
-      margin-top: 18px;
-      margin-bottom: 30px;
     }
 
     .info-box {
@@ -498,15 +540,14 @@
       line-height: 1.4;
     }
 
-    .demo-section {
-      background: var(--color-surface);
-      padding: 20px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-light);
+    .demo-panel {
+      background: rgba(0,0,0,0.02);
+      padding: 16px;
+      border-radius: 12px;
     }
 
-    .demo-block + .demo-block {
-      margin-top: 20px;
+    [data-theme="dark"] .demo-panel {
+      background: rgba(255,255,255,0.03);
     }
 
     .demo-subtitle {
@@ -605,45 +646,45 @@
     }
 
     @media (max-width: 900px) {
-      .download-demo-grid {
+      .release-grid,
+      .demo-wide-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    .apple-icon {
+    .system-icon {
       display: inline-flex;
       align-items: center;
       margin-right: 6px;
     }
 
-    .apple-icon img {
+    .system-icon img {
       width: 20px;
       height: 20px;
       transform: translateY(1px);
     }
 
     /* 기본 (light mode) */
-    .apple-dark {
+    .system-dark {
       display: none;
     }
 
-    .apple-light {
+    .system-light {
       display: inline;
     }
 
     /* dark mode일 때 */
-    [data-theme="dark"] .apple-dark {
+    [data-theme="dark"] .system-dark {
       display: inline;
     }
 
-    [data-theme="dark"] .apple-light {
+    [data-theme="dark"] .system-light {
       display: none;
     }
 
     .note-block {
       display: block;
-      line-height: 1.8;
-      margin-top: 6px;
+      line-height: 1.4;
     }
 
   </style>
@@ -694,75 +735,126 @@
       The platform focuses on clarity, reproducibility, and biological relevance rather than unnecessary technical complexity. It incorporates commonly used transcriptomics strategies, including enrichment analysis, pathway-level scoring, and visualization, in a modular framework that can be directly applied to real research scenarios.
     </p>
 
-    <div class="download-demo-grid">
+    <div class="release-grid">
       <div class="info-box">
-        <h3>Download & Installation</h3>
+        <h3>macOS Version</h3>
 
         <a href="https://drive.google.com/uc?export=download&id=1XQG2s1pE3jHt1GGtZesQ9bubpTOUzNjI" 
-           class="download-button" 
-           target="_blank" 
-           rel="noopener noreferrer">
-          <span class="apple-icon">
-            <img src="Apple_logo_black.svg" class="apple-dark">
-            <img src="Apple_logo_white.svg" class="apple-light">
+          class="download-button" 
+          target="_blank" 
+          rel="noopener noreferrer">
+          <span class="system-icon">
+            <img src="Apple_logo_black.svg" class="system-dark">
+            <img src="Apple_logo_white.svg" class="system-light">
           </span>
-          Download OmicsForge (MacOS)
+          Download OmicsForge (macOS)
         </a>
 
         <p class="small-note" style="margin-top:10px; margin-bottom:14px;">
-          Currently available for macOS only
+          OmicsForge v1.0 for macOS
         </p>
 
         <pre><strong>Requirements:</strong>
-  - <span class="highlight">macOS</span>
-  - <span class="highlight">R (version 4.5 or later)</span>
+    - <span class="highlight">macOS</span>
+    - <span class="highlight">R (version 4.5 or later)</span>
 
 <strong>How to run:</strong>
-  1. Download OmicsForge.app.zip
-  2. Unzip
-  3. Double-click OmicsForge.app
+    1. Download OmicsForge.app.zip
+    2. Unzip
+    3. Double-click OmicsForge.app
 
-  On launch, a web browser will open automatically to run 
-  the application.
+    On launch, a web browser will open automatically to run the application.
 
 <strong>If macOS blocks the app:</strong>
 <span class="small-note"><em>This warning appears because the app is not signed with an Apple developer certificate.</em></span>
 
-  1. Open <span class="highlight">System Settings → Privacy & Security</span>
-  2. Scroll down to the security section
-  3. Click <span class="highlight">"Open Anyway"</span>
+    1. Open <span class="highlight">System Settings → Privacy & Security</span>
+    2. Scroll down to the security section
+    3. Click <span class="highlight">"Open Anyway"</span>
 
-  Alternative method:
-  Right-click → Open → Open
+<strong>Alternative method:</strong>
+    Right-click → Open → Open
 
 <strong>If the app still does not launch, run from Terminal:</strong>
-
-  ~/Desktop/OmicsForge.app/Contents/MacOS/run
+    ~/Desktop/OmicsForge.app/Contents/MacOS/run
 
 <strong>Make sure R is properly installed and accessible from Terminal.</strong>
-<span class="note-block"><em>
-- This version includes all required packages for immediate use.
-- No additional installation is required.
-- Tested on Apple Silicon M4 macOS environments.
-- First launch may take a few seconds 
-- while the environment initializes.</em></span></pre>
+
+<strong>Notes:</strong>
+    <span class="note-block"><em>    - This version includes all required packages for immediate use
+    - No additional installation is required
+    - Tested on Apple Silicon M4 macOS environments with R 4.5.3+
+    - Internet connection is recommended for certain features
+    - First launch may take a few seconds while the environment initializes</em></span></pre>
       </div>
 
-      <div class="demo-section">
-        <h2 style="margin-top: 0;">Demo</h2>
-        <p class="small-note">Video demonstration and interface snapshots.</p>
+      <div class="info-box">
+        <h3>Windows Version</h3>
 
-        <div class="demo-block">
+        <a href="https://drive.google.com/uc?export=download&id=1a1uQcDUvJLmM9e-bc-wp54woG9Oba3pG"
+          class="download-button"
+          target="_blank"
+          rel="noopener noreferrer">
+          <span class="system-icon">
+            <img src="Windows_logo_black.svg" class="system-dark">
+            <img src="Windows_logo_white.svg" class="system-light">
+          </span>
+          Download OmicsForge (Windows)
+        </a>
+
+        <p class="small-note" style="margin-top:10px; margin-bottom:14px;">
+          OmicsForge v1.0 for Windows
+        </p>
+
+        <pre><strong>Requirements:</strong>
+    - <span class="highlight">Windows 11 or later</span>
+    - <span class="highlight">R (version 4.5 or later)</span>
+
+<strong>How to run:</strong>
+    1. Download OmicsForge_Setup.exe
+    2. Run the installer
+    3. Launch OmicsForge from the desktop or start menu shortcut
+
+    On launch, a web browser will open automatically to run the application.
+
+<strong>Note:</strong>
+<span class="small-note"><em>The "Launch OmicsForge" checkbox at the end of installation may not always start the application correctly.</em></span>
+
+  If this happens:
+  - Close the installer
+  - Double-click the desktop icon to launch OmicsForge
+
+<strong>If the app does not launch:</strong>
+    - Make sure <span class="highlight">R (version 4.5 or later)</span> is installed
+    - R should be installed in the default location (e.g., C:\Program Files\R\)
+
+<strong>Optional check (Command Prompt):</strong>
+  <span class="highlight">Rscript --version</span>
+
+<strong>Make sure R is properly installed and accessible from the system.</strong>
+
+<strong>Notes:</strong>
+    <span class="note-block"><em>    - This version includes all required R packages for immediate use
+    - No additional installation is required
+    - Tested on Windows 11 environments with R 4.5.3+
+    - Internet connection is recommended for certain features
+    - First launch may take a few seconds while the environment initializes</em></span></pre>
+      </div>
+    </div>
+
+    <div class="demo-wide-section">
+      <h2 style="margin-top: 0;">Demo</h2>
+      <p class="small-note">Video demonstration and interface snapshots.</p>
+
+      <div class="demo-wide-grid">
+        <div class="demo-panel">
           <h3 class="demo-subtitle">Video</h3>
-
-          <div>
-            <video class="video-frame" controls>
-              <source src="omicsforge_data/OmicsForge_Introduction.mp4" type="video/mp4">
-            </video>
-          </div>
+          <video class="video-frame" controls>
+            <source src="omicsforge_data/OmicsForge_Introduction.mp4" type="video/mp4">
+          </video>
         </div>
 
-        <div class="demo-block">
+        <div class="demo-panel">
           <h3 class="demo-subtitle">Screenshots</h3>
 
           <div class="slider-container">
@@ -774,42 +866,42 @@
               <div class="slide-caption">Main interface overview 1</div>
             </div>
 
-            <div class="slide active">
+            <div class="slide">
               <img src="omicsforge_data/Main_Interface_2.png" alt="OmicsForge main interface" class="zoomable">
               <div class="slide-caption">Transcriptomics module</div>
             </div>
 
-            <div class="slide active">
+            <div class="slide">
               <img src="omicsforge_data/Main_Interface_3.png" alt="OmicsForge main interface" class="zoomable">
-              <div class="slide-caption">Transcriptomics/ vizualization module</div>
+              <div class="slide-caption">Transcriptomics / visualization module</div>
             </div>
 
-            <div class="slide active">
+            <div class="slide">
               <img src="omicsforge_data/prerankedgsea_5.png" alt="OmicsForge main interface" class="zoomable">
               <div class="slide-caption">Preranked GSEA module example</div>
             </div>
 
-            <div class="slide active">
+            <div class="slide">
               <img src="omicsforge_data/prerankedgsea_result_3.png" alt="OmicsForge main interface" class="zoomable">
-              <div class="slide-caption">Preranked GSEA module example</div>
+              <div class="slide-caption">Preranked GSEA result example</div>
             </div>
 
-            <div class="slide active">
+            <div class="slide">
               <img src="omicsforge_data/ssgsea_4.png" alt="OmicsForge main interface" class="zoomable">
               <div class="slide-caption">ssGSEA module example</div>
             </div>
 
-            <div class="slide active">
+            <div class="slide">
               <img src="omicsforge_data/ssgsea_result_1.png" alt="OmicsForge main interface" class="zoomable">
-              <div class="slide-caption">ssGSEA module example</div>
+              <div class="slide-caption">ssGSEA result example</div>
             </div>
 
-            <div class="slide active">
+            <div class="slide">
               <img src="omicsforge_data/esplot_8.png" alt="OmicsForge main interface" class="zoomable">
               <div class="slide-caption">ES plot module example</div>
             </div>
 
-            <div class="slide active">
+            <div class="slide">
               <img src="omicsforge_data/volcanoplot_9.png" alt="OmicsForge main interface" class="zoomable">
               <div class="slide-caption">Volcano plot module example</div>
             </div>
@@ -821,31 +913,46 @@
     <!-- ⭐ Release Notes Section -->
     <div class="section-accordion">
       <div class="section-title" onclick="toggleAccordion('release_notes')">
-        • Release Notes (v1.0)
+        • Release Notes (v1.0 · March 28, 2026)
       </div>
 
       <div class="section-content" id="release_notes">
         <p>
           <strong>Overview</strong>
-          <br><br>
+          <br>
           First public release of OmicsForge, providing a modular and reproducible framework for transcriptomics analysis and visualization.
           <br><br>
 
-          <strong>New Features</strong>
-          <br><br>
-          Implementation of core transcriptomics modules including <span class="highlight">preranked GSEA</span> and <span class="highlight">ssGSEA</span>, along with visualization tools such as <span class="highlight">ES plots</span> and <span class="highlight">volcano plots</span>.
+          <strong>Supported Platforms</strong>
+          <br>
+          Version 1.0 is now available for both <span class="highlight">macOS</span> and <span class="highlight">Windows</span>.
           <br><br>
 
-          <strong>System</strong>
+          <strong>Core Modules</strong>
+          <br>
+          This release includes core transcriptomics analysis modules such as <span class="highlight">preranked GSEA</span> and <span class="highlight">ssGSEA</span>, together with visualization modules including <span class="highlight">ES plots</span> and <span class="highlight">volcano plots</span>.
           <br><br>
-          Distributed as a standalone macOS application (.app) with pre-installed dependencies, enabling immediate use without additional package installation.
+
+          <strong>System Design</strong>
+          <br>
+          OmicsForge is distributed as a standalone desktop application with pre-configured dependencies, allowing users to begin analysis with minimal setup once the required R environment is installed.
+          <br><br>
+
+          <strong>Reproducibility</strong>
+          <br>
+          The platform is designed not only to perform analysis, but also to preserve the analysis workflow in a structured and reproducible form through integrated reporting.
           <br><br>
 
           <strong>Notes</strong>
+          <br>
+          OmicsForge requires <span class="highlight">R version 4.5 or later</span>. On launch, the application runs locally and opens automatically in a web browser.
+          <br>
+          Some features may work best with an internet connection.
           <br><br>
-          Requires R (version 4.5 or later). On launch, the application runs locally and opens in a web browser.
-          <br><br>
-          Additional modules and expanded visualization features are planned for future releases, with long-term extension toward multi-omics integration.
+
+          <strong>Next Steps</strong>
+          <br>
+          Additional modules and expanded visualization features are planned for future releases, with long-term development toward a broader <span class="highlight">multi-omics analysis platform</span>.
         </p>
       </div>
     </div>
@@ -1008,7 +1115,9 @@
   <!-- ⭐ 여기에 이미지 확대용 모달 추가하면 가장 안전함 -->
   <div class="img-modal" id="imgModal">
     <span class="img-close" id="imgModalClose">&times;</span>
+    <button class="img-nav prev" id="imgPrevBtn">&#10094;</button>
     <img class="img-modal-content" id="imgModalImage">
+    <button class="img-nav next" id="imgNextBtn">&#10095;</button>
   </div>
 
   <script>
@@ -1165,30 +1274,62 @@
       const modal = document.getElementById("imgModal");
       const modalImg = document.getElementById("imgModalImage");
       const modalClose = document.getElementById("imgModalClose");
+      const prevBtn = document.getElementById("imgPrevBtn");
+      const nextBtn = document.getElementById("imgNextBtn");
+      const zoomableImages = Array.from(document.querySelectorAll("img.zoomable"));
 
-      // 모든 zoomable 이미지에 적용
-      document.querySelectorAll("img.zoomable").forEach(img => {
+      let currentZoomIndex = 0;
+
+      function showZoomedImage(index) {
+        if (!zoomableImages.length) return;
+
+        if (index < 0) currentZoomIndex = zoomableImages.length - 1;
+        else if (index >= zoomableImages.length) currentZoomIndex = 0;
+        else currentZoomIndex = index;
+
+        modalImg.src = zoomableImages[currentZoomIndex].src;
+        modalImg.alt = zoomableImages[currentZoomIndex].alt || "Expanded image";
+      }
+
+      zoomableImages.forEach((img, index) => {
         img.addEventListener("click", () => {
+          currentZoomIndex = index;
+          showZoomedImage(currentZoomIndex);
           modal.style.display = "flex";
-          modalImg.src = img.src;   // 클릭한 이미지 그대로 확대
         });
       });
 
-      // 닫기 버튼
+      prevBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        showZoomedImage(currentZoomIndex - 1);
+      });
+
+      nextBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        showZoomedImage(currentZoomIndex + 1);
+      });
+
       modalClose.addEventListener("click", () => {
         modal.style.display = "none";
       });
 
-      // 모달 외부 클릭 시 닫기
       modal.addEventListener("click", (e) => {
         if (e.target === modal) modal.style.display = "none";
       });
+
+      document.addEventListener("keydown", (e) => {
+        if (modal.style.display !== "flex") return;
+
+        if (e.key === "ArrowLeft") {
+          showZoomedImage(currentZoomIndex - 1);
+        } else if (e.key === "ArrowRight") {
+          showZoomedImage(currentZoomIndex + 1);
+        } else if (e.key === "Escape") {
+          modal.style.display = "none";
+        }
+      });
     });
 
-    // ===== Copy / Selection Disable (기존 유지) =====
-    document.addEventListener("contextmenu", e => e.preventDefault());
-    document.addEventListener("copy", e => e.preventDefault());
-    document.addEventListener("selectstart", e => e.preventDefault());
 
     // ===== Dark Mode Toggle =====
     function toggleDarkMode() {
