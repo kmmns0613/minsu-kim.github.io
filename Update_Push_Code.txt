@@ -1,5 +1,5 @@
 터미널 푸시 명령어
 
 git add .
-git commit -m "Update OmicsForge 260324"
+git commit -m "Update BlaberLab 260401"
 git push
